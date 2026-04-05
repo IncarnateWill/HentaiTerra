@@ -1,0 +1,8 @@
+<svg width="800" height="300" viewBox="0 0 800 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="300" fill="#1f2937"/>
+  <rect x="300" y="100" width="200" height="100" rx="8" fill="#374151"/>
+  <circle cx="400" cy="130" r="20" fill="#6b7280"/>
+  <rect x="350" y="160" width="100" height="8" rx="4" fill="#6b7280"/>
+  <rect x="370" y="180" width="60" height="6" rx="3" fill="#4b5563"/>
+  <text x="400" y="240" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="16">Banner indisponibil</text>
+</svg>

@@ -1,0 +1,62 @@
+{
+  "name": "hentaiterra",
+  "version": "2.0.5",
+  "private": false,
+  "author": "IncarnateWill",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IncarnateWill/HentaiTerra"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "bun": ">=1.0.0"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.31.9",
+    "@formkit/auto-animate": "^0.9.0",
+    "@headlessui/react": "^2.2.7",
+    "bun": "^1.2.21",
+    "disqus-react": "^1.1.7",
+    "dotenv": "^17.2.2",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.542.0",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.0",
+    "next": "^15.5.2",
+    "node-fetch": "^3.3.2",
+    "rate-limiter-flexible": "^7.3.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-error-boundary": "^6.0.0",
+    "react-helmet": "^6.1.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.5.0",
+    "tailwind-merge": "^3.3.1",
+    "ts-node": "^10.9.2",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^15.5.2",
+    "@types/ioredis": "^5.0.0",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "15.5.2",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "typescript": "^5.9.2"
+  },
+  "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom"
+  }
+}

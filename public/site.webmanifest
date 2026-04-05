@@ -1,0 +1,115 @@
+{
+  "name": "HentaiTerra - Hentai și Manga",
+  "short_name": "HentaiTerra",
+  "description": "Descoperă, vizionează și discută despre hentai-urile tale preferate. Alătură-te comunității noastre pentru cele mai noi episoade și manga.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#13111C",
+  "theme_color": "#1a1625",
+  "orientation": "any",
+  "lang": "ro-RO",
+  "dir": "ltr",
+  "categories": [
+    "entertainment",
+    "video",
+    "social",
+    "hentai",
+    "manga",
+    "adult"
+  ],
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/homebanner.webp",
+      "sizes": "540x960",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "HentaiTerra homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Acasă",
+      "short_name": "Acasă",
+      "description": "Mergi la pagina principală",
+      "url": "/?source=pwa",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Hentai",
+      "short_name": "Hentai",
+      "description": "Explorează toate hentai-urile",
+      "url": "/hentai?source=pwa",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Anime",
+      "short_name": "Anime",
+      "description": "Descoperă anime-urile",
+      "url": "https://animaterra.ro/?source=pwa",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Manga",
+      "short_name": "Manga",
+      "description": "Citește manga",
+      "url": "https://mangaterra.ro/?source=pwa",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
