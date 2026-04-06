@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
 
 const siteConfig = {
-  title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Conținut Hentai în Română`,
-  description: 'Platformă pentru hentai cu conținut subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra') + ' oferă streaming gratuit în calitate HD și conținut explicit pentru hentai.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro',
-  ogImage: process.env.NEXT_PUBLIC_OG_IMAGE || 'https://images2.alphacoders.com/913/913209.jpg',
-  twitterHandle: process.env.NEXT_PUBLIC_TWITTER_HANDLE || '@HentaiTerra',
-  siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
+    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Conținut Hentai în Română`,
+    description: 'Platformă pentru hentai cu conținut subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra') + ' oferă streaming gratuit în calitate HD și conținut explicit pentru hentai.',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro',
+    ogImage: process.env.NEXT_PUBLIC_OG_IMAGE || 'https://images2.alphacoders.com/913/913209.jpg',
+    twitterHandle: process.env.NEXT_PUBLIC_TWITTER_HANDLE || '@HentaiTerra',
+    siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
 };
 
 export const homeMetadata: Metadata = {
@@ -86,6 +86,6 @@ export const homeMetadata: Metadata = {
     other: {
         "geo.region": "RO",
         "geo.placename": "Romania",
-        "copyright": `Copyright (C) 2026 IncarnateWill`,
+        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiTerra`,
     }
 };

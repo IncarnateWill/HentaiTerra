@@ -604,19 +604,29 @@ export default async function AnimeDetailsPage({
                     {/* Episodes Section */}
                     <div className="mt-8">
                         <h2 className="text-2xl font-bold mb-4 text-text-primary">Episoade</h2>
-                        <AnimeEpisodeList 
-                            episodes={anime.episodes as any} 
-                            currentEpisodeId="" 
-                        />
-                        
-                        {/* Pagination */}
-                        {anime.totalPages && anime.totalPages > 1 && (
-                            <Pagination
-                                currentPage={resolvedPage}
-                                totalPages={anime.totalPages}
-                                baseUrl={`/hentai/${mediaId}`}
-                                searchParams={{}}
-                            />
+                        {anime.episodes && anime.episodes.length > 0 ? (
+                            <>
+                                <AnimeEpisodeList 
+                                    episodes={anime.episodes as any} 
+                                    currentEpisodeId="" 
+                                />
+                                
+                                {/* Pagination */}
+                                {anime.totalPages && anime.totalPages > 1 && (
+                                    <Pagination
+                                        currentPage={resolvedPage}
+                                        totalPages={anime.totalPages}
+                                        baseUrl={`/hentai/${mediaId}`}
+                                        searchParams={{}}
+                                    />
+                                )}
+                            </>
+                        ) : (
+                            <div className="bg-dark-500/30 p-6 rounded-lg border border-dark-400">
+                                <p className="text-text-secondary text-lg italic">
+                                    Nici un episod nu a fost postat inca
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>

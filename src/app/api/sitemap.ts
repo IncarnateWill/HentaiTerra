@@ -3,6 +3,9 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Anime, Episode } from '@/models';
 import { logToDiscordWebhook } from '@/lib/discord-webhook';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Reusable connection
 const dbConnection = connectToDatabase().catch(async (error) => {
   await logToDiscordWebhook(`Error in sitemap: ${error}`);

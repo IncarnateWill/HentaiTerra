@@ -1,8 +1,8 @@
 // Permissions utility for admin roles
-// Usage: import { isFullAdmin, canManageContent } from './admin-permissions';
+// Usage: import { isFullAdmin, canManageContent, canDeleteContent, isStaff } from './admin-permissions';
 
 export function isFullAdmin(user: { roles?: string[] }) {
-  return !!user?.roles?.some(r => ["owner", "co-owner", "admin"].includes(r));
+  return !!user?.roles?.some(r => ["owner", "co-owner"].includes(r));
 }
 
 export function isStaff(user: { roles?: string[] }) {

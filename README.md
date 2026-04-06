@@ -24,10 +24,9 @@ HentaiTerra v2.0 is a high-performance, modern hentai streaming platform built w
 
 ## Tech Stack
 
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js 15+ (App Router)
 - **Styling**: TailwindCSS
 - **Database**: MongoDB (via Mongoose)
-- **Caching**: Redis (ioredis)
 - **Auth**: Clerk
 - **Icons**: React Icons (Fa, Hi, Si)
 - **Animations**: Framer Motion
@@ -57,26 +56,28 @@ HentaiTerra v2.0 is a high-performance, modern hentai streaming platform built w
 The following environment variables are required for the application to function:
 
 | Variable | Description |
-|---|---|
+|----------|-------------|
 | `MONGODB_URI` | Connection string for MongoDB |
-| `REDIS_URL` | Connection string for Redis |
 | `CLERK_SECRET_KEY` | Clerk private API key |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public API key |
-| `NEXT_PUBLIC_SITE_URL` | The public URL of your deployment (e.g., https://hentaiterra.ro) |
-| `NEXT_PUBLIC_SITE_NAME` | The name of your site (e.g., HentaiTerra) |
+| `NEXT_PUBLIC_SITE_URL` | The public URL of your deployment (e.g., `https://yourdomain.ro`) |
+| `NEXT_PUBLIC_SITE_NAME` | The name of your site |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | Public contact email address |
+| `NEXT_PUBLIC_DMCA_EMAIL` | DMCA takedown contact email |
 | `NEXT_PUBLIC_DISCORD_URL` | Your Discord server invite link |
 | `NEXT_PUBLIC_MANGA_URL` | (Optional) Link to your partner manga site |
 | `NEXT_PUBLIC_ANIME_URL` | (Optional) Link to your partner anime site |
-| `INDEXNOW_KEY` | Your IndexNow API key for indexing |
-| `DISCORD_WEBHOOK_ANIME` | Webhook URL for new anime/hentai notifications |
+| `INDEXNOW_KEY` | Your IndexNow API key for search engine indexing |
+| `DISCORD_WEBHOOK_ANIME` | Webhook URL for new anime notifications |
 | `DISCORD_WEBHOOK_EPISODE` | Webhook URL for new episode notifications |
 | `DISCORD_WEBHOOK_LOG` | Webhook URL for system logs and error reporting |
-| `DISCORD_WEBHOOK_SUGGEST` | Webhook URL for user suggestions |
 | `DISCORD_WEBHOOK_RECRUIT` | Webhook URL for staff applications |
 | `DISCORD_WEBHOOK_REPORT` | Webhook URL for episode reports |
-| `DISCORD_ROLE_ANIME` | (Optional) Discord Role ID to mention for new posts |
+| `DISCORD_ROLE_ANIME` | (Optional) Discord Role ID to mention for new anime posts |
 | `DISCORD_ROLE_EPISODE` | (Optional) Discord Role ID to mention for new episodes |
-| `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console verification token |
+| `JIKAN_BASE` | Jikan (MyAnimeList) API base URL |
+| `GOOGLE_TRANSLATE_URL` | Google Translate endpoint URL |
+| `NEXT_PUBLIC_DISQUS_SHORTNAME` | (Optional) Disqus shortname for comments |
 
 ## Additional Attributions
 
@@ -86,8 +87,8 @@ The following environment variables are required for the application to function
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. 
 
-Copyright (C) 2026 IncarnateWill
+Copyright (C) 2026 IncarnateWill / HentaiTerra
 
 ---
 
-**Creat cu ❤️ de comunitatea HentaiTerra pentru fanii hentai din România**
+**Creat cu ❤️ de IncarnateWill pentru comunitatea HentaiTerra si fanii hentai din România**

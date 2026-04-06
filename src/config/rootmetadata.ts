@@ -2,11 +2,11 @@ export const homeMetadata = {
     title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Hentai Online Subtitrat în Română | Conținut pentru Adulți 18+`,
     description: 'Platformă pentru adulți cu conținut hentai subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra') + ' oferă streaming gratuit de conținut pentru adulți în calitate HD cu subtitrare în limba română.',
     keywords: [
-        'hentai romania', 
+        'hentai romania',
         'hentai subtitrat',
         'conținut adulți',
         'hentai gratis',
-        'hentai pentru adulți', 
+        'hentai pentru adulți',
         'hentai română',
         'hentai subtitrat romana',
         'conținut pentru adulți romania',
@@ -94,6 +94,6 @@ export const homeMetadata = {
         "dcterms.subject": "hentai, streaming, subtitrat romana",
         "revisit-after": "3 days", // More frequent revisit
         "rating": "general", // Changed to more accurate rating
-        "copyright": `Copyright (C) 2026 IncarnateWill`
+        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiTerra`
     }
 };

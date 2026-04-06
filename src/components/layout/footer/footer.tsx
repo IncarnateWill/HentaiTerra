@@ -16,7 +16,7 @@ const Footer = () => {
 
     const navigation = [
         { name: "Acasă", href: "/home", icon: HiHome, ariaLabel: "Navighează la pagina principală" },
-        { name: "Hentai", href: `/hentais`, icon: FaGhost, ariaLabel: "Răsfoiește colecția noastră de hentai"},
+        { name: "Hentai", href: `/hentais`, icon: FaGhost, ariaLabel: "Răsfoiește colecția noastră de hentai" },
         { name: "Manga", href: process.env.NEXT_PUBLIC_MANGA_URL || "https://mangaterra.ro", icon: FaBook, ariaLabel: "Răsfoiește colecția noastră de manga", external: true },
         { name: "Watchlist", href: "/watchlist", icon: HiHeart, ariaLabel: "Vezi lista ta de urmărire" },
         { name: "Echipă", href: "/staff", icon: HiShieldCheck, ariaLabel: "Echipă" },
@@ -49,7 +49,7 @@ const Footer = () => {
                     <section aria-label="Despre HentaiTerra" className="lg:col-span-2">
                         <h3 className="text-xl font-bold mb-4 text-purple-400">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}</h3>
                         <p className="text-gray-400 leading-relaxed mb-4">
-                            Bine ai venit la {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} - platforma ta preferată pentru hentai în România. 
+                            Bine ai venit la {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} - platforma ta preferată pentru hentai în România.
                             Oferim o selecție vastă de conținut de înaltă calitate, actualizat regulat pentru publicul adult.
                         </p>
                         <div className="flex space-x-4">
@@ -68,13 +68,13 @@ const Footer = () => {
                         </div>
                         <div className="mt-5">
                             <a
-                                href="https://theporndude.com/ro"
+                                href="https://theporndude.vip/"
                                 target="_blank"
                                 rel="noopener noreferrer nofollow"
-                                aria-label="ThePornDude"
+                                aria-label="Best Porn Sites"
                                 className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 text-gray-200 border border-white/10 hover:bg-white/10 transition"
                             >
-                                <span className="font-semibold">ThePornDude</span>
+                                <span className="font-semibold">Best Porn Sites</span>
                             </a>
                         </div>
                     </section>
@@ -163,18 +163,18 @@ const Footer = () => {
                 <div className="mt-12 pt-8 border-t border-purple-900/20">
                     <div className="text-sm text-gray-400 mb-4 max-w-3xl">
                         <p className="mb-2">
-                            <strong className="text-purple-400">Disclaimer:</strong> {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} nu stochează niciun fișier pe serverele sale. 
+                            <strong className="text-purple-400">Disclaimer:</strong> {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} nu stochează niciun fișier pe serverele sale.
                             Tot conținutul este furnizat de terțe părți neafiliate. Nu suntem responsabili pentru conținutul găzduit pe platformele terțe.
                         </p>
                         <p>
-                            Toate mărcile comerciale, imaginile și conținutul video aparțin proprietarilor lor de drept. 
+                            Toate mărcile comerciale, imaginile și conținutul video aparțin proprietarilor lor de drept.
                         </p>
                         <p>
                             {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} respectă proprietatea intelectuală și drepturile de autor.
                         </p>
                     </div>
                     <div className="text-center text-gray-400">
-                        <p>Copyright (C) 2026 IncarnateWill. Toate drepturile rezervate.</p>
+                        <p>Copyright (C) {currentYear} IncarnateWill / HentaiTerra. Toate drepturile rezervate.</p>
                     </div>
                 </div>
             </div>

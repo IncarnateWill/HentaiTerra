@@ -10,11 +10,11 @@ interface DisqusProps {
   onLoad?: () => void;
 }
 
-export default function DisqusDiscussionEmbed({ 
-  identifier, 
-  title, 
+export default function DisqusDiscussionEmbed({
+  identifier,
+  title,
   language = "ro",
-  onLoad 
+  onLoad
 }: DisqusProps) {
   const [currentUrl, setCurrentUrl] = useState<string>("");
 
@@ -46,8 +46,8 @@ export default function DisqusDiscussionEmbed({
 
   return (
     <div className="disqus-container">
-      <DiscussionEmbed 
-        shortname="hentaiterra" 
+      <DiscussionEmbed
+        shortname={process.env.NEXT_PUBLIC_DISQUS_SHORTNAME || ""}
         config={{
           ...disqusConfig,
         }}
