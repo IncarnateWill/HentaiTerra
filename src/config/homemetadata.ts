@@ -1,12 +1,12 @@
 import { Metadata } from 'next';
 
 const siteConfig = {
-    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Conținut Hentai în Română`,
-    description: 'Platformă pentru hentai cu conținut subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra') + ' oferă streaming gratuit în calitate HD și conținut explicit pentru hentai.',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro',
+    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Conținut Hentai în Română`,
+    description: 'Platformă pentru hentai cu conținut subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited') + ' oferă streaming gratuit în calitate HD și conținut explicit pentru hentai.',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro',
     ogImage: process.env.NEXT_PUBLIC_OG_IMAGE || 'https://images2.alphacoders.com/913/913209.jpg',
-    twitterHandle: process.env.NEXT_PUBLIC_TWITTER_HANDLE || '@HentaiTerra',
-    siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
+    twitterHandle: process.env.NEXT_PUBLIC_TWITTER_HANDLE || '@HentaiUnited',
+    siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
 };
 
 export const homeMetadata: Metadata = {
@@ -22,7 +22,7 @@ export const homeMetadata: Metadata = {
         'hentai uncensored',
         'hentai 18+',
         'conținut explicit',
-        'HentaiTerra',
+        'HentaiUnited',
     ],
     metadataBase: new URL(siteConfig.url as string),
     alternates: {
@@ -69,7 +69,7 @@ export const homeMetadata: Metadata = {
     },
     appleWebApp: {
         capable: true,
-        title: "HentaiTerra",
+        title: "HentaiUnited",
         statusBarStyle: "black-translucent",
     },
     formatDetection: {
@@ -86,6 +86,6 @@ export const homeMetadata: Metadata = {
     other: {
         "geo.region": "RO",
         "geo.placename": "Romania",
-        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiTerra`,
+        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiUnited`,
     }
 };

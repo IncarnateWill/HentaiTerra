@@ -6,15 +6,15 @@ import { Metadata } from 'next';
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
 
 export const metadata: Metadata = {
-  title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Caută după Gen și Popularitate`,
-  description: `Descoperă hentai-uri noi folosind filtrele avansate pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Caută după gen, popularitate, anul lansării și multe altele pentru a găsi hentai-ul perfect.`,
+  title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Caută după Gen și Popularitate`,
+  description: `Descoperă hentai-uri noi folosind filtrele avansate pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Caută după gen, popularitate, anul lansării și multe altele pentru a găsi hentai-ul perfect.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/filter`
+    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/filter`
   },
   openGraph: {
-    title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
+    title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
     description: `Descoperă hentai-uri noi folosind filtrele avansate. Caută după gen, popularitate și multe altele.`,
-    url: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/filter`,
+    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/filter`,
     type: 'website'
   },
   robots: {

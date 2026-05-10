@@ -1,13 +1,13 @@
 export const getHomeStructuredData = () => ({
     "@context": "https://schema.org",
                         "@type": "WebSite",
-                        "name": `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Hentai Online Subtitrat în Română`,
+                        "name": `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Hentai Online Subtitrat în Română`,
                         "description": `Platformă premium de streaming hentai cu subtitrare în română. Vizionează gratuit hentai online subtitrat în română, în calitate HD.`,
-                        "url": process.env.SITE_URL || 'https://hentaiterra.ro',    
+                        "url": process.env.SITE_URL || 'https://HentaiUnited.ro',    
                         "publisher": {
                             "@type": "Organization",
-                            "name": process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
-                            "url": process.env.SITE_URL || 'https://hentaiterra.ro',
+                            "name": process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
+                            "url": process.env.SITE_URL || 'https://HentaiUnited.ro',
                             "logo": {
                                 "@type": "ImageObject",
                                 "url": process.env.NEXT_PUBLIC_OG_IMAGE || '/placeholder.jpg'
@@ -26,7 +26,7 @@ export const getHomeStructuredData = () => ({
                                     "@type": "ListItem",
                                     "position": 2,
                                     "name": "Ultimele Hentaiuri",
-                                    "description": "Cele mai recente serii hentai adăugate pe HentaiTerra"
+                                    "description": "Cele mai recente serii hentai adăugate pe HentaiUnited"
                                 },
                                 {
                                     "@type": "ListItem",

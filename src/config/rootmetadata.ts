@@ -1,6 +1,6 @@
 export const homeMetadata = {
-    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Hentai Online Subtitrat în Română | Conținut pentru Adulți 18+`,
-    description: 'Platformă pentru adulți cu conținut hentai subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra') + ' oferă streaming gratuit de conținut pentru adulți în calitate HD cu subtitrare în limba română.',
+    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Hentai Online Subtitrat în Română | Conținut pentru Adulți 18+`,
+    description: 'Platformă pentru adulți cu conținut hentai subtitrat în română. Doar pentru persoane de peste 18 ani. ' + (process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited') + ' oferă streaming gratuit de conținut pentru adulți în calitate HD cu subtitrare în limba română.',
     keywords: [
         'hentai romania',
         'hentai subtitrat',
@@ -14,7 +14,7 @@ export const homeMetadata = {
         'hentai cu subtitrare',
         'adult content 18+'
     ],
-    metadataBase: new URL((process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro') as string),
+    metadataBase: new URL((process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro') as string),
     alternates: {
         canonical: "/",
         languages: {
@@ -35,36 +35,36 @@ export const homeMetadata = {
         },
     },
     openGraph: {
-        title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Platformă de Conținut pentru Adulți în Română`,
+        title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Platformă de Conținut pentru Adulți în Română`,
         description: 'Platformă pentru adulți cu conținut hentai subtitrat în română. Doar pentru persoane de peste 18 ani. Streaming gratuit, calitate HD și conținut explicit pentru adulți.',
         type: 'website',
-        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro',
+        url: process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro',
         images: [
             {
                 url: process.env.NEXT_PUBLIC_OG_IMAGE || 'https://images2.alphacoders.com/913/913209.jpg',
                 width: 1200,
                 height: 630,
-                alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Platformă Premium de Conținut pentru Adulți în Română`
+                alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Platformă Premium de Conținut pentru Adulți în Română`
             },
         ],
-        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
         locale: 'ro_RO',
         // Added video capability for future use
         videos: []
     },
     twitter: {
         card: "summary_large_image",
-        title: "HentaiTerra - Conținut pentru Adulți 18+ în Română",
+        title: "HentaiUnited - Conținut pentru Adulți 18+ în Română",
         description: "Platformă pentru adulți cu conținut hentai subtitrat în română. Doar pentru persoane de peste 18 ani.",
         images: [
             "https://images2.alphacoders.com/913/913209.jpg",
         ],
-        site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@HentaiTerra",
-        creator: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@HentaiTerra",
+        site: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@HentaiUnited",
+        creator: process.env.NEXT_PUBLIC_TWITTER_HANDLE || "@HentaiUnited",
     },
     appleWebApp: {
         capable: true,
-        title: "HentaiTerra",
+        title: "HentaiUnited",
         statusBarStyle: "black-translucent",
     },
     formatDetection: {
@@ -94,6 +94,6 @@ export const homeMetadata = {
         "dcterms.subject": "hentai, streaming, subtitrat romana",
         "revisit-after": "3 days", // More frequent revisit
         "rating": "general", // Changed to more accurate rating
-        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiTerra`
+        "copyright": `Copyright (C) ${new Date().getFullYear()} IncarnateWill / HentaiUnited`
     }
 };

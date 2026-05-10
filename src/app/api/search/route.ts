@@ -3,6 +3,7 @@ import { logToDiscordWebhook } from "@/lib/discord-webhook";
 import { connectToDatabase } from "@/lib/mongodb";
 import { Anime } from "@/models";
 import { NextRequest, NextResponse } from "next/server";
+import { getCachedData, setCachedData } from "@/lib/redis";
 // Reusable connection
 const dbConnection = connectToDatabase().catch(async (err) => {
     await logToDiscordWebhook(`Failed to connect to database: ${err}`);
@@ -30,6 +31,10 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        const cacheKey = `search_${query.toLowerCase()}_${limit}_${page}`;
+        const cached = await getCachedData<any>(cacheKey);
+        if (cached) return NextResponse.json(cached);
+
         await dbConnection;
 
         // Create search query with improved matching and index usage
@@ -52,7 +57,7 @@ export async function GET(request: NextRequest) {
             .limit(limit)
             .lean();
 
-        return NextResponse.json({
+        const response = {
             success: true,
             results: animeResults,
             pagination: {
@@ -61,7 +66,11 @@ export async function GET(request: NextRequest) {
                 totalResults: totalCount,
                 hasMore: totalCount > skip + limit
             }
-        });
+        };
+
+        await setCachedData(cacheKey, response, 600); // 10 minutes
+
+        return NextResponse.json(response);
         // Removed Cache-Control headers
 
     } catch (error) {

@@ -238,8 +238,8 @@ function resolvePosterUrl(poster: string, siteUrl: string): string {
  * @returns Metadata object for Next.js
  */
 function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
-    const siteUrl = process.env.SITE_URL || 'https://hentaiterra.ro';
-    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
     
     // Generate titles and descriptions
     const romanianTitle = `${anime.name} - Urmărește Online HD Gratis | ${siteName}`;
@@ -298,8 +298,8 @@ function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
             title: romanianTitle,
             description: romanianDescription,
             images: posterUrl ? [posterUrl] : [],
-            site: '@HentaiTerra',
-            creator: '@HentaiTerra',
+            site: '@HentaiUnited',
+            creator: '@HentaiUnited',
         },
         alternates: {
             canonical: `${siteUrl}/hentai/${mediaId}`,
@@ -477,7 +477,7 @@ export async function generateMetadata({
         if (!isValidObjectId(mediaId)) {
             await logToDiscordWebhook(`Invalid mediaId attempted: ${mediaId} - generateMetadata`);
             return {
-                title: 'Hentai nu a fost găsit | HentaiTerra',
+                title: 'Hentai nu a fost găsit | HentaiUnited',
                 description: 'ID-ul hentai-ului nu este valid.',
                 robots: { index: false, follow: false },
             };
@@ -489,7 +489,7 @@ export async function generateMetadata({
         if (!validateAnimeData(anime)) {
             await logToDiscordWebhook(`Anime not found for valid ID: ${mediaId} - generateMetadata`);
             return {
-                title: 'Hentai nu a fost găsit | HentaiTerra',
+                title: 'Hentai nu a fost găsit | HentaiUnited',
                 description: 'Hentai-ul căutat nu există în baza noastră de date.',
                 robots: { index: false, follow: false },
             };
@@ -499,7 +499,7 @@ export async function generateMetadata({
     } catch (error) {
         await logToDiscordWebhook(`Error in generateMetadata: ${error}`);
         return {
-            title: 'Eroare la încărcarea conținutului | HentaiTerra',
+            title: 'Eroare la încărcarea conținutului | HentaiUnited',
             description: 'A apărut o eroare la încărcarea hentai-ului.',
             robots: { index: false, follow: false },
         };
@@ -540,7 +540,7 @@ export default async function AnimeDetailsPage({
     }
 
     // Prepare data
-    const siteUrl = process.env.SITE_URL || 'https://hentaiterra.ro';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
     const mediaData = prepareMediaData(anime);
     
     // Generate structured data

@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { getEpisodeDetails, getRecommendedAnimes } from "@/lib/db-utils";
+import { getCachedData, setCachedData } from "@/lib/redis";
 import dynamic from 'next/dynamic';
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -281,7 +282,7 @@ function generateVideoStructuredData(episode: Episode, episodeTitle: string, thu
     genre: (episode.genres || []).map(g => g.name),
     publisher: {
       "@type": "Organization",
-      name: episode.animeId.studio || "HentaiTerra",
+      name: episode.animeId.studio || "HentaiUnited",
       url: siteUrl,
     },
     potentialAction: {
@@ -416,15 +417,23 @@ export async function generateMetadata({
       };
     }
 
-    const episode = await getEpisodeDetails(mediaId);
+    const cacheKey = `episode_metadata_${mediaId}`;
+    let episode = await getCachedData<any>(cacheKey);
+
+    if (!episode) {
+      episode = await getEpisodeDetails(mediaId);
+      if (episode) {
+        await setCachedData(cacheKey, episode, 3600); // Cache for 1 hour
+      }
+    }
 
     if (!validateEpisode(episode)) {
       notFound();
     }
 
-    const siteUrl = process.env.SITE_URL || "https://hentaiterra.ro";
+    const siteUrl = process.env.SITE_URL || "https://HentaiUnited.ro";
     const episodeTitle = `${episode.animeId.name} - Episodul ${episode.episodeNumber} - ${episode.name}`;
-    const description = `Urmareste ${episodeTitle} pe HentaiTerra subtitrat in Romana`;
+    const description = `Urmareste ${episodeTitle} pe HentaiUnited subtitrat in Romana`;
     const thumbnailUrl = resolveThumbnailUrl(episode.thumbnail, episode.animeId.poster, siteUrl);
 
     return {
@@ -437,7 +446,7 @@ export async function generateMetadata({
         type: "video.episode",
         title: episodeTitle,
         description,
-        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
         locale: "ro_RO",
         images: [{
           url: thumbnailUrl,
@@ -461,8 +470,8 @@ export async function generateMetadata({
           height: 1080,
           alt: `Thumbnail for ${episodeTitle}`,
         }],
-        creator: "@HentaiTerra",
-        site: "@HentaiTerra",
+        creator: "@HentaiUnited",
+        site: "@HentaiUnited",
       },
       alternates: {
         canonical: `${siteUrl}/watch/${mediaId}`,
@@ -570,7 +579,15 @@ export default async function WatchPage({
     }
 
     // Fetch episode details
-    const episode = await getEpisodeDetails(mediaId);
+    const episodeCacheKey = `episode_details_${mediaId}`;
+    let episode = await getCachedData<any>(episodeCacheKey);
+
+    if (!episode) {
+      episode = await getEpisodeDetails(mediaId);
+      if (episode) {
+        await setCachedData(episodeCacheKey, episode, 3600); // Cache for 1 hour
+      }
+    }
 
     // Validate episode data
     if (!episode || !validateEpisode(episode)) {
@@ -578,7 +595,15 @@ export default async function WatchPage({
     }
 
     // Fetch recommended anime in parallel (non-blocking)
-    const recommendedAnime = await getRecommendedAnimes(episode.animeId._id.toString());
+    const recommendedCacheKey = `recommended_anime_${episode.animeId._id}`;
+    let recommendedAnime = await getCachedData<any[]>(recommendedCacheKey);
+
+    if (!recommendedAnime) {
+      recommendedAnime = await getRecommendedAnimes(episode.animeId._id.toString());
+      if (recommendedAnime) {
+        await setCachedData(recommendedCacheKey, recommendedAnime, 3600); // Cache for 1 hour
+      }
+    }
 
     // Validate episodes array
     const episodes = episode.animeId.episodes || [];
@@ -597,7 +622,7 @@ export default async function WatchPage({
     // Prepare data for rendering
     const episodeTitle = `${episode.animeId.name} - Episodul ${episode.episodeNumber} - ${episode.name || 'Untitled'}`;
     const mediaData = prepareMediaData(episode);
-    const siteUrl = process.env.SITE_URL || "https://hentaiterra.ro";
+    const siteUrl = process.env.SITE_URL || "https://HentaiUnited.ro";
     const thumbnailUrl = resolveThumbnailUrl(episode.thumbnail, mediaData.posterPath, siteUrl);
 
     // Generate structured data

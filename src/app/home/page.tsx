@@ -190,7 +190,7 @@ function serializeMovieList(movies: Anime[]) {
  */
 const HeroSection = ({ popularAnime }: { popularAnime: Anime[] }) => {
     const serializedPopularAnime = serializePopularAnime(popularAnime);
-    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
 
     return (
         <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-secondary to-background-tertiary border border-primary-500/30 shadow-xl p-4 md:p-8 w-full">

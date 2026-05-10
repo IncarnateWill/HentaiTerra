@@ -2,15 +2,15 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: `Contact | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Contactați-ne`,
-  description: `Contactați echipa ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} pentru întrebări, sugestii sau notificări legale. Suntem aici să vă ajutăm și să răspundem la toate solicitările dumneavoastră.`,
+  title: `Contact | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Contactați-ne`,
+  description: `Contactați echipa ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} pentru întrebări, sugestii sau notificări legale. Suntem aici să vă ajutăm și să răspundem la toate solicitările dumneavoastră.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/contact`
+    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/contact`
   },
   openGraph: {
-    title: `Contact | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
-    description: `Contactați echipa ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} pentru întrebări, sugestii sau notificări legale. Suntem aici să vă ajutăm.`,
-    url: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/contact`,
+    title: `Contact | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
+    description: `Contactați echipa ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} pentru întrebări, sugestii sau notificări legale. Suntem aici să vă ajutăm.`,
+    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/contact`,
     type: 'website'
   },
   robots: {
@@ -36,7 +36,7 @@ const ContactUsPage: React.FC = () => {
           You may contact us using the details below:
         </p>
         <ul>
-          <li><strong>Email:</strong> {process.env.NEXT_PUBLIC_CONTACT_EMAIL || `contact@${(process.env.NEXT_PUBLIC_SITE_NAME || 'hentaiterra').toLowerCase()}.ro`}</li>
+          <li><strong>Email:</strong> {process.env.NEXT_PUBLIC_CONTACT_EMAIL || `contact@${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited').toLowerCase()}.ro`}</li>
         </ul>
         <p>
           We appreciate your interest in our services and value your feedback. All communications will be handled in strict confidence and in accordance with our privacy policies.
@@ -57,7 +57,7 @@ const ContactUsPage: React.FC = () => {
           Ne puteți contacta utilizând următoarele detalii:
         </p>
         <ul>
-          <li><strong>Email:</strong> contact@{(process.env.NEXT_PUBLIC_SITE_NAME || 'hentaiterra').toLowerCase()}.ro</li>
+          <li><strong>Email:</strong> contact@{(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited').toLowerCase()}.ro</li>
 
         </ul>
         <p>

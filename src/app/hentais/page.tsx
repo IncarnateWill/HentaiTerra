@@ -64,7 +64,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
             posterPath: anime.poster || '',
             mediaType: "anime" as const,
             views: typeof anime.views === 'number' ? anime.views : 0,
-            alt: `${anime.title || ''} - Vizionează pe HentaiTerra`,
+            alt: `${anime.title || ''} - Vizionează pe HentaiUnited`,
             name: anime.name || '',
             censorship: (anime.censorship || 'censored') as 'censored' | 'uncensored'
         })) || [];
@@ -134,7 +134,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                              Oops! Ceva nu a mers bine
                          </h2>
                         <p className="text-lg text-text-secondary mb-6">
-                            A apărut o eroare la încărcarea rezultatelor pe HentaiTerra. Te rugăm să încerci din nou.
+                            A apărut o eroare la încărcarea rezultatelor pe HentaiUnited. Te rugăm să încerci din nou.
                         </p>
                         <button 
                             onClick={() => window.location.reload()} 

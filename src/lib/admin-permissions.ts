@@ -10,11 +10,11 @@ export function isStaff(user: { roles?: string[] }) {
 }
 
 export function canManageContent(user: { roles?: string[] }) {
-  // Owner, co-owner, admin, and staff can manage content (add/edit anime/episodes)
-  return user?.roles?.some(r => ["owner", "co-owner", "admin", "staff"].includes(r));
+  // Owner, co-owner, and staff can manage content (add/edit anime/episodes)
+  return user?.roles?.some(r => ["owner", "co-owner", "staff"].includes(r));
 }
 
 export function canDeleteContent(user: { roles?: string[] }) {
   // Only owner, co-owner, and admin can delete anime/episodes
-  return user?.roles?.some(r => ["owner", "co-owner", "admin"].includes(r));
+  return user?.roles?.some(r => ["owner", "co-owner"].includes(r));
 } 

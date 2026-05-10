@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getFilteredMedia } from '@/lib/db-utils';
 import { logToDiscordWebhook } from '@/lib/discord-webhook';
+import { getCachedData, setCachedData } from '@/lib/redis';
 
 export async function GET(request: NextRequest) {
     try {
@@ -11,6 +12,13 @@ export async function GET(request: NextRequest) {
         const search = searchParams.get('search') || '';
         const genres = searchParams.get('genres')?.split(',').filter(Boolean) || [];
         const sort = searchParams.get('sort') || 'latest';
+
+        const cacheKey = `filter_${page}_${perPage}_${search}_${genres.join(',')}_${sort}`;
+        const cachedResult = await getCachedData<any>(cacheKey);
+
+        if (cachedResult) {
+            return NextResponse.json(cachedResult);
+        }
         
         const result = await getFilteredMedia({
             page,
@@ -29,11 +37,13 @@ export async function GET(request: NextRequest) {
                 posterPath: anime.poster || '',
                 mediaType: "anime" as const,
                 views: typeof anime.views === 'number' ? anime.views : 0,
-                alt: `${anime.title || ''} - Vizionează pe HentaiTerra`,
+                alt: `${anime.title || ''} - Vizionează pe HentaiUnited`,
                 name: anime.name || '',
                 censorship: (anime.censorship || 'censored') as 'censored' | 'uncensored'
             })) || []
         };
+
+        await setCachedData(cacheKey, serializedResult, 300); // Cache for 5 minutes
         
         return NextResponse.json(serializedResult);
     } catch (error) {

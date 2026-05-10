@@ -177,15 +177,8 @@ export default function Navbar() {
       ariaLabel: "Hentai",
     },
     {
-      name: "Manga",
-      href: process.env.NEXT_PUBLIC_MANGA_URL || "https://mangaterra.ro",
-      icon: HiBookOpen,
-      ariaLabel: "Manga",
-      external: true,
-    },
-    {
       name: "Anime",
-      href: process.env.NEXT_PUBLIC_ANIME_URL || "https://animeterra.ro",
+      href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro",
       icon: FaGhost,
       ariaLabel: "Anime",
     },
@@ -201,14 +194,7 @@ export default function Navbar() {
       href: "/staff",
       icon: HiShieldCheck,
       ariaLabel: "Staff",
-    },
-    {
-      name: "ThePornDude",
-      href: "https://theporndude.com/ro",
-      icon: HiStar,
-      ariaLabel: "ThePornDude",
-      external: true,
-    },
+    }
   ];
 
   // Show Dashboard for users who can manage content (admin, staff, owner, co-owner)
@@ -251,7 +237,7 @@ export default function Navbar() {
           "text-white hover:text-primary-300"
         )}>
           <FaEarthEurope className={cn("w-6 h-6", "text-primary-500")} />
-          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}</span>
+          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}</span>
         </Link>
         <div className="flex items-center gap-2">
           <SignedOut>
@@ -488,7 +474,7 @@ export default function Navbar() {
           "text-white hover:text-primary-300"
         )}>
           <FaEarthEurope className={cn("w-6 h-6", "text-primary-500")} />
-          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}</span>
+          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}</span>
         </Link>
         <div className="flex-1 flex justify-center gap-0.5">
           {navItems.map((item) => {

@@ -26,7 +26,7 @@ export default function DonatePage() {
           animate={{ y: 0, opacity: 1 }}
           className="text-5xl font-bold mb-8 text-center bg-gradient-to-r from-purple-400 via-pink-300 to-purple-400 bg-clip-text text-transparent"
         >
-          Susține Aventura HentaiTerra! 🌟
+          Susține Aventura HentaiUnited! 🌟
         </motion.h1>
 
         <div className="flex flex-col md:flex-row gap-8 justify-center">
@@ -37,7 +37,7 @@ export default function DonatePage() {
             <div className="bg-neutral-900/70 backdrop-blur-lg rounded-xl p-8 shadow-xl border border-purple-500/30 hover:border-purple-500/50 transition-all">
               <h2 className="text-3xl font-semibold mb-6 text-purple-300">De Ce Să Donezi?</h2>
               <div className="space-y-4 text-gray-200">
-                <p className="text-lg"> {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} este un proiect născut din pasiunea pentru hentai, dedicat comunității din România.</p>
+                <p className="text-lg"> {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} este un proiect născut din pasiunea pentru hentai, dedicat comunității din România.</p>
                 <p className="text-lg font-medium text-purple-200">Donațiile tale ne ajută să:</p>
                 <ul className="list-none pl-5 space-y-3">
                   {[
@@ -58,7 +58,7 @@ export default function DonatePage() {
                     </motion.li>
                   ))}
                 </ul>
-                <p className="pt-4 text-lg font-medium text-purple-200">Fiecare contribuție contează pentru viitorul {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}!</p>
+                <p className="pt-4 text-lg font-medium text-purple-200">Fiecare contribuție contează pentru viitorul {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}!</p>
               </div>
 
               <motion.div 
@@ -73,7 +73,7 @@ export default function DonatePage() {
                   </div>
                   <div className="bg-neutral-800/70 p-4 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all">
                     <span className="font-bold text-white text-lg">🎭 Badge Special</span>
-                    <p className="text-gray-300">Badge distinctiv pe profilul tău {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}</p>
+                    <p className="text-gray-300">Badge distinctiv pe profilul tău {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}</p>
                   </div>
                 </div>
               </motion.div>
@@ -92,7 +92,7 @@ export default function DonatePage() {
                 <div className="relative w-full max-w-xs">
                   <Image 
                     src={`https://i.imgur.com/BhTbL9B.png`} 
-                    alt={`${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} Donation`} 
+                    alt={`${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} Donation`} 
                     width={300} 
                     height={200}
                     className="mx-auto opacity-90 hover:opacity-100 transition-opacity"
@@ -149,8 +149,8 @@ export default function DonatePage() {
                     onClick={() => {
                       if (navigator.share) {
                         navigator.share({
-                          title: `${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} - Platforma Hentai din România`,
-                          text: `Descoperă ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}, cea mai bună platformă de hentai din România!`,
+                          title: `${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} - Platforma Hentai din România`,
+                          text: `Descoperă ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}, cea mai bună platformă de hentai din România!`,
                           url: window.location.origin,
                         });
                       } else {
@@ -178,7 +178,7 @@ export default function DonatePage() {
             Mulțumim Donatorilor Noștri
           </h2>
           <p className="text-gray-300 max-w-2xl mx-auto text-lg">
-            Suntem profund recunoscători tuturor celor care au contribuit la dezvoltarea {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}. 
+            Suntem profund recunoscători tuturor celor care au contribuit la dezvoltarea {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}. 
             Fiecare donație ne ajută să continuăm să oferim conținut de calitate și să îmbunătățim experiența utilizatorilor.
           </p>
         </motion.div>
@@ -194,7 +194,7 @@ export default function DonatePage() {
             >
               <div className="bg-neutral-900 p-8 rounded-xl border border-purple-500/30 max-w-md text-center">
                 <h3 className="text-2xl font-bold text-purple-300 mb-4">Mulțumim pentru Suport! 💜</h3>
-                <p className={`text-gray-300`}>Contribuția ta face diferența pentru comunitatea {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}.</p>
+                <p className={`text-gray-300`}>Contribuția ta face diferența pentru comunitatea {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}.</p>
               </div>
             </motion.div>
           )}

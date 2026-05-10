@@ -9,8 +9,8 @@ export const dynamic = 'force-dynamic';
 // export const revalidate = 360000;
 
 export const metadata = {
-    title: `Echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} - Staff și Contributori`,
-    description: `Cunoaște echipa din spatele ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}. Traducători, encoderi, și staff-ul care face totul posibil.`,
+    title: `Echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} - Staff și Contributori`,
+    description: `Cunoaște echipa din spatele ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}. Traducători, encoderi, și staff-ul care face totul posibil.`,
 };
 
 interface StaffMember {
@@ -122,7 +122,7 @@ export default async function StaffPage() {
                         </div>
                         
                         <h1 className="text-6xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-white via-purple-200 to-indigo-200 bg-clip-text text-transparent leading-tight">
-                            Echipa {process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}
+                            Echipa {process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}
                         </h1>
                         
                         <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-12 font-light">
@@ -240,7 +240,7 @@ export default async function StaffPage() {
                                                     {/* Bio - Fixed height with proper overflow handling */}
                                                     <div className="flex-1 min-h-0 px-2 mb-2">
                                                         <p className="text-xs text-gray-300 leading-relaxed p-2 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-all duration-300 overflow-y-auto max-h-[5rem] break-words hyphens-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-                                                            {member.bio || "HentaiTerra.ro este cel mai bun site pentru vizionat hentai în România"}
+                                                            {member.bio || "HentaiUnited.ro este cel mai bun site pentru vizionat hentai în România"}
                                                         </p>
                                                     </div>
 
@@ -250,12 +250,12 @@ export default async function StaffPage() {
                                                         <a
                                                             href={member.social?.discord ? 
                                                                 (member.social.discord.startsWith('http') ? member.social.discord : `https://discord.com/users/${member.social.discord}`) : 
-                                                                "https://hentaiterra.ro"
+                                                                "https://HentaiUnited.ro"
                                                             }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 hover:text-indigo-300 rounded-lg transition-all duration-300 hover:brightness-110 border border-indigo-500/20 hover:border-indigo-500/40"
-                                                            title={member.social?.discord ? "Discord" : "Visit HentaiTerra"}
+                                                            title={member.social?.discord ? "Discord" : "Visit HentaiUnited"}
                                                         >
                                                             <FaDiscord className="w-3 h-3" />
                                                         </a>
@@ -264,12 +264,12 @@ export default async function StaffPage() {
                                                         <a
                                                             href={member.social?.twitter ? 
                                                                 (member.social.twitter.startsWith('http') ? member.social.twitter : `https://twitter.com/${member.social.twitter}`) : 
-                                                                "https://hentaiterra.ro"
+                                                                "https://HentaiUnited.ro"
                                                             }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 hover:text-blue-300 rounded-lg transition-all duration-300 hover:brightness-110 border border-blue-500/20 hover:border-blue-500/40"
-                                                            title={member.social?.twitter ? "Twitter" : "Visit HentaiTerra Site"}
+                                                            title={member.social?.twitter ? "Twitter" : "Visit HentaiUnited Site"}
                                                         >
                                                             <FaTwitter className="w-3 h-3" />
                                                         </a>
@@ -278,12 +278,12 @@ export default async function StaffPage() {
                                                         <a
                                                             href={member.social?.instagram ? 
                                                                 (member.social.instagram.startsWith('http') ? member.social.instagram : `https://instagram.com/${member.social.instagram}`) : 
-                                                                "https://hentaiterra.ro"
+                                                                "https://HentaiUnited.ro"
                                                             }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1.5 bg-pink-500/20 hover:bg-pink-500/30 text-pink-400 hover:text-pink-300 rounded-lg transition-all duration-300 hover:brightness-110 border border-pink-500/20 hover:border-pink-500/40"
-                                                            title={member.social?.instagram ? "Instagram" : "Visit HentaiTerra"}
+                                                            title={member.social?.instagram ? "Instagram" : "Visit HentaiUnited"}
                                                         >
                                                             <FaInstagram className="w-3 h-3" />
                                                         </a>
@@ -292,12 +292,12 @@ export default async function StaffPage() {
                                                         <a
                                                             href={member.social?.youtube ? 
                                                                 (member.social.youtube.startsWith('http') ? member.social.youtube : `https://youtube.com/${member.social.youtube}`) : 
-                                                                "https://hentaiterra.ro"
+                                                                "https://HentaiUnited.ro"
                                                             }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 rounded-lg transition-all duration-300 hover:brightness-110 border border-red-500/20 hover:border-red-500/40"
-                                                            title={member.social?.youtube ? "YouTube" : "Visit HentaiTerra"}
+                                                            title={member.social?.youtube ? "YouTube" : "Visit HentaiUnited"}
                                                         >
                                                             <FaYoutube className="w-3 h-3" />
                                                         </a>
@@ -306,12 +306,12 @@ export default async function StaffPage() {
                                                         <a
                                                             href={member.social?.twitch ? 
                                                                 (member.social.twitch.startsWith('http') ? member.social.twitch : `https://twitch.tv/${member.social.twitch}`) : 
-                                                                "https://hentaiterra.ro"
+                                                                "https://HentaiUnited.ro"
                                                             }
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1.5 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 hover:text-purple-300 rounded-lg transition-all duration-300 hover:brightness-110 border border-purple-500/20 hover:border-purple-500/40"
-                                                            title={member.social?.twitch ? "Twitch" : "Visit HentaiTerra"}
+                                                            title={member.social?.twitch ? "Twitch" : "Visit HentaiUnited"}
                                                         >
                                                             <FaTwitch className="w-3 h-3" />
                                                         </a>

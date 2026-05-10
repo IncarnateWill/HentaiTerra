@@ -3,7 +3,7 @@ import { logToDiscordWebhook } from './discord-webhook';
 
 // IndexNow configuration
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || '';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro';
 
 // Search engine endpoints that support IndexNow
 const INDEXNOW_ENDPOINTS = [
@@ -55,7 +55,7 @@ export async function submitToIndexNow(urls: string[], reason: string = 'Content
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'HentaiTerra IndexNow Bot'
+          'User-Agent': 'HentaiUnited IndexNow Bot'
         },
         body: JSON.stringify(submission)
       });

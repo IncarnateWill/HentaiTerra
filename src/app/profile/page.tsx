@@ -14,9 +14,14 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 async function ProfileRedirectPage() {
+  let userId;
+  let user;
+
   try {
     // Authenticate user
-    const { userId } = await auth();
+    const authResult = await auth();
+    userId = authResult.userId;
+
     if (!userId) {
       await logToDiscordWebhook(`Authentication failed | User ID: Not provided`);
       return (
@@ -46,7 +51,7 @@ async function ProfileRedirectPage() {
 
     // Find user with error handling
     try {
-      const user = await User.findOne({ clerkId: userId }).lean();
+      user = await User.findOne({ clerkId: userId }).lean();
       
       if (!user) {
         await logToDiscordWebhook(`Profile not found | User ID: ${userId}`);
@@ -79,17 +84,12 @@ async function ProfileRedirectPage() {
         return (
           <div className="container mx-auto py-8">
             <div className="bg-yellow-900/30 border border-yellow-500/50 rounded-lg p-6 text-center">
-              <h2 className="text-xl font-semibold text-yellow-400 mb-2">Invalid Username Format</h2>
+              <h2 className="text-xl font-semibold text-red-400 mb-2">Invalid Username Format</h2>
               <p className="text-gray-300">Your username contains invalid characters. Please update your profile with a valid username.</p>
             </div>
           </div>
         );
       }
-      
-      // Sanitize username before redirecting
-      const sanitizedUsername = encodeURIComponent(user.username);
-      redirect(`/profile/${sanitizedUsername}`);
-      
     } catch (userError) {
       await logToDiscordWebhook(`User fetch error: ${userError} | User ID: ${userId}`);
       return (
@@ -102,7 +102,7 @@ async function ProfileRedirectPage() {
       );
     }
   } catch (error) {
-    await logToDiscordWebhook(`Unexpected error in profile page: ${error} | User ID: Unknown`);
+    await logToDiscordWebhook(`Unexpected error in profile page: ${error} | User ID: ${userId || 'Unknown'}`);
     return (
       <div className="container mx-auto py-8">
         <div className="bg-red-900/30 border border-red-500/50 rounded-lg p-6 text-center">
@@ -112,6 +112,14 @@ async function ProfileRedirectPage() {
       </div>
     );
   }
+
+  // Redirect outside of all try-catch blocks to avoid catching NEXT_REDIRECT
+  if (user && 'username' in user && user.username) {
+    const sanitizedUsername = encodeURIComponent(user.username);
+    redirect(`/profile/${sanitizedUsername}`);
+  }
+
+  return null;
 }
 
 export default ProfileRedirectPage;

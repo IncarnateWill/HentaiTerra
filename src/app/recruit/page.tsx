@@ -48,7 +48,7 @@ const RecruitPage = () => {
             if (isSignedIn && user) {
                 userInfo = `\nUser Info (Clerk):\nEmail: ${user.primaryEmailAddress?.emailAddress || 'Not available'}\nUsername: ${user.username || 'Not available'}\nClerk ID: ${user.id}\n`;
                 // Add site name to user info
-                userInfo += `\nSite Name: ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`;
+                userInfo += `\nSite Name: ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`;
                 
                 // Add social accounts if available
                 if (user.externalAccounts && user.externalAccounts.length > 0) {
@@ -106,11 +106,11 @@ const RecruitPage = () => {
     return (
         <>
             <Head>
-                <title>Alătură-te Echipei {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')} | Recrutări pentru Traducători și Editori</title>
-                <meta name="description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}! Căutăm traducători și editori pasionați de hentai. Aplică acum pentru a contribui la comunitatea hentai din România.`} />
-                <meta name="keywords" content={`${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}, recrutare, traducători hentai, editori hentai, comunitate hentai, România`} />
-                <meta property="og:title" content={`Alătură-te Echipei ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}`} />
-                <meta property="og:description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}! Aplică acum pentru rolurile disponibile.`} />
+                <title>Alătură-te Echipei {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} | Recrutări pentru Traducători și Editori</title>
+                <meta name="description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! Căutăm traducători și editori pasionați de hentai. Aplică acum pentru a contribui la comunitatea hentai din România.`} />
+                <meta name="keywords" content={`${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}, recrutare, traducători hentai, editori hentai, comunitate hentai, România`} />
+                <meta property="og:title" content={`Alătură-te Echipei ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}`} />
+                <meta property="og:description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! Aplică acum pentru rolurile disponibile.`} />
             </Head>
 
             <motion.div 
@@ -124,7 +124,7 @@ const RecruitPage = () => {
                     animate={{ y: 0 }}
                     className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-white via-gray-200 to-neutral-400 bg-clip-text text-transparent"
                 >
-                    Devino Parte din Aventura {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}! 🌟
+                    Devino Parte din Aventura {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! 🌟
                 </motion.h1>
 
                 <div className="flex flex-col md:flex-row gap-8 justify-center">

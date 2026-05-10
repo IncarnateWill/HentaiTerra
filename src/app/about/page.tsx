@@ -2,15 +2,15 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: `Despre Noi | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Echipa și Misiunea Noastră`,
-  description: `Descoperă povestea ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} și echipa noastră dedicată. Află despre misiunea noastră de a aduce conținut hentai de calitate în română pentru comunitatea din România.`,
+  title: `Despre Noi | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Echipa și Misiunea Noastră`,
+  description: `Descoperă povestea ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} și echipa noastră dedicată. Află despre misiunea noastră de a aduce conținut hentai de calitate în română pentru comunitatea din România.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/about`
+    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/about`
   },
   openGraph: {
-    title: `Despre Noi | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
-    description: `Descoperă povestea ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} și echipa noastră dedicată. Misiunea noastră de a aduce hentai de calitate în română.`,
-    url: `${process.env.SITE_URL || 'https://hentaiterra.ro'}/about`,
+    title: `Despre Noi | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
+    description: `Descoperă povestea ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} și echipa noastră dedicată. Misiunea noastră de a aduce hentai de calitate în română.`,
+    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/about`,
     type: 'website'
   },
   robots: {
@@ -23,12 +23,12 @@ const AboutUsPage: React.FC = () => {
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', lineHeight: '1.8', maxWidth: '900px', margin: '0 auto' }}>
       
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>About HentaiTerra / Despre HentaiTerra</h1>
+      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>About HentaiUnited / Despre HentaiUnited</h1>
             {/* Romanian Version */}
             <section>
         <h2>Cine Suntem</h2>
         <p>
-          Bine ați venit la <strong>HentaiTerra</strong> - destinația dedicată unde pasiunea noastră pentru hentai și divertisment pentru adulți se îmbină cu traduceri de înaltă calitate. Creat de o echipă de fani dedicați, HentaiTerra este dedicat împărtășirii conținutului subtitrat în limba română pentru comunitatea din România.
+          Bine ați venit la <strong>HentaiUnited</strong> - destinația dedicată unde pasiunea noastră pentru hentai și divertisment pentru adulți se îmbină cu traduceri de înaltă calitate. Creat de o echipă de fani dedicați, HentaiUnited este dedicat împărtășirii conținutului subtitrat în limba română pentru comunitatea din România.
         </p>
         
         <h2>Misiunea și Viziunea Noastră</h2>
@@ -38,7 +38,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Povestea Noastră</h2>
         <p>
-          HentaiTerra s-a născut din pasiunea comună pentru hentai și din dorința de a face disponibile titluri de calitate în limba română. Frustrați de lipsa traducerilor bune și a unei experiențe curate, fondatorii noștri – adevărați entuziaști – au decis să preia inițiativa. Ce a început ca un mic proiect de fani a crescut într-o platformă unde creativitatea, pasiunea și comunitatea se îmbină armonios.
+          HentaiUnited s-a născut din pasiunea comună pentru hentai și din dorința de a face disponibile titluri de calitate în limba română. Frustrați de lipsa traducerilor bune și a unei experiențe curate, fondatorii noștri – adevărați entuziaști – au decis să preia inițiativa. Ce a început ca un mic proiect de fani a crescut într-o platformă unde creativitatea, pasiunea și comunitatea se îmbină armonios.
         </p>
         
         <h2>Procesul de Traducere</h2>
@@ -62,12 +62,12 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Angajamentul Nostru</h2>
         <p>
-          La HentaiTerra, punem accent pe calitate și respect față de publicul adult. Ne străduim să realizăm traduceri care să rezoneze cu comunitatea noastră și să ofere o experiență plăcută tuturor utilizatorilor. Toate proiectele noastre sunt revizuite constant pentru a ne asigura că servesc cel mai bine interesele comunității.
+          La HentaiUnited, punem accent pe calitate și respect față de publicul adult. Ne străduim să realizăm traduceri care să rezoneze cu comunitatea noastră și să ofere o experiență plăcută tuturor utilizatorilor. Toate proiectele noastre sunt revizuite constant pentru a ne asigura că servesc cel mai bine interesele comunității.
         </p>
         
         <h2>Echipa Noastră</h2>
         <p>
-          Inima HentaiTerra este echipa noastră diversificată și talentată:
+          Inima HentaiUnited este echipa noastră diversificată și talentată:
         </p>
         <ul>
           <li>Traducători dedicați, fluent în engleză, japoneză și chineză.</li>
@@ -81,7 +81,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Dezvoltări Viitoare</h2>
         <p>
-          HentaiTerra este în continuă evoluție și planurile noastre pentru viitor includ:
+          HentaiUnited este în continuă evoluție și planurile noastre pentru viitor includ:
         </p>
         <ul>
           <li>Implementarea unor instrumente avansate pentru a optimiza procesul de traducere.</li>
@@ -95,7 +95,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Avertisment</h2>
         <p>
-          Toate traducerile realizate pe HentaiTerra sunt produse de echipa noastră din pasiune pentru hentai și sunt oferite pentru a fi apreciate de comunitate. Acestea sunt realizate în spiritul divertismentului personal și al schimbului cultural și pot conține ocazional mici discrepanțe. HentaiTerra este un proiect al fanilor și nu reprezintă traduceri oficiale.
+          Toate traducerile realizate pe HentaiUnited sunt produse de echipa noastră din pasiune pentru hentai și sunt oferite pentru a fi apreciate de comunitate. Acestea sunt realizate în spiritul divertismentului personal și al schimbului cultural și pot conține ocazional mici discrepanțe. HentaiUnited este un proiect al fanilor și nu reprezintă traduceri oficiale.
         </p>
       </section>
       {/* English Version */}
@@ -104,7 +104,7 @@ const AboutUsPage: React.FC = () => {
       <section style={{ marginBottom: '40px' }}>
         <h2>Who We Are</h2>
         <p>
-          Welcome to <strong>HentaiTerra</strong> – the destination where our love for hentai and adult animation meets high-quality Romanian subtitles. Created by a team of dedicated fans, HentaiTerra is all about delivering curated, localized content for the Romanian adult audience.
+          Welcome to <strong>HentaiUnited</strong> – the destination where our love for hentai and adult animation meets high-quality Romanian subtitles. Created by a team of dedicated fans, HentaiUnited is all about delivering curated, localized content for the Romanian adult audience.
         </p>
         
         <h2>Our Mission & Vision</h2>
@@ -114,7 +114,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Our Story</h2>
         <p>
-          HentaiTerra was born out of a shared passion for hentai and a desire to make quality content available in Romanian. Frustrated by the scarcity of good translations and clean viewing experiences, our founders—true enthusiasts—decided to take matters into their own hands. What began as a small fan project has grown into a thriving platform where creativity, passion, and community come together.
+          HentaiUnited was born out of a shared passion for hentai and a desire to make quality content available in Romanian. Frustrated by the scarcity of good translations and clean viewing experiences, our founders—true enthusiasts—decided to take matters into their own hands. What began as a small fan project has grown into a thriving platform where creativity, passion, and community come together.
         </p>
         
         <h2>Our Translation Process</h2>
@@ -138,7 +138,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Our Team</h2>
         <p>
-          The spirit of HentaiTerra comes from our passionate and diverse team:
+          The spirit of HentaiUnited comes from our passionate and diverse team:
         </p>
         <ul>
           <li>Dedicated translators who are fluent in English, Japanese, and Chinese.</li>
@@ -152,7 +152,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Future Developments</h2>
         <p>
-          HentaiTerra is always evolving. Our future plans include:
+          HentaiUnited is always evolving. Our future plans include:
         </p>
         <ul>
           <li>Integrating advanced translation tools to streamline our workflow.</li>
@@ -166,7 +166,7 @@ const AboutUsPage: React.FC = () => {
         
         <h2>Disclaimer</h2>
         <p>
-          All translations on HentaiTerra are produced by our dedicated team out of pure passion for hentai. These translations are provided as a service to our community for personal enjoyment and cultural sharing. Please note that our work is fan-driven and unofficial, and while we strive for the highest quality, occasional discrepancies may occur.
+          All translations on HentaiUnited are produced by our dedicated team out of pure passion for hentai. These translations are provided as a service to our community for personal enjoyment and cultural sharing. Please note that our work is fan-driven and unofficial, and while we strive for the highest quality, occasional discrepancies may occur.
         </p>
       </section>
             

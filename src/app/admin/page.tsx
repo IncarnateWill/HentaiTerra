@@ -199,6 +199,6 @@ export default async function AdminDashboard() {
 }
 
 export const metadata = {
-  title: 'Admin Dashboard | HentaiTerra',
-  description: 'Admin dashboard for managing users, hentai, and episodes on HentaiTerra.'
+  title: 'Admin Dashboard | HentaiUnited',
+  description: 'Admin dashboard for managing users, hentai, and episodes on HentaiUnited.'
 };

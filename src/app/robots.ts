@@ -110,6 +110,6 @@ export default function robots(): MetadataRoute.Robots {
         '/*?*utm_*',
       ],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro'}/api/sitemap.xml`,
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro'}/api/sitemap.xml`,
   }
 }

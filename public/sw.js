@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'hentaiterra-v1';
+const CACHE_VERSION = 'HentaiUnited-v1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -54,7 +54,7 @@ self.addEventListener('activate', (event) => {
       .then(cacheNames => {
         return Promise.all(
           cacheNames
-            .filter(name => name.startsWith('hentaiterra-') && name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== IMAGE_CACHE && name !== API_CACHE)
+            .filter(name => name.startsWith('HentaiUnited-') && name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== IMAGE_CACHE && name !== API_CACHE)
             .map(name => {
               console.log('[SW] Deleting old cache:', name);
               return caches.delete(name);
@@ -76,7 +76,7 @@ self.addEventListener('fetch', (event) => {
 
   // Skip Chrome extensions and external domains
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
-  if (!url.origin.includes('hentaiterra.ro') && !url.origin.includes('localhost')) {
+  if (!url.origin.toLowerCase().includes('hentaiunited.ro') && !url.origin.includes('localhost')) {
     // Allow external resources but don't cache
     return;
   }
@@ -86,7 +86,6 @@ self.addEventListener('fetch', (event) => {
     // Don't cache mutations, analytics, or user-specific data
     if (url.pathname.includes('/views') || 
         url.pathname.includes('/likes') || 
-        url.pathname.includes('/analytics') ||
         url.pathname.includes('/watchlist') ||
         url.pathname.includes('/profile')) {
       return; // Network only
@@ -211,7 +210,7 @@ self.addEventListener('push', (event) => {
       badge: '/favicon-32x32.png',
       image: data.image, // Anime cover image
       vibrate: [200, 100, 200],
-      tag: data.tag || 'hentaiterra-notification',
+      tag: data.tag || 'HentaiUnited-notification',
       requireInteraction: data.requireInteraction || false,
       data: {
         url: data.url || '/',
@@ -235,7 +234,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-      self.registration.showNotification(data.title || 'HentaiTerra', options)
+      self.registration.showNotification(data.title || 'HentaiUnited', options)
     );
   } catch (err) {
     console.error('[SW] Push notification error:', err);

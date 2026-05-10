@@ -65,7 +65,6 @@ The following environment variables are required for the application to function
 | `NEXT_PUBLIC_CONTACT_EMAIL` | Public contact email address |
 | `NEXT_PUBLIC_DMCA_EMAIL` | DMCA takedown contact email |
 | `NEXT_PUBLIC_DISCORD_URL` | Your Discord server invite link |
-| `NEXT_PUBLIC_MANGA_URL` | (Optional) Link to your partner manga site |
 | `NEXT_PUBLIC_ANIME_URL` | (Optional) Link to your partner anime site |
 | `INDEXNOW_KEY` | Your IndexNow API key for search engine indexing |
 | `DISCORD_WEBHOOK_ANIME` | Webhook URL for new anime notifications |

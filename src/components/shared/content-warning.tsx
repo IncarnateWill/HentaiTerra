@@ -9,7 +9,7 @@ export default function ContentWarning() {
 
   useEffect(() => {
     // Check if user has already accepted the warning
-    const accepted = localStorage.getItem('hentaiterra-age-verified');
+    const accepted = localStorage.getItem('HentaiUnited-age-verified');
     if (!accepted) {
       setIsVisible(true);
     } else {
@@ -18,7 +18,7 @@ export default function ContentWarning() {
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('hentaiterra-age-verified', 'true');
+    localStorage.setItem('HentaiUnited-age-verified', 'true');
     setHasAccepted(true);
     setIsVisible(false);
   };
@@ -45,11 +45,11 @@ export default function ContentWarning() {
         
         <div className="text-gray-300 mb-6 space-y-3">
           <p className="font-semibold text-red-400">
-            HentaiTerra conține conținut hentai explicit pentru adulți (18+)
+            HentaiUnited conține conținut hentai explicit pentru adulți (18+)
           </p>
           
           <p>
-            Prin continuarea navigării pe HentaiTerra, confirmați că:
+            Prin continuarea navigării pe HentaiUnited, confirmați că:
           </p>
           
           <ul className="text-left space-y-2 text-sm">

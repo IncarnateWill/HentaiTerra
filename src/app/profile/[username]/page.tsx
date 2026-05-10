@@ -77,7 +77,7 @@ export async function generateMetadata(
     };
   }
 
-  const baseUrl = process.env.SITE_URL || 'https://hentaiterra.ro';
+  const baseUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
   const canonicalUrl = `${baseUrl}/profile/${username}`;
   
   const title = `Profilul utilizatorului ${user.username}`;
@@ -105,15 +105,15 @@ export async function generateMetadata(
       ],
       type: 'website',
       locale: 'ro_RO',
-      siteName: 'HentaiTerra',
+      siteName: 'HentaiUnited',
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
       images: [imageUrl],
-      creator: '@HentaiTerra',
-      site: '@HentaiTerra',
+      creator: '@HentaiUnited',
+      site: '@HentaiUnited',
     },
     robots: {
       index: true,

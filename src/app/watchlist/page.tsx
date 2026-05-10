@@ -10,8 +10,8 @@ import { logToDiscordWebhook } from '@/lib/discord-webhook';
 // export const revalidate = 0;
 
 export const metadata = {
-  title: 'My Watchlist - HentaiTerra',
-  description: 'Manage your hentai watchlist on HentaiTerra',
+  title: 'My Watchlist - HentaiUnited',
+  description: 'Manage your hentai watchlist on HentaiUnited',
 };
 
 // Enhanced types with better type safety

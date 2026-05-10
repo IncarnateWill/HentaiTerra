@@ -134,8 +134,8 @@ export default function RootLayout({
           {/* Preload critical CSS */}
           {/* Removed incorrect preload tag for CSS; Next.js handles CSS imports automatically */}
           
-          {/* Preload LCP image - uncomment only when needed on specific pages */}
-          {/* <link rel="preload" href="/homebanner.webp" as="image" type="image/webp" fetchPriority="high" /> */}
+          {/* Preload LCP image */}
+          <link rel="preload" href="/homebanner.webp" as="image" type="image/webp" fetchPriority="high" />
           
           {/* DNS prefetch for external domains */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />

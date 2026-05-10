@@ -12,7 +12,7 @@ const dbConnection = connectToDatabase().catch(async (error) => {
 });
 
 // Constants
-const SITE_URL = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro') as string;
+const SITE_URL = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro') as string;
 const DEFAULT_LAST_MODIFIED = new Date();
 const BATCH_SIZE = 1000; // For pagination
 

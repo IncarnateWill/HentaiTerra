@@ -66,7 +66,7 @@ export async function GET(req: NextRequest) {
     // Return IndexNow configuration info
     return NextResponse.json({
       keyFile: '5adf88428cd24eb58d0f9f2cd23246df.txt',
-      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`,
+      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`,
       supportedEngines: ['Bing', 'Microsoft'],
       status: 'active'
     });

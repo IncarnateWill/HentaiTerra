@@ -4,8 +4,44 @@ import { IEpisode }from '@/models/types';
 import mongoose, { Types } from 'mongoose';
 import { cache } from 'react';
 import { logToDiscordWebhook } from './discord-webhook';
+import { getCachedData, setCachedData } from './redis';
 export const dynamic = 'force-dynamic';
 export const revalidate = 60; // ISR every 60 seconds
+
+// Map to track in-flight requests to prevent cache stampede
+const pendingRequests = new Map<string, Promise<any>>();
+
+/**
+ * Helper to handle cache-aside pattern with stampede protection (mutex)
+ */
+async function fetchWithCache<T>(
+    key: string,
+    fetcher: () => Promise<T>,
+    ttl: number = 300
+): Promise<T> {
+    const cached = await getCachedData<T>(key);
+    if (cached) return cached;
+
+    // Check if there's already an in-flight request for this key
+    if (pendingRequests.has(key)) {
+        return pendingRequests.get(key);
+    }
+
+    // Create a new request and store it in the map
+    const request = (async () => {
+        try {
+            const data = await fetcher();
+            await setCachedData(key, data, ttl);
+            return data;
+        } finally {
+            // Remove from map once done (success or failure)
+            pendingRequests.delete(key);
+        }
+    })();
+
+    pendingRequests.set(key, request);
+    return request;
+}
 
 // Utility function to validate MongoDB ObjectId
 export const isValidObjectId = (id: string): boolean => {
@@ -27,71 +63,79 @@ export const validateObjectId = (id: string, context: string): boolean => {
 // Using Next.js built-in caching for performance
 export const getRecentEpisodes = cache(
     async (limit: number = 6) => {
-        await connectToDatabase();
+        const cacheKey = `recent_episodes_${limit}`;
         
-        const episodes = await Episode.find()
-            .sort({ releaseDate: -1 })
-            .limit(limit)
-            .select('episodeId episodeNumber animeId releaseDate thumbnail displayTitle isCensored')
-            .populate({
-                path: 'animeId',
-                select: 'name poster mediaType status censorship',
-            })
-            .lean()
-            .then(episodes => {
-                return episodes.filter(ep => ep.animeId);
-            });
-        
-        return episodes;
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
+            
+            const episodes = await Episode.find()
+                .sort({ releaseDate: -1 })
+                .limit(limit)
+                .select('episodeId episodeNumber animeId releaseDate thumbnail displayTitle isCensored')
+                .populate({
+                    path: 'animeId',
+                    select: 'name poster mediaType status censorship',
+                })
+                .lean()
+                .then(episodes => {
+                    return episodes.filter(ep => ep.animeId);
+                });
+            
+            return episodes;
+        }, 300); // 5 minutes
     }
 );
 
 
 export const getPopularAnime = cache(
     async (limit: number = 10) => {
-        await connectToDatabase();
-        const result = await Anime.aggregate([
-            // Optimized genre population with limited fields
-            {
-                $lookup: {
-                    from: 'genres',
-                    let: { genreIds: '$genres' },
-                    pipeline: [
-                        { $match: { $expr: { $in: ['$_id', '$$genreIds'] } } },
-                        { $project: { name: 1 } },
-                        { $limit: 10 } // Limit genres to reduce payload
-                    ],
-                    as: 'genres'
-                }
-            },
-            
-            // Optimized episode lookup with only views field
-            {
-                $lookup: {
-                    from: 'episodes',
-                    let: { animeId: '$_id' },
-                    pipeline: [
-                        { $match: { $expr: { $eq: ['$animeId', '$$animeId'] } } },
-                        { $project: { views: 1 } }
-                    ],
-                    as: 'episodes'
-                }
-            },
-            
-            { $addFields: { 
-                totalViews: { $sum: "$episodes.views" } 
-            }},
-            { $sort: { totalViews: -1 } },
-            { $limit: limit },
-            { $project: { 
-                name: 1,
-                poster: 1,
-                description: 1,
-                genres: 1
-            }}
-        ]);
+        const cacheKey = `popular_anime_${limit}`;
         
-        return result;
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
+            const result = await Anime.aggregate([
+                // Optimized genre population with limited fields
+                {
+                    $lookup: {
+                        from: 'genres',
+                        let: { genreIds: '$genres' },
+                        pipeline: [
+                            { $match: { $expr: { $in: ['$_id', '$$genreIds'] } } },
+                            { $project: { name: 1 } },
+                            { $limit: 10 } // Limit genres to reduce payload
+                        ],
+                        as: 'genres'
+                    }
+                },
+                
+                // Optimized episode lookup with only views field
+                {
+                    $lookup: {
+                        from: 'episodes',
+                        let: { animeId: '$_id' },
+                        pipeline: [
+                            { $match: { $expr: { $eq: ['$animeId', '$$animeId'] } } },
+                            { $project: { views: 1 } }
+                        ],
+                        as: 'episodes'
+                    }
+                },
+                
+                { $addFields: { 
+                    totalViews: { $sum: "$episodes.views" } 
+                }},
+                { $sort: { totalViews: -1 } },
+                { $limit: limit },
+                { $project: { 
+                    name: 1,
+                    poster: 1,
+                    description: 1,
+                    genres: 1
+                }}
+            ]);
+            
+            return result;
+        }, 3600); // 1 hour
     }
 );
 
@@ -99,34 +143,42 @@ export const getPopularAnime = cache(
 
 export const getRecentAnimes = cache(
     async (limit: number = 6) => {
-        await connectToDatabase();
-        const animes = await Anime.find({ mediaType: 'anime' }) // Filter for anime only
-            .sort({ createdAt: -1 }) // Sort by creation date to show newest anime first
-            .limit(limit)
-            .select('name poster status censorship') // Include status and censorship for badge rendering
-            .lean();
+        const cacheKey = `recent_animes_${limit}`;
         
-        return animes;
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
+            const animes = await Anime.find({ mediaType: 'anime' }) // Filter for anime only
+                .sort({ createdAt: -1 }) // Sort by creation date to show newest anime first
+                .limit(limit)
+                .select('name poster status censorship') // Include status and censorship for badge rendering
+                .lean();
+            
+            return animes;
+        }, 600); // 10 minutes
     }
 );
 
 
 export const getRecentMovies = cache(
     async (limit: number = 6) => {
-        await connectToDatabase();
-        const movies = await Anime.find({ mediaType: 'movie' }) // Ensures only movies are fetched
-            .sort({ createdAt: -1 }) // Sort by creation date to show newest movies first
-            .limit(limit)
-            .select('name poster status') // Include status even for movies (future use)
-            .lean();    
+        const cacheKey = `recent_movies_${limit}`;
         
-        return movies;
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
+            const movies = await Anime.find({ mediaType: 'movie' }) // Ensures only movies are fetched
+                .sort({ createdAt: -1 }) // Sort by creation date to show newest movies first
+                .limit(limit)
+                .select('name poster status') // Include status even for movies (future use)
+                .lean();    
+            
+            return movies;
+        }, 600); // 10 minutes
     }
 );
 
 export const getAnimeDetails = cache(
     async (id: string, page = 1, perPage = 24) => {
-        await connectToDatabase();
+        const cacheKey = `anime_details_${id}_${page}_${perPage}`;
 
         // Validate ObjectId before making database query
         if (!validateObjectId(id, 'getAnimeDetails')) {
@@ -134,64 +186,75 @@ export const getAnimeDetails = cache(
             return null;
         }
 
-        try {
-            const skip = (page - 1) * perPage;
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
 
-            const anime = await Anime.findById(id)
-                .populate({
-                    path: 'episodes',
-                    options: {
-                        sort: { episodeNumber: 1 },
-                        skip: skip,
-                        limit: perPage
-                    }
-                })
-                .populate({
-                    path: 'genres',
-                    select: 'name',
-                })
-                .lean();
+            try {
+                const skip = (page - 1) * perPage;
 
-            if (!anime || Array.isArray(anime)) {
-                console.log(`Anime not found for ID: ${id}`);
+                const anime = await Anime.findById(id)
+                    .populate({
+                        path: 'episodes',
+                        options: {
+                            sort: { episodeNumber: 1 },
+                            skip: skip,
+                            limit: perPage
+                        }
+                    })
+                    .populate({
+                        path: 'genres',
+                        select: 'name',
+                    })
+                    .lean();
+
+                if (!anime || Array.isArray(anime)) {
+                    console.log(`Anime not found for ID: ${id}`);
+                    return null;
+                }
+
+                // Get total episode count separately
+                const totalEpisodes = await Episode.countDocuments({ animeId: anime._id });
+
+                const result = {
+                    ...anime,
+                    totalPages: Math.ceil(totalEpisodes / perPage),
+                    totalEpisodes
+                };
+
+                return result;
+            } catch (error) {
+                console.error(`Error in getAnimeDetails for ID ${id}:`, error);
                 return null;
             }
-
-            // Get total episode count separately
-            const totalEpisodes = await Episode.countDocuments({ animeId: anime._id });
-
-            return {
-                ...anime,
-                totalPages: Math.ceil(totalEpisodes / perPage),
-                totalEpisodes
-            };
-        } catch (error) {
-            console.error(`Error in getAnimeDetails for ID ${id}:`, error);
-            return null;
-        }
+        }, 3600); // 1 hour
     }
 );
 
 
 
 // lib/db-utils.ts
-export const getEpisodeDetails = async (episodeId: string) => {
-    await connectToDatabase();
-    try {
-        // First try to find by episodeId
-        let episode = await Episode.findOne({ episodeId })
-            .populate({
-                path: 'animeId',
-                populate: {
-                    path: 'episodes',
-                    select: 'episodeId episodeNumber thumbnail name duration displayTitle',
-                    options: { sort: { episodeNumber: 1 } }
-                }
-            })
-            .populate('genres', 'name')
-            .lean();
+export const getEpisodeDetails = cache(
+    async (episodeId: string) => {
+        const cacheKey = `episode_details_${episodeId}`;
+        const cached = await getCachedData<any>(cacheKey);
+        if (cached) return cached;
 
-        // If not found and episodeId looks like a MongoDB ObjectId, try searching by _id
+        await connectToDatabase();
+        try {
+            // First try to find by episodeId
+            let episode = await Episode.findOne({ episodeId })
+                .populate({
+                    path: 'animeId',
+                    populate: {
+                        path: 'episodes',
+                        select: 'episodeId episodeNumber thumbnail name duration displayTitle',
+                        options: { sort: { episodeNumber: 1 } }
+                    }
+                })
+                .populate('genres', 'name')
+                .lean();
+
+            // If not found and episodeId looks like a MongoDB ObjectId, try searching by _id
         if (!episode && /^[0-9a-fA-F]{24}$/.test(episodeId)) {
             episode = await Episode.findById(episodeId)
                 .populate({
@@ -210,12 +273,14 @@ export const getEpisodeDetails = async (episodeId: string) => {
             return null;
         }
 
+        await setCachedData(cacheKey, episode, 300); // 5 minutes
         return episode;
     } catch (error) {
         console.error('Error in getEpisodeDetails:', error);
         throw error;
     }
-};
+}
+);
 
 
 
@@ -255,18 +320,20 @@ export const searchAnime = cache(
     }
 );
 
-export const getAnimeByGenre = async (genreId: string, limit: number = 12) => {
-    await connectToDatabase();
-    return Anime.find({ genres: genreId })
-        .select('name poster description mediaType') // Only select needed fields
-        .limit(limit)
-        .populate({
-            path: 'genres',
-            select: 'name',
-            options: { limit: 10 } // Limit populated genres
-        })
-        .lean();
-};
+export const getAnimeByGenre = cache(
+    async (genreId: string, limit: number = 12) => {
+        await connectToDatabase();
+        return Anime.find({ genres: genreId })
+            .select('name poster description mediaType') // Only select needed fields
+            .limit(limit)
+            .populate({
+                path: 'genres',
+                select: 'name',
+                options: { limit: 10 } // Limit populated genres
+            })
+            .lean();
+    }
+);
 
 // For updating views/likes/dislikes
 export const updateEpisodeStats = async (
@@ -433,6 +500,10 @@ export const getStaffMembers = cache(
 
 
 export const getRecommendedAnimes = async (currentAnimeId: string, limit: number = 6) => {
+    const cacheKey = `recommended_animes_${currentAnimeId}_${limit}`;
+    const cached = await getCachedData<any[]>(cacheKey);
+    if (cached) return cached;
+
     await connectToDatabase();
     
     // Validate ObjectId before making database query
@@ -587,9 +658,12 @@ export const getRecommendedAnimes = async (currentAnimeId: string, limit: number
         ]);
 
         // Combine next season (if found) with other recommendations
-        return nextSeason 
+        const result = nextSeason 
             ? [nextSeason, ...recommendations]
             : recommendations;
+
+        await setCachedData(cacheKey, result, 3600); // 1 hour
+        return result;
 
     } catch (error) {
         console.error('Error getting recommended anime:', error);

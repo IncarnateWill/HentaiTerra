@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       ],
       usage: 'POST with { "testType": "test-name" }',
       keyFile: '5adf88428cd24eb58d0f9f2cd23246df.txt',
-      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://hentaiterra.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`
+      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`
     });
 
   } catch (error) {
