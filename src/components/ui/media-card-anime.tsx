@@ -7,99 +7,88 @@ import { useState } from 'react';
 import { ImageSkeleton } from './Skeleton';
 
 interface MediaCardProps {
-    id: string;
-    title: string;
-    posterPath: string;
-    mediaType: "anime" | "movie";
-    name?: string; // Optional name prop
-    status?: string; // Optional status badge
-    censorship?: 'censored' | 'uncensored';
+  id: string;
+  title: string;
+  posterPath: string;
+  mediaType: "anime" | "movie";
+  name?: string;
+  status?: string;
+  censorship?: 'censored' | 'uncensored';
 }
 
-const MediaCardAnime = ({ id, title, posterPath, mediaType, name, status, censorship }: MediaCardProps) => {
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const [imageError, setImageError] = useState(false);
+const statusColors: Record<string, string> = {
+  ongoing: 'bg-emerald-500/90 text-white',
+  upcoming: 'bg-amber-500/90 text-white',
+  finished: 'bg-blue-500/90 text-white',
+  dropped: 'bg-red-500/90 text-white',
+  cancelled: 'bg-gray-500/90 text-white',
+  'in-traducere': 'bg-violet-500/90 text-white',
+};
 
-    return (
-        <Link
-            href={`/hentai/${id}`}
-            className="group transition-transform duration-200 hover:-translate-y-1"
-            aria-label={`Watch ${title || name || id}`}
-        >
-            <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-gray-800">
-                {/* Status badge - bottom left */}
-                {status && (
-                    <span className={`absolute bottom-2 left-2 z-10 px-2 py-1 text-[10px] sm:text-xs rounded-md font-semibold shadow capitalize
-                        ${(() => {
-                            const s = status.toLowerCase();
-                            const styles: Record<string, string> = {
-                                ongoing: 'bg-purple-600 text-white',
-                                upcoming: 'bg-yellow-600 text-white',
-                                finished: 'bg-green-600 text-white',
-                                dropped: 'bg-red-600 text-white',
-                                cancelled: 'bg-gray-600 text-white',
-                                'in-traducere': 'bg-indigo-600 text-white',
-                            };
-                            return styles[s] || 'bg-slate-600 text-white';
-                        })()}
-                    `}>
-                        {(status || '').replace(/-/g, ' ')}
-                    </span>
-                )}
-                {/* Censorship badge - top left */}
-                {censorship && (
-                    <span className={`absolute top-2 left-2 z-10 px-2 py-1 text-[10px] sm:text-xs rounded-md font-semibold shadow
-                        ${censorship === 'uncensored' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}
-                    >
-                        {censorship}
-                    </span>
-                )}
-                {/* Media type badge */}
-                <span
-                    className={`absolute top-2 right-2 z-10 px-2 py-1 text-[10px] sm:text-xs rounded-md font-semibold shadow
-                        ${mediaType === 'anime' ? 'bg-blue-600 text-white' : ''}
-                        ${mediaType === 'movie' ? 'bg-indigo-600 text-white' : ''}`}
-                >
-                    {mediaType === 'anime' ? 'Hentai' : 'Movie'}
-                </span>
-                {/* Skeleton loader */}
-                {!imageLoaded && !imageError && (
-                    <ImageSkeleton className="absolute inset-0" />
-                )}
-                
-                {/* Image */}
-                <Image
-                    src={posterPath}
-                    alt={title || name || id}
-                    title={title || name || id}
-                    fill
-                    loading="lazy"
-                    className={`object-cover transition-all duration-300 group-hover:scale-105 ${
-                        imageLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
-                    sizes="
-                        (max-width: 480px) 90vw,
-                        (max-width: 640px) 70vw,
-                        (max-width: 1024px) 33vw,
-                        25vw
-                    "
-                    quality={70}
-                    onLoad={() => setImageLoaded(true)}
-                    onError={() => setImageError(true)}
-                />
-                
-                {/* Hover overlay for play button */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-black/70 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-xl">
-                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <HiPlay className="w-14 h-14 text-white opacity-95" />
-                    </div>
-                </div>
+const MediaCardAnime = ({ id, title, posterPath, mediaType, name, status, censorship }: MediaCardProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const displayTitle = title || name || id;
+
+  return (
+    <Link
+      href={`/hentai/${id}`}
+      className="group block"
+      aria-label={`Vizionează ${displayTitle}`}
+    >
+      {/* Poster */}
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl bg-[#14161f] transition-all duration-300 group-hover:-translate-y-1">
+        {/* Censorship badge */}
+        {censorship && (
+          <span className={`absolute top-2 left-2 z-20 text-[9px] font-bold px-1.5 py-0.5 rounded-md ${censorship === 'uncensored' ? 'bg-emerald-500/85 text-white' : 'bg-red-500/85 text-white'}`}>
+            {censorship === 'uncensored' ? 'Uncensored' : 'Censored'}
+          </span>
+        )}
+
+        {/* Skeleton */}
+        {!imageLoaded && !imageError && <ImageSkeleton className="absolute inset-0" />}
+
+        {/* Image */}
+        <Image
+          src={posterPath}
+          alt={displayTitle}
+          title={displayTitle}
+          fill
+          loading="lazy"
+          className={`object-cover transition-all duration-500 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 16vw"
+          quality={65}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageError(true)}
+        />
+
+        {/* Hover overlay */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-end bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+            <div className="w-11 h-11 rounded-full bg-primary-500/90 flex items-center justify-center shadow-lg shadow-primary-500/40">
+              <HiPlay className="w-5 h-5 text-white ml-0.5" />
             </div>
-            <h3 className="mt-2 text-sm sm:text-base font-medium text-gray-200 break-words line-clamp-2">
-                {title || name || id}
-            </h3>
-        </Link>
-    );
+          </div>
+          <div className="p-3 space-y-1">
+            <p className="text-white text-xs font-semibold line-clamp-2 leading-tight">{displayTitle}</p>
+            {status && (
+              <span className={`inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-md ${statusColors[status.toLowerCase()] || 'bg-gray-500/90 text-white'}`}>
+                {status.replace(/-/g, ' ')}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Ring */}
+        <div className="absolute inset-0 rounded-xl ring-1 ring-transparent group-hover:ring-primary-500/30 transition-all duration-300 pointer-events-none" />
+      </div>
+
+      {/* Title */}
+      <p className="mt-2 text-xs sm:text-sm font-medium text-gray-300 group-hover:text-primary-300 line-clamp-2 transition-colors duration-200 leading-snug px-0.5">
+        {displayTitle}
+      </p>
+    </Link>
+  );
 };
 
 export default MediaCardAnime;

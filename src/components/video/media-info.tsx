@@ -17,163 +17,52 @@ interface MediaInfoProps {
         releaseDate: string;
         uploadDate: string;
         censorship: "Censored" | "Uncensored";
-        traducator: string;
-        encoder: string;
-        verificator: string;
-        animeId?: string; // Add this property for the anime ID
-        status?: string; // Optional anime status
+        traducator?: string;
+        encoder?: string;
+        verificator?: string;
+        animeId?: string;
+        status?: string;
+        mediaType?: string;
+        duration?: string;
+        rating?: number | string;
+        season?: string;
     };
 }
 const MediaInfo = ({ media }: MediaInfoProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     return (
-        <div className="py-8">
-            {/* Title Section */}
-            <div className="mb-6">
-                <div className="flex items-center gap-3 flex-wrap">
-                    {media.animeId ? (
-                        <Link href={`/hentai/${media.animeId}`} className="hover:text-purple-400 transition-colors">
-                            <h2 className="text-2xl font-bold text-white">{media.title}</h2>
-                        </Link>
-                    ) : (
-                        <h2 className="text-2xl font-bold text-white">{media.title}</h2>
-                    )}
-                    {media.status && (
-                        <span
-                            className={`px-2.5 py-0.5 rounded-full text-xs uppercase tracking-wide
-                                ${media.status === 'ongoing' ? 'bg-blue-500/20 text-blue-300' : ''}
-                                ${media.status === 'upcoming' ? 'bg-yellow-500/20 text-yellow-300' : ''}
-                                ${media.status === 'finished' ? 'bg-green-500/20 text-green-300' : ''}
-                                ${media.status === 'dropped' ? 'bg-red-500/20 text-red-300' : ''}
-                                ${media.status === 'cancelled' ? 'bg-gray-500/20 text-gray-300' : ''}
-                                ${media.status === 'in-traducere' ? 'bg-indigo-500/20 text-indigo-300' : ''}
-                            `}
-                        >
-                            {media.status.replace(/-/g, ' ')}
-                        </span>
-                    )}
-                </div>
-                {media.alternativeTitles && media.alternativeTitles.length > 0 && (
-                    <p className="mt-1 text-sm text-gray-400">
-                        {media.alternativeTitles.join(" • ")}
-                    </p>
-                )}
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-6">
-                {/* Poster */}
-                <div className="flex-shrink-0 w-full hidden md:block md:w-[200px]">
-                    <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
+        <div className="py-6">
+            <div className="flex flex-col lg:flex-row gap-8">
+                {/* Poster - Left Side on Large Screens */}
+                <div className="flex-shrink-0 w-full md:w-[240px] mx-auto lg:mx-0">
+                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-2xl border border-white/10">
                         <Image
                             src={media.posterPath || "/default-thumbnail.jpg"}
                             alt={media.title}
                             fill
                             className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 200px"
+                            sizes="(max-width: 768px) 100vw, 240px"
                             priority
                         />
                     </div>
                 </div>
 
-                {/* Information */}
-                <div className="flex-grow space-y-5">
-                    {/* Synopsis */}
+                {/* Information - Right Side */}
+                <div className="flex-grow space-y-6">
+                    {/* Title and Genres */}
                     <div>
-                        <h2 className="text-gray-400 text-sm mb-1">Descriere</h2>
-                        <div className="relative">
-                            <p className={`text-gray-200 leading-relaxed ${!isExpanded ? 'line-clamp-3' : ''
-                                }`}>
-                                {media.synopsis}
-                            </p>
-                            <button
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className="text-sm text-gray-400 hover:text-white flex items-center gap-1 mt-1 transition-colors"
-                            >
-                                {isExpanded ? (
-                                    <>
-                                        Arata mai putin <HiChevronUp className="w-4 h-4" />
-                                    </>
-                                ) : (
-                                    <>
-                                        Arata mai mult <HiChevronDown className="w-4 h-4" />
-                                    </>
-                                )}
-                            </button>
+                        <div className="flex items-center gap-3 flex-wrap mb-3">
+                            {media.animeId ? (
+                                <Link href={`/hentai/${media.animeId}`} className="hover:text-primary-400 transition-colors">
+                                    <h1 className="text-3xl font-bold text-white">{media.title}</h1>
+                                </Link>
+                            ) : (
+                                <h1 className="text-3xl font-bold text-white">{media.title}</h1>
+                            )}
                         </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-4">
-                        {/* Creator */}
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Creator</h3>
-                                <h4 className="text-gray-200">{media.creator}</h4>
-                            </div>
-                        </div>
-
-                        {/* Release Date */}
-                        <div className="flex items-center gap-2">
-                            <HiCalendar className="w-5 h-5 text-gray-400" />
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Data lansării</h3>
-                                <h4 className="text-gray-200">{media.releaseDate}</h4>
-                            </div>
-                        </div>
-
-                        {/* Upload Date */}
-                        <div className="flex items-center gap-2">
-                            <HiClock className="w-5 h-5 text-gray-400" />
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Data postării</h3>
-                                <h4 className="text-gray-200">{media.uploadDate}</h4>
-                            </div>
-                        </div>
-
-                        {/* Censorship */}
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Censorship</h3>
-                                <h4
-                                    className={`inline-block px-3 py-1 rounded-full text-sm ${media.censorship === "Censored"
-                                            ? "bg-red-500/20 text-red-400"
-                                            : "bg-green-500/20 text-green-400"
-                                        }`}
-                                >
-                                    {media.censorship}
-                                </h4>
-                            </div>
-                        </div>
-
-                        {/* Traducator */}
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Traducator</h3>
-                                <h4 className="text-gray-200">{media.traducator}</h4>
-                            </div>
-                        </div>
-
-                        {/* Encoder */}
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Encoder</h3>
-                                <h4 className="text-gray-200">{media.encoder}</h4>
-                            </div>
-                        </div>
-
-                        {/* Verificator */}
-                        <div className="flex items-center gap-2">
-                            <div>
-                                <h3 className="text-gray-400 text-sm">Verificator</h3>
-                                <h4 className="text-gray-200">{media.verificator}</h4>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Genres */}
-                    <div>
-                        <h2 className="text-gray-400 text-sm mb-2">Genuri</h2>
-                        <div className="flex flex-wrap gap-2">
+                        
+                        <div className="flex flex-wrap gap-2 mb-4">
                             {media.genres.map((genre) => (
                                 <Link
                                     key={genre._id}
@@ -185,11 +74,98 @@ const MediaInfo = ({ media }: MediaInfoProps) => {
                                             search: ''
                                         }));
                                     }}
-                                    className="px-3 py-1 bg-neutral-800 hover:bg-neutral-700 rounded-full text-sm transition-colors"
+                                    className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-medium text-gray-300 transition-colors"
                                 >
                                     {genre.name}
                                 </Link>
                             ))}
+                        </div>
+
+                        {media.alternativeTitles && media.alternativeTitles.length > 0 && (
+                            <p className="text-sm text-gray-400 font-medium">
+                                {media.alternativeTitles.join(" • ")}
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Metadata Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 py-4 border-y border-white/5">
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Format</span>
+                            <p className="text-sm font-semibold text-gray-200 capitalize">{media.mediaType || 'TV'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Status</span>
+                            <p className={`text-sm font-semibold capitalize ${
+                                media.status === 'ongoing' ? 'text-blue-400' : 
+                                media.status === 'finished' ? 'text-green-400' : 'text-gray-200'
+                            }`}>
+                                {media.status?.replace(/-/g, ' ') || 'Unknown'}
+                            </p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Studio</span>
+                            <p className="text-sm font-semibold text-gray-200">{media.creator}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Rating</span>
+                            <p className="text-sm font-semibold text-gray-200">{media.rating || 'N/A'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Duration</span>
+                            <p className="text-sm font-semibold text-gray-200">{media.duration || '24 min'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Season</span>
+                            <p className="text-sm font-semibold text-gray-200 capitalize">{media.season || 'Unknown'}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Start Date</span>
+                            <p className="text-sm font-semibold text-gray-200">{media.releaseDate}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-xs text-gray-500 uppercase tracking-wider">Censorship</span>
+                            <p className={`text-sm font-semibold ${
+                                media.censorship === "Censored" ? "text-red-400" : "text-green-400"
+                            }`}>{media.censorship}</p>
+                        </div>
+                    </div>
+
+                    {/* Synopsis */}
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-bold text-white uppercase tracking-wider">Synopsis</h3>
+                        <div className="relative">
+                            <p className={`text-gray-300 leading-relaxed text-sm ${!isExpanded ? 'line-clamp-4' : ''}`}>
+                                {media.synopsis}
+                            </p>
+                            {media.synopsis.length > 200 && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-xs font-bold text-primary-400 hover:text-primary-300 flex items-center gap-1 mt-2 transition-colors uppercase"
+                                >
+                                    {isExpanded ? (
+                                        <>Read Less <HiChevronUp className="w-3 h-3" /></>
+                                    ) : (
+                                        <>Read More <HiChevronDown className="w-3 h-3" /></>
+                                    )}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Staff Info */}
+                    <div className="flex flex-wrap gap-x-8 gap-y-2 pt-2 text-xs">
+                        <div className="flex gap-2">
+                            <span className="text-gray-500">Traducator:</span>
+                            <span className="text-gray-300 font-medium">{media.traducator}</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <span className="text-gray-500">Encoder:</span>
+                            <span className="text-gray-300 font-medium">{media.encoder}</span>
+                        </div>
+                        <div className="flex gap-2">
+                            <span className="text-gray-500">Verificator:</span>
+                            <span className="text-gray-300 font-medium">{media.verificator}</span>
                         </div>
                     </div>
                 </div>

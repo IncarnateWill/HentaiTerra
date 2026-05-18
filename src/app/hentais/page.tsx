@@ -57,7 +57,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
             _id: String(genre._id),
             name: genre.name,
         }));
-        
+
         const serializedAnimes = media?.map((anime: AnimeData) => ({
             id: String(anime._id),
             title: anime.title || '',
@@ -82,18 +82,17 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
 
                 {/* Hero Section */}
                 <section className="relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-transparent to-secondary-900/20"></div>
                     <div className="container mx-auto py-8 sm:py-16 px-4 relative z-10">
                         <div className="text-center max-w-4xl mx-auto">
                             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 bg-gradient-to-r from-primary-300 via-text-primary to-primary-300 bg-clip-text text-transparent leading-tight">
                                 Hentai Online Subtitrat în Română
                             </h1>
                             <p className="text-lg sm:text-xl text-text-secondary mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto">
-                                  Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit, 
-                                  calitate HD și actualizări zilnice cu cele mai noi episoade și serii hentai.
-                              </p>
-                              <p className="text-base sm:text-lg text-text-muted max-w-3xl mx-auto">
-                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit, 
+                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit,
+                                calitate HD și actualizări zilnice cu cele mai noi episoade și serii hentai.
+                            </p>
+                            <p className="text-base sm:text-lg text-text-muted max-w-3xl mx-auto">
+                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit,
                                 calitate HD și actualizări zilnice cu cele mai noi episoade și serii hentai.
                             </p>
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 rounded-full border border-primary-500/30">
@@ -131,13 +130,13 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                             </svg>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-4">
-                             Oops! Ceva nu a mers bine
-                         </h2>
+                            Oops! Ceva nu a mers bine
+                        </h2>
                         <p className="text-lg text-text-secondary mb-6">
                             A apărut o eroare la încărcarea rezultatelor pe HentaiUnited. Te rugăm să încerci din nou.
                         </p>
-                        <button 
-                            onClick={() => window.location.reload()} 
+                        <button
+                            onClick={() => window.location.reload()}
                             className="inline-flex items-center px-6 py-3 bg-semantic-error hover:bg-red-700 text-text-primary font-semibold rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
                         >
                             Încearcă din nou

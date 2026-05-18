@@ -1,44 +1,54 @@
-import MediaCard from "./media-card-anime";
+import MediaCardAnime from "./media-card-anime";
+import Link from "next/link";
 
 interface Media {
-    id: string;
-    title: string;
-    posterPath: string;
-    mediaType: "anime" | "movie";
-    name?: string; // Added name field
-    status?: string; // Optional status for badge
-    censorship?: 'censored' | 'uncensored';
+  id: string;
+  title: string;
+  posterPath: string;
+  mediaType: "anime" | "movie";
+  name?: string;
+  status?: string;
+  censorship?: 'censored' | 'uncensored';
 }
 
 interface MediaGridProps {
-    items: Media[];
-    title?: string;
+  items: Media[];
+  title?: string;
+  viewAllHref?: string;
 }
 
-const MediaGridAnime = ({ items, title }: MediaGridProps) => {
-    return (
-        <section className="py-4 sm:py-8">
-            {title && (
-                <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
-                    {title}
-                </h2>
-            )}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {items.map((item) => (
-                    <MediaCard
-                        key={item.id}
-                        id={item.id}
-                        title={item.title}
-                        posterPath={item.posterPath}
-                        mediaType={item.mediaType}
-                        name={item.name} // Pass name prop to MediaCard
-                        status={item.status}
-                        censorship={item.censorship}
-                    />
-                ))}
-            </div>
-        </section>
-    )
-}
+const MediaGridAnime = ({ items, title, viewAllHref }: MediaGridProps) => {
+  if (!items || items.length === 0) return null;
+  return (
+    <section>
+      {title && (
+        <div className="flex items-center justify-between mb-4 sm:mb-5">
+          <h2 className="section-accent text-lg sm:text-xl font-bold text-white">
+            {title}
+          </h2>
+          {viewAllHref && (
+            <Link href={viewAllHref} className="text-xs font-semibold text-primary-400 hover:text-primary-300 transition-colors flex items-center gap-1">
+              Vezi toate <span aria-hidden>→</span>
+            </Link>
+          )}
+        </div>
+      )}
+      <div className="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 sm:gap-4">
+        {items.map((item) => (
+          <MediaCardAnime
+            key={item.id}
+            id={item.id}
+            title={item.title}
+            posterPath={item.posterPath}
+            mediaType={item.mediaType}
+            name={item.name}
+            status={item.status}
+            censorship={item.censorship}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
 
 export default MediaGridAnime;

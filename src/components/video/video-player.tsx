@@ -92,10 +92,8 @@ const VideoPlayer = memo(({
   title
 }: VideoPlayerProps) => {
   const [selectedSource, setSelectedSource] = useState(videoUrl);
-  const [showSources, setShowSources] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentViews, setCurrentViews] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +115,6 @@ const VideoPlayer = memo(({
   // Handle source selection
   const handleSourceSelect = useCallback((url: string) => {
     setSelectedSource(url);
-    setShowSources(false);
     setIsLoading(true);
     setError(null);
   }, []);
@@ -125,7 +122,7 @@ const VideoPlayer = memo(({
   // Handle view count
   const handleViewCount = useCallback(async () => {
     try {
-      const response = await fetch(`/api/episodes/${episodeId}/views`, {
+      await fetch(`/api/episodes/${episodeId}/views`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,12 +132,6 @@ const VideoPlayer = memo(({
           animeId
         }),
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to update view count');
-      }
-      const data = await response.json();
-      setCurrentViews(data.views);
     } catch (error) {
       console.error('[VideoPlayer] Error updating view count:', error);
     }
@@ -157,7 +148,6 @@ const VideoPlayer = memo(({
   const handleIframeError = useCallback(() => {
     setIsLoading(false);
     setError('Failed to load video. Please try another source.');
-    // Try next source if available
     const currentIndex = videoSources.findIndex(source => source.url === selectedSource);
     if (currentIndex < videoSources.length - 1) {
       handleSourceSelect(videoSources[currentIndex + 1].url);
@@ -165,16 +155,16 @@ const VideoPlayer = memo(({
   }, [selectedSource, videoSources, handleSourceSelect]);
 
   return (
-    <div ref={containerRef} className="relative w-full h-full">
+    <div ref={containerRef} className="w-full h-full flex flex-col">
       <Head>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
       
-      <div className="relative aspect-video bg-black">
+      <div className="relative aspect-video bg-black rounded-t-2xl overflow-hidden">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center z-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+          <div className="absolute inset-0 flex items-center justify-center z-20 bg-black">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
           </div>
         )}
         
@@ -187,7 +177,7 @@ const VideoPlayer = memo(({
                   setError(null);
                   setIsLoading(true);
                 }}
-                className="px-4 py-2 bg-purple-500 rounded-lg hover:bg-purple-600 transition-colors text-sm sm:text-base"
+                className="px-4 py-2 bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors text-sm sm:text-base"
               >
                 Try Again
               </button>
@@ -195,37 +185,28 @@ const VideoPlayer = memo(({
           </div>
         )}
 
-        <div className="relative w-full h-full">
-          <iframe
-            ref={iframeRef}
-            src={selectedSource}
-            className="w-full h-full"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            referrerPolicy="no-referrer"
-            loading="lazy"
-            title={title}
-            onLoad={handleIframeLoad}
-            onError={handleIframeError}
+        <iframe
+          ref={iframeRef}
+          src={selectedSource}
+          className="w-full h-full"
+          allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          title={title}
+          onLoad={handleIframeLoad}
+          onError={handleIframeError}
+        />
+      </div>
+
+      <div className="px-4 pb-2">
+        <Suspense fallback={<div className="h-20 animate-pulse bg-white/5 rounded-lg mt-4" />}>
+          <VideoControls
+            sources={videoSources}
+            selectedSource={selectedSource}
+            onSourceSelect={handleSourceSelect}
           />
-
-
-
-          <Suspense fallback={
-            <div className="absolute top-3 right-3 z-20">
-              <div className="animate-pulse bg-neutral-800/50 h-12 rounded-lg w-[200px]" />
-            </div>
-          }>
-            <VideoControls
-              sources={videoSources}
-              selectedSource={selectedSource}
-              showSources={showSources}
-              hasInteracted={true}
-              onSourceSelect={handleSourceSelect}
-              onToggleSources={() => setShowSources(!showSources)}
-            />
-          </Suspense>
-        </div>
+        </Suspense>
       </div>
     </div>
   );

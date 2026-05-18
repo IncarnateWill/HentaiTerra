@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
-  
+
   // Image optimization
   images: {
     remotePatterns: [
@@ -24,15 +24,15 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [50, 60, 70, 80, 90, 100],
-    qualities: [40, 50, 60, 70, 75, 80, 85, 90, 95],
+    qualities: [40, 50, 60, 65, 70, 75, 80, 85, 90, 95],
     dangerouslyAllowSVG: true,
   },
-  
+
   // Experimental features for better performance
   experimental: {
     optimizePackageImports: ['framer-motion', 'react-icons'],
   },
-  
+
   // Turbopack configuration (moved from experimental.turbo)
   turbopack: {
     rules: {
@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  
+
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {

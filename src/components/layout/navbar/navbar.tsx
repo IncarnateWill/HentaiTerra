@@ -1,33 +1,18 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  HiHome,
-  HiFilm,
-  HiMenu,
-  HiX,
-  HiUserGroup,
-  HiHeart,
-  HiUser,
-  HiShieldCheck,
-  HiMail,
-  HiInformationCircle,
-  HiBookOpen,
-  HiStar,
+  HiHome, HiFilm, HiMenu, HiX, HiUserGroup, HiHeart,
+  HiUser, HiShieldCheck, HiSearch,
 } from "react-icons/hi";
-import { FaDiscord, FaBook, FaGhost } from "react-icons/fa";
+import { FaDiscord, FaGhost } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
-import {
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { isFullAdmin, canManageContent } from "@/lib/admin-permissions";
-import { Button, Input, cn } from "@/components/ui";
-import { colors } from "@/styles/design-system";
+import { cn } from "@/components/ui";
+import { useDebounce } from "@/hooks/use-debounce";
+import Image from "next/image";
 
 interface NavItem {
   name: string;
@@ -39,16 +24,29 @@ interface NavItem {
   admin?: boolean;
 }
 
+interface SearchResult {
+  _id: string;
+  name: string;
+  poster: string;
+}
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname();
-  const { user, isSignedIn } = useUser();
-
+  const [showMobileTop, setShowMobileTop] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isStaffOrAdmin, setIsStaffOrAdmin] = useState(false);
 
-  const [showMobileTop, setShowMobileTop] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, isSignedIn } = useUser();
+  const searchRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const debouncedQuery = useDebounce(searchQuery, 300);
 
   // Scroll behavior
   useEffect(() => {
@@ -58,11 +56,7 @@ export default function Navbar() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
-          if (currentScrollY > lastScrollY && currentScrollY > 20) {
-            setShowMobileTop(false); // scrolling down
-          } else {
-            setShowMobileTop(true); // scrolling up
-          }
+          setShowMobileTop(currentScrollY <= lastScrollY || currentScrollY <= 20);
           lastScrollY = currentScrollY;
           ticking = false;
         });
@@ -70,76 +64,37 @@ export default function Navbar() {
       }
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sync Clerk user to DB
+  // Sync Clerk user
   useEffect(() => {
     const syncUser = async () => {
-      if (user && isSignedIn) {
-        try {
-          let username = user.username || user.firstName || user.id;
-          
-          const response = await fetch("/api/user/sync", {
+      if (!user || !isSignedIn) return;
+      try {
+        const username = user.username || user.firstName || user.id;
+        const res = await fetch("/api/user/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clerkId: user.id, email: user.primaryEmailAddress?.emailAddress, username, imageUrl: user.imageUrl }),
+        });
+        if (res.status === 409) {
+          await fetch("/api/user/sync", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              clerkId: user.id,
-              email: user.primaryEmailAddress?.emailAddress,
-              username,
-              imageUrl: user.imageUrl,
-            }),
+            body: JSON.stringify({ clerkId: user.id, email: user.primaryEmailAddress?.emailAddress, username: `${username}_${user.id.slice(-6)}`, imageUrl: user.imageUrl }),
           });
-          
-          if (response.status === 409) {
-            // Username conflict - try with a unique fallback
-            const fallbackUsername = `${username}_${user.id.slice(-6)}`;
-            console.log(`Username '${username}' taken, trying '${fallbackUsername}'`);
-            
-            const retryResponse = await fetch("/api/user/sync", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                clerkId: user.id,
-                email: user.primaryEmailAddress?.emailAddress,
-                username: fallbackUsername,
-                imageUrl: user.imageUrl,
-              }),
-            });
-            
-            if (!retryResponse.ok) {
-              const errorData = await retryResponse.json();
-              throw new Error(`Failed to sync user data: ${errorData.message || 'Unknown error'}`);
-            }
-            
-            const retryData = await retryResponse.json();
-            if (retryData.user) localStorage.setItem("lastUserSync", Date.now().toString());
-          } else if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to sync user data: ${errorData.message || 'Unknown error'}`);
-          } else {
-            const data = await response.json();
-            if (data.user) localStorage.setItem("lastUserSync", Date.now().toString());
-          }
-        } catch (error) {
-          console.error("Error syncing user profile:", error);
         }
-      }
+      } catch {}
     };
     syncUser();
   }, [user, isSignedIn]);
 
-  // Fetch user roles
+  // Fetch roles
   useEffect(() => {
-    if (!isSignedIn) {
-      setUserRoles([]);
-      setIsStaffOrAdmin(false);
-      return;
-    }
-
-    // Add a small delay to ensure user sync completes first
-    const fetchUserProfile = async () => {
+    if (!isSignedIn) { setUserRoles([]); setIsStaffOrAdmin(false); return; }
+    const fetchProfile = async () => {
       try {
         const res = await fetch("/api/user/profile");
         if (res.ok) {
@@ -148,440 +103,383 @@ export default function Navbar() {
           setUserRoles(roles);
           setIsStaffOrAdmin(isFullAdmin({ roles }));
         } else if (res.status === 404) {
-          // User might still be syncing, retry after a short delay
-          setTimeout(fetchUserProfile, 500);
+          setTimeout(fetchProfile, 500);
         }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
+      } catch {}
+    };
+    setTimeout(fetchProfile, 500);
+  }, [isSignedIn]);
+
+  // Search functionality
+  useEffect(() => {
+    if (debouncedQuery.length < 2) { setSearchResults([]); return; }
+    const fetchSearch = async () => {
+      setSearchLoading(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(debouncedQuery)}&limit=6`);
+        if (res.ok) {
+          const data = await res.json();
+          setSearchResults(data.results || []);
+        }
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
       }
     };
+    fetchSearch();
+  }, [debouncedQuery]);
 
-    // Wait a bit for user sync to complete
-    setTimeout(fetchUserProfile, 500);
-  }, [isSignedIn]);
+  // Close search on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+        setSearchQuery("");
+        setSearchResults([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  // Auto-focus when search opens
+  useEffect(() => {
+    if (searchOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
+  }, [searchOpen]);
 
   const isActivePath = (path: string) => pathname === path;
 
+  const handleSearchSubmit = useCallback(() => {
+    if (searchQuery.trim()) {
+      sessionStorage.setItem("animeFilters", JSON.stringify({ genres: [], sort: "latest", search: searchQuery }));
+      router.push("/hentais");
+      setSearchOpen(false);
+      setSearchQuery("");
+      setSearchResults([]);
+    }
+  }, [searchQuery, router]);
 
   const navItems: NavItem[] = [
-    {
-      name: "Home",
-      href: "/home",
-      icon: HiHome,
-      ariaLabel: "Home",
-    },
-    {
-      name: "Hentai",
-      href: "/hentais",
-      icon: HiFilm,
-      ariaLabel: "Hentai",
-    },
-    {
-      name: "Anime",
-      href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro",
-      icon: FaGhost,
-      ariaLabel: "Anime",
-    },
-    {
-      name: "Watchlist",
-      href: "/watchlist",
-      icon: HiHeart,
-      ariaLabel: "Watchlist",
-      requireAuth: true,
-    },
-    {
-      name: "Staff",
-      href: "/staff",
-      icon: HiShieldCheck,
-      ariaLabel: "Staff",
-    }
+    { name: "Acasă", href: "/home", icon: HiHome, ariaLabel: "Acasă" },
+    { name: "Hentai", href: "/hentais", icon: HiFilm, ariaLabel: "Hentai" },
+    { name: "Anime", href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro", icon: FaGhost, ariaLabel: "Anime", external: true },
+    { name: "Watchlist", href: "/watchlist", icon: HiHeart, ariaLabel: "Watchlist", requireAuth: true },
+    { name: "Echipă", href: "/staff", icon: HiShieldCheck, ariaLabel: "Echipă" },
   ];
 
-  // Show Dashboard for users who can manage content (admin, staff, owner, co-owner)
   if (canManageContent({ roles: userRoles })) {
-    navItems.push({
-      name: "Dashboard",
-      href: "/admin",
-      icon: HiUserGroup,
-      ariaLabel: "Dashboard",
-      admin: true,
-    });
+    navItems.push({ name: "Dashboard", href: "/admin", icon: HiUserGroup, ariaLabel: "Dashboard", admin: true });
   }
 
-  const mobileNavItems: NavItem[] = [...navItems];
-
+  const mobileNavItems = [...navItems];
   if (isSignedIn) {
-    mobileNavItems.push({
-      name: "Profile",
-      href: user?.username ? `/profile/${encodeURIComponent(user.username)}` : "/profile",
-      icon: HiUser,
-      ariaLabel: "Profile",
-    });
+    mobileNavItems.push({ name: "Profil", href: user?.username ? `/profile/${encodeURIComponent(user.username)}` : "/profile", icon: HiUser, ariaLabel: "Profil" });
   }
 
   const profileUrl = user?.username ? `/profile/${encodeURIComponent(user.username)}` : "/profile";
-  const watchlistVisible = isSignedIn;
-  const adminVisible = canManageContent({ roles: userRoles });
-  const desktopMaxWidth = adminVisible ? 'max-w-[1250px]' : (watchlistVisible ? 'max-w-[1150px]' : 'max-w-[1100px]');
+
+  const renderNavLink = (item: NavItem) => {
+    const isActive = isActivePath(item.href);
+    const classes = cn(
+      "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200",
+      isActive
+        ? "text-white bg-primary-500/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+        : item.admin
+        ? "text-primary-400 hover:bg-primary-500/10"
+        : "text-gray-300 hover:text-white hover:bg-white/8"
+    );
+    const content = (
+      <>
+        <item.icon className={cn("h-4 w-4", isActive ? "text-primary-400" : "")} />
+        <span className="hidden md:inline">{item.name}</span>
+        {isActive && (
+          <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary-400" />
+        )}
+      </>
+    );
+    if (item.external) {
+      return (
+        <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={classes} aria-label={item.ariaLabel}>
+          {content}
+        </a>
+      );
+    }
+    return (
+      <Link key={item.name} href={item.href} className={classes} aria-label={item.ariaLabel}>
+        {content}
+      </Link>
+    );
+  };
 
   return (
     <>
-      {/* Mobile Top Navbar */}
+      {/* ── MOBILE TOP BAR ── */}
       <nav className={cn(
-        "lg:hidden fixed top-0 left-0 w-full z-50 flex items-center justify-between px-4 py-2 transition-transform duration-300",
-        "bg-black/90 border-b border-white/10 backdrop-blur-md",
-        showMobileTop ? 'translate-y-0' : '-translate-y-full'
+        "lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-2.5",
+        "bg-[#0a0b0f]/90 backdrop-blur-xl border-b border-white/5",
+        "transition-transform duration-300",
+        showMobileTop ? "translate-y-0" : "-translate-y-full"
       )}>
-        <Link href="/home" className={cn(
-          "flex items-center gap-2 font-bold text-lg transition-colors duration-200",
-          "text-white hover:text-primary-300"
-        )}>
-          <FaEarthEurope className={cn("w-6 h-6", "text-primary-500")} />
-          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}</span>
+        <Link href="/home" className="flex items-center gap-2 font-bold text-base text-white hover:text-primary-300 transition-colors">
+          <FaEarthEurope className="w-5 h-5 text-primary-500" />
+          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || "HentaiTerra"}</span>
         </Link>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/8 transition-all"
+            aria-label="Caută"
+          >
+            <HiSearch className="h-5 w-5" />
+          </button>
           <SignedOut>
             <SignInButton>
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
+              <button className="px-3 py-1.5 text-xs font-semibold rounded-full border border-primary-500/50 text-primary-400 hover:bg-primary-500/10 transition-all">
+                Autentificare
+              </button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <Link
-              href={profileUrl}
-              className={cn(
-                "flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-all duration-200",
-                "text-gray-200 hover:bg-white/10 hover:text-white"
-              )}
-              aria-label="Profile"
-            >
+            <Link href={profileUrl} className="p-2 text-gray-300 hover:text-white rounded-full hover:bg-white/8 transition-all">
               <HiUser className="h-5 w-5" />
-              <span className="font-medium">Profile</span>
             </Link>
           </SignedIn>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => setMobileMenuOpen(true)}
-            className={cn(
-              "p-2 text-gray-300 hover:text-primary-400 rounded-lg",
-              "hover:bg-primary-900/10 transition-all duration-200"
-            )}
-            aria-label="Open menu"
+            className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/8 transition-all"
+            aria-label="Deschide meniu"
           >
-            <HiMenu className="h-6 w-6" />
-          </Button>
+            <HiMenu className="h-5 w-5" />
+          </button>
         </div>
       </nav>
 
-      {/* Sidebar Menu */}
+      {/* ── MOBILE SIDE MENU ── */}
       {mobileMenuOpen && (
-        <div className={cn(
-          "fixed inset-0 z-[100] flex flex-col animate-fadeIn",
-          "bg-black/95 backdrop-blur-lg"
-        )}>
-          <div className={cn(
-            "flex items-center justify-end px-4 py-3",
-            "border-b border-white/10"
-          )}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileMenuOpen(false)}
-              className={cn(
-                "p-2 text-gray-400 hover:text-white",
-                "hover:bg-white/10 rounded-lg transition-colors duration-200"
-              )}
-              aria-label="Close menu"
-            >
-              <HiX className="h-6 w-6" />
-            </Button>
-          </div>
-          <div className="flex-1 flex flex-col gap-4 px-6 py-6 overflow-y-auto">
-            {/* Main Content */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Content</h3>
-              <div className="space-y-1">
-                {["Home", "Hentai", "Anime", "Watchlist", "Manga", "ThePornDude"].map(itemName => {
-                  const item = navItems.find(nav => nav.name === itemName);
-                  if (!item) return null;
-                  if (item.requireAuth && !isSignedIn) return null;
-                  if (item.external) {
-                    return (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        target="_blank"
-                        rel={item.name === "ThePornDude" ? "noopener noreferrer nofollow" : "noopener noreferrer"}
-                        className={cn(
-                          "flex items-center gap-3 text-white py-3 px-3 rounded-lg transition-colors",
-                          item.name === "ThePornDude"
-                            ? "hover:bg-white/5"
-                            : "hover:bg-white/10"
-                        )}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <item.icon className={cn("h-5 w-5", item.name === "ThePornDude" ? "text-pink-300" : "text-purple-400")} />
-                        <span>{item.name}</span>
-                      </a>
-                    );
-                  }
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <item.icon className="h-5 w-5 text-purple-400" />
-                      <span>{item.name}</span>
-                    </Link>
-                  );
-                })}
-              </div>
+        <div className="fixed inset-0 z-[100] flex animate-fadeIn">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+          <div className="relative ml-auto w-[280px] h-full bg-[#0d0e14] border-l border-white/5 flex flex-col animate-slideIn overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+              <span className="font-bold text-white text-sm">{process.env.NEXT_PUBLIC_SITE_NAME || "HentaiTerra"}</span>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-white/8 transition-all">
+                <HiX className="h-5 w-5" />
+              </button>
             </div>
-
-            {/* Community */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Community</h3>
-              <div className="space-y-1">
-                <Link
-                  href="/staff"
-                  className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <HiUserGroup className="h-5 w-5 text-purple-400" />
-                  <span>Staff</span>
-                </Link>
-                <Link
-                  href="/recruit"
-                  className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <HiUserGroup className="h-5 w-5 text-purple-400" />
-                  <span>Recruit</span>
-                </Link>
-                <a
-                  href={process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/SwvnaKc49N"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <FaDiscord className="h-5 w-5 text-purple-400" />
-                  <span>Discord</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Support */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Support</h3>
-              <div className="space-y-1">
-                <Link
-                  href="/donate"
-                  className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <HiHeart className="h-5 w-5 text-purple-400" />
-                  <span>Donate</span>
-                </Link>
-                <Link
-                  href="/contact"
-                  className="flex items-center gap-3 text-white py-3 px-3 rounded-lg hover:bg-white/10 transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <HiMail className="h-5 w-5 text-purple-400" />
-                  <span>Contact</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Dashboard for staff */}
-            {userRoles.includes("staff") && (
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Admin</h3>
-                <div className="space-y-1">
-                  <Link
-                    href="/admin"
-                    className="flex items-center gap-3 text-purple-400 py-3 px-3 rounded-lg hover:bg-purple-900/20 transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <HiShieldCheck className="h-5 w-5" />
-                    <span>Dashboard</span>
+            {/* Nav items */}
+            <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-600 px-3 mb-2">Conținut</p>
+              {navItems.map((item) => {
+                if (item.requireAuth && !isSignedIn) return null;
+                const isActive = isActivePath(item.href);
+                const cls = cn(
+                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+                  isActive ? "text-primary-300 bg-primary-500/10" : "text-gray-300 hover:text-white hover:bg-white/5"
+                );
+                if (item.external) return (
+                  <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={cls} onClick={() => setMobileMenuOpen(false)}>
+                    <item.icon className="h-4 w-4 text-primary-400" />
+                    <span>{item.name}</span>
+                  </a>
+                );
+                return (
+                  <Link key={item.name} href={item.href} className={cls} onClick={() => setMobileMenuOpen(false)}>
+                    <item.icon className={cn("h-4 w-4", isActive ? "text-primary-400" : "text-gray-500")} />
+                    <span>{item.name}</span>
                   </Link>
-                </div>
-              </div>
-            )}
+                );
+              })}
+              <div className="my-3 border-t border-white/5" />
+              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-600 px-3 mb-2">Comunitate</p>
+              {[
+                { name: "Discord", href: process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/SwvnaKc49N", icon: FaDiscord, ext: true },
+                { name: "Donează", href: "/donate", icon: HiHeart, ext: false },
+                { name: "Recrutare", href: "/recruit", icon: HiUserGroup, ext: false },
+              ].map((item) => {
+                const cls = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all";
+                if (item.ext) return (
+                  <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={cls} onClick={() => setMobileMenuOpen(false)}>
+                    <item.icon className="h-4 w-4 text-primary-400" /><span>{item.name}</span>
+                  </a>
+                );
+                return (
+                  <Link key={item.name} href={item.href} className={cls} onClick={() => setMobileMenuOpen(false)}>
+                    <item.icon className="h-4 w-4 text-gray-500" /><span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            {/* Bottom sign-in */}
+            <div className="p-4 border-t border-white/5">
+              <SignedOut>
+                <SignInButton>
+                  <button className="w-full py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:from-primary-600 hover:to-primary-700 transition-all">
+                    Autentificare
+                  </button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <Link href={profileUrl} onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/5 transition-all">
+                  <HiUser className="h-5 w-5 text-primary-400" />
+                  <span className="text-sm font-medium text-gray-200">Profilul meu</span>
+                </Link>
+              </SignedIn>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Mobile Bottom Navbar */}
-      <nav className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[95vw] max-w-md mx-auto rounded-2xl bg-black/90 border border-white/10 shadow-2xl backdrop-blur-md px-2 py-2 flex items-center justify-around" style={{boxShadow: '0 4px 24px 0 rgba(0,0,0,0.4)'}}>
-        {mobileNavItems.map((item) => {
-          if (item.requireAuth && !isSignedIn) return null;
-          const isActive = isActivePath(item.href);
-          if (item.external) {
-            return (
-              <a
-                key={item.name}
-                href={item.href}
-                target="_blank"
-                rel={item.name === "ThePornDude" ? "noopener noreferrer nofollow" : "noopener noreferrer"}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 ${
-                  item.name === "ThePornDude"
-                    ? "text-pink-300 hover:text-pink-400 hover:bg-white/5"
-                    : isActive
-                      ? "text-purple-400 bg-purple-900/20"
-                      : "text-gray-400 hover:text-purple-400 hover:bg-white/5"
-                }`}
-                aria-label={item.ariaLabel}
-              >
-                <item.icon className="h-6 w-6" />
-              </a>
-            );
-          }
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-200 ${
-                isActive
-                  ? "text-purple-400 bg-purple-900/20"
-                  : "text-gray-400 hover:text-purple-400 hover:bg-white/5"
-              }`}
-              aria-label={item.ariaLabel}
-            >
-              <item.icon className="h-6 w-6" />
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Desktop Navbar */}
-      <nav
-        className={cn(
-          "hidden lg:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full",
-          desktopMaxWidth,
-          "mx-auto rounded-full bg-black/60 border border-white/10 shadow-xl backdrop-blur-md",
-          "px-2 py-1 items-center justify-between transition-[max-width] duration-300 ease-out"
-        )}
-      >
-        <Link href="/home" className={cn(
-          "flex items-center gap-2 font-bold text-lg ml-1 transition-colors duration-200",
-          "text-white hover:text-primary-300"
-        )}>
-          <FaEarthEurope className={cn("w-6 h-6", "text-primary-500")} />
-          <span className="tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}</span>
-        </Link>
-        <div className="flex-1 flex justify-center gap-0.5">
-          {navItems.map((item) => {
+      {/* ── MOBILE BOTTOM NAV ── */}
+      <nav className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-sm mx-auto">
+        <div className="flex items-center justify-around px-2 py-1.5 rounded-2xl bg-[#0d0e14]/95 border border-white/8 shadow-2xl backdrop-blur-xl" style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)" }}>
+          {mobileNavItems.slice(0, 5).map((item) => {
             if (item.requireAuth && !isSignedIn) return null;
             const isActive = isActivePath(item.href);
-            if (item.external) {
-              return (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  target="_blank"
-                  rel={item.name === "ThePornDude" ? "noopener noreferrer nofollow" : "noopener noreferrer"}
-                  className={cn(
-                    "flex items-center gap-2 py-1.5 rounded-full font-semibold transition-all duration-200",
-                    item.name === "ThePornDude" ? "px-5 ring-1 ring-pink-300/20 text-gray-200 hover:bg-white/10" : (item.admin && item.name === 'Dashboard' ? 'px-6' : 'px-4'),
-                    item.name === "ThePornDude"
-                      ? ""
-                      : isActive
-                        ? "bg-white/20 shadow-lg text-white backdrop-blur-lg"
-                        : item.admin
-                          ? "text-primary-500 hover:bg-primary-900/30"
-                          : "text-gray-200 hover:bg-white/10",
-                    isActive && item.admin ? "text-white" : ""
-                  )}
-                  aria-label={item.ariaLabel}
-                >
-                  <item.icon className={cn("h-5 w-5", item.name === "ThePornDude" ? "text-pink-300" : "")} />
-                  <span className="hidden md:inline">{item.name}</span>
-                </a>
-              );
-            }
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2 py-1.5 rounded-full font-semibold transition-all duration-200",
-                  item.admin && item.name === 'Dashboard' ? 'px-6' : 'px-4',
-                  isActive
-                    ? "bg-white/20 shadow-lg text-white backdrop-blur-lg"
-                    : item.admin
-                      ? "text-primary-500 hover:bg-primary-900/30"
-                      : "text-gray-200 hover:bg-white/10",
-                  isActive && item.admin ? "text-white" : ""
-                )}
-                aria-label={item.ariaLabel}
-              >
+            const cls = cn(
+              "mobile-nav-item flex-1",
+              isActive ? "active" : "text-gray-500 hover:text-gray-300"
+            );
+            if (item.external) return (
+              <a key={item.name} href={item.href} target="_blank" rel="noopener noreferrer" className={cls} aria-label={item.ariaLabel}>
                 <item.icon className="h-5 w-5" />
-                <span className="hidden md:inline">{item.name}</span>
+                <span className="text-[10px] font-semibold mt-0.5">{item.name}</span>
+              </a>
+            );
+            return (
+              <Link key={item.name} href={item.href} className={cls} aria-label={item.ariaLabel}>
+                <item.icon className="h-5 w-5" />
+                <span className="text-[10px] font-semibold mt-0.5">{item.name}</span>
               </Link>
             );
           })}
         </div>
       </nav>
 
-      {/* Profile Section */}
-      <div className="hidden lg:flex fixed top-6 right-[calc(2vw+8px)] z-[60] h-[56px] items-center">
-        <div className="flex items-center gap-2">
-          <SignedOut>
-            <SignInButton>
-              <Button
-                variant="outline"
-                size="sm"
-                className={cn(
-                  "border-primary-700 bg-black/40 font-semibold shadow-sm",
-                  colors.primary[500],
-                  "hover:bg-primary-900/30 hover:text-white"
+      {/* ── DESKTOP NAVBAR ── */}
+      <nav className={cn(
+        "hidden lg:flex fixed top-0 left-0 right-0 z-50 items-center",
+        "transition-all duration-300",
+        isScrolled
+          ? "bg-[#0a0b0f]/95 backdrop-blur-xl border-b border-white/5 shadow-[0_1px_0_rgba(255,255,255,0.04)]"
+          : "bg-[#0a0b0f]/80 backdrop-blur-lg border-b border-white/3"
+      )}>
+        <div className="w-full max-w-[1440px] mx-auto px-6 py-0 flex items-center h-[60px] gap-4">
+          {/* Logo */}
+          <Link href="/home" className="flex items-center gap-2 font-bold text-white hover:text-primary-300 transition-colors shrink-0 mr-2">
+            <FaEarthEurope className="w-6 h-6 text-primary-500" />
+            <span className="text-[15px] tracking-wide">{process.env.NEXT_PUBLIC_SITE_NAME || "HentaiTerra"}</span>
+          </Link>
+
+          {/* Nav links */}
+          <div className="flex items-center gap-0.5">
+            {navItems.map((item) => {
+              if (item.requireAuth && !isSignedIn) return null;
+              return renderNavLink(item);
+            })}
+          </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Inline Search */}
+          <div ref={searchRef} className="relative flex items-center">
+            {searchOpen ? (
+              <div className="flex items-center gap-2 animate-scaleIn">
+                <div className="relative">
+                  <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary-400" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") handleSearchSubmit(); if (e.key === "Escape") { setSearchOpen(false); setSearchQuery(""); setSearchResults([]); } }}
+                    placeholder="Caută hentai..."
+                    className="w-[240px] pl-9 pr-4 py-1.5 text-sm rounded-full border text-white placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500/60 focus:border-primary-500/50 transition-all"
+                    style={{ backgroundColor: '#12141c', borderColor: 'rgba(255,255,255,0.12)', color: 'white' }}
+                    aria-label="Caută"
+                  />
+                </div>
+                <button onClick={() => { setSearchOpen(false); setSearchQuery(""); setSearchResults([]); }} className="p-1.5 text-gray-500 hover:text-white rounded-full hover:bg-white/8 transition-all">
+                  <HiX className="h-4 w-4" />
+                </button>
+                {/* Dropdown */}
+                {(searchResults.length > 0 || searchLoading) && (
+                  <div className="absolute top-full right-0 mt-2 w-[320px] rounded-2xl bg-[#0d0e14]/98 border border-white/8 shadow-2xl backdrop-blur-xl overflow-hidden animate-slideIn z-50">
+                    {searchLoading ? (
+                      <div className="p-4 space-y-3">
+                        {[...Array(3)].map((_, i) => (
+                          <div key={i} className="flex items-center gap-3 animate-pulse">
+                            <div className="w-10 h-14 bg-white/5 rounded-lg shrink-0" />
+                            <div className="space-y-2 flex-1"><div className="h-3 bg-white/5 rounded w-3/4" /><div className="h-2.5 bg-white/5 rounded w-1/2" /></div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-2">
+                        {searchResults.map((result) => (
+                          <Link key={result._id} href={`/hentai/${result._id}`} onClick={() => { setSearchOpen(false); setSearchQuery(""); setSearchResults([]); }}
+                            className="flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 transition-colors group">
+                            <div className="relative w-9 h-12 rounded-lg overflow-hidden shrink-0 bg-white/5">
+                              <Image src={result.poster || "/placeholder.jpg"} alt={result.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="36px" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-200 group-hover:text-primary-300 transition-colors line-clamp-2">{result.name}</span>
+                          </Link>
+                        ))}
+                        <div className="px-3 py-2 border-t border-white/5">
+                          <button onClick={handleSearchSubmit} className="w-full text-center text-xs font-semibold text-primary-400 hover:text-primary-300 py-1 transition-colors">
+                            Toate rezultatele pentru &quot;{searchQuery}&quot; →
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white hover:bg-white/8 border border-transparent hover:border-white/8 transition-all group"
+                aria-label="Caută"
               >
-                Sign in
-              </Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <div className="relative flex items-center gap-2">
-              <Link
-                href={profileUrl}
-                className={cn(
-                  "flex items-center gap-1 px-3 py-1.5 rounded-full font-semibold transition-all duration-200",
-                  "text-gray-200 hover:bg-white/10 hover:text-white"
-                )}
-                aria-label="Profile"
-              >
-                <span className="hidden md:inline font-medium">Profile</span>
-                {userRoles.includes("staff") &&
-                  !["admin", "owner", "co-owner"].some((role) => userRoles.includes(role)) && (
-                    <span className={cn(
-                      "flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs text-white font-bold",
-                      "bg-primary-700/80"
-                    )}>
-                      <HiShieldCheck className="w-4 h-4 mr-0.5" /> Staff
+                <HiSearch className="h-4 w-4" />
+                <span className="text-xs text-gray-600 hidden xl:inline">Caută...</span>
+                <kbd className="hidden xl:inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono text-gray-600 bg-white/5 rounded border border-white/8">/</kbd>
+              </button>
+            )}
+          </div>
+
+          {/* Auth */}
+          <div className="flex items-center gap-2 shrink-0">
+            <SignedOut>
+              <SignInButton>
+                <button className="px-4 py-1.5 text-sm font-semibold rounded-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white transition-all shadow-lg shadow-primary-500/20">
+                  Autentificare
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <div className="flex items-center gap-2">
+                <Link href={profileUrl} className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium text-gray-300 hover:text-white hover:bg-white/8 transition-all">
+                  <HiUser className="h-4 w-4" />
+                  <span className="hidden xl:inline">Profil</span>
+                  {userRoles.some(r => ["admin","owner","co-owner"].includes(r)) && (
+                    <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-primary-500/15 text-primary-300 border border-primary-500/20">
+                      <HiShieldCheck className="w-3 h-3" /> Admin
                     </span>
                   )}
-                {userRoles.some((role) => ["admin", "owner", "co-owner"].includes(role)) && (
-                  <span className={cn(
-                    "flex items-center gap-0.5 px-2 py-0.5 rounded-full text-xs text-white font-bold",
-                    "bg-primary-700/80"
-                  )}>
-                    <HiShieldCheck className="w-4 h-4 mr-0.5" /> Admin
-                  </span>
-                )}
-              </Link>
-              <UserButton />
-            </div>
-          </SignedIn>
+                  {userRoles.includes("staff") && !userRoles.some(r => ["admin","owner","co-owner"].includes(r)) && (
+                    <span className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-primary-500/15 text-primary-300 border border-primary-500/20">
+                      <HiShieldCheck className="w-3 h-3" /> Staff
+                    </span>
+                  )}
+                </Link>
+                <UserButton />
+              </div>
+            </SignedIn>
+          </div>
         </div>
-      </div>
+      </nav>
     </>
   );
 }

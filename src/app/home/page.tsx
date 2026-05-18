@@ -5,7 +5,7 @@ import AnimeSlider from '@/components/ui/anime-slider';
 import MediaGrid from '@/components/ui/media-grid';
 import MediaGridAnime from '@/components/ui/media-grid-anime';
 import { getHomeStructuredData } from '@/config/homestructured-data';
-import { GridSkeleton } from '@/components/ui/Skeleton';
+import { GridSkeleton, SliderSkeleton } from '@/components/ui/Skeleton';
 import { homeMetadata } from '@/config/homemetadata';
 import ErrorBoundary from '@/components/ui/error-boundary';
 
@@ -40,6 +40,7 @@ interface Episode {
     episodeId?: string;
     _id: any;
     episodeNumber?: number;
+    thumbnail?: string;
     views?: number;
     animeId?: {
         name?: string;
@@ -65,22 +66,13 @@ interface HomePageData {
  * Loading skeleton for content sections with shimmer effect
  */
 const SectionSkeleton = () => (
-    <div className="animate-pulse rounded-xl bg-background-tertiary border border-primary-500/20 shadow-lg p-4 md:p-6 w-full min-h-[400px]">
-        <div className="h-8 bg-dark-300 rounded-lg mb-4 w-1/3"></div>
+    <div className="space-y-10 mt-8">
+        <GridSkeleton columns={6} rows={1} />
         <GridSkeleton columns={6} rows={1} />
     </div>
 );
 
-/**
- * Loading skeleton for hero section with proper dimensions
- */
-const HeroSkeleton = () => (
-    <div className="animate-pulse rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-secondary to-background-tertiary border border-primary-500/30 shadow-xl p-4 md:p-8 w-full">
-        <div className="h-12 bg-dark-300 rounded-lg mb-6 w-3/4 mx-auto"></div>
-        <div className="h-6 bg-dark-300 rounded-lg mb-8 w-1/2 mx-auto"></div>
-        <div className="h-[250px] xs:h-[300px] sm:h-[350px] md:h-[400px] bg-dark-300 rounded-xl"></div>
-    </div>
-);
+const HeroSkeleton = () => <SliderSkeleton />;
 
 // ============================================================================
 // ERROR FALLBACK COMPONENTS
@@ -92,7 +84,7 @@ const HeroSkeleton = () => (
 const HeroError = () => (
     <div className="rounded-xl sm:rounded-2xl bg-background-secondary border border-semantic-error/30 p-4 md:p-8 w-full text-center">
         <h2 className="text-xl text-semantic-error mb-2">Eroare la încărcarea slider-ului</h2>
-        <p className="text-text-secondary">Nu am putut încărca animeurile populare</p>
+        <p className="text-text-secondary">Nu am putut încărca hentai-urile populare</p>
     </div>
 );
 
@@ -111,20 +103,21 @@ const ContentError = () => (
 // ============================================================================
 
 /**
- * Serializes anime data for slider component
+ * Serializes episode data for slider component
  * Converts MongoDB ObjectIds to strings and provides fallback values
- * @param popularAnime - Array of popular anime from database
+ * @param randomEpisodes - Array of random episodes from database
  * @returns Serialized anime array safe for client-side use
  */
-function serializePopularAnime(popularAnime: Anime[]) {
-    return popularAnime.map(anime => ({
-        id: anime._id.toString(),
-        title: anime.name || anime.title || "Nume necunoscut",
-        posterPath: anime.poster || "/placeholder.jpg",
-        description: anime.description || "Nu are descriere",
-        genres: anime.genres?.map((genre: Genre) => ({
+function serializeRandomEpisodes(randomEpisodes: any[]) {
+    return randomEpisodes.map(episode => ({
+        id: episode.episodeId || episode._id.toString(),
+        title: episode.displayTitle || episode.animeDetails?.name || "Nume necunoscut",
+        posterPath: episode.thumbnail || episode.animeDetails?.poster || "/placeholder.jpg",
+        description: episode.animeDetails?.description || "Nu are descriere",
+        genres: episode.genres?.map((genre: Genre) => ({
             name: genre.name
-        })) || []
+        })) || [],
+        link: `/watch/${episode.episodeId || episode._id.toString()}`
     }));
 }
 
@@ -136,13 +129,13 @@ function serializePopularAnime(popularAnime: Anime[]) {
  */
 function serializeRecentEpisodes(episodes: Episode[]) {
     return episodes
-        .filter((episode: Episode) => 
+        .filter((episode: Episode) =>
             episode?.animeId?.name && episode?.animeId?.poster
         )
         .map((episode: Episode) => ({
             id: episode.episodeId || episode._id.toString(),
             title: `${episode.animeId?.name || 'Unknown'} - Episodul ${episode.episodeNumber || '?'}`,
-            posterPath: episode.animeId?.poster || '/placeholder.jpg',
+            posterPath: episode.thumbnail || '/placeholder.jpg',
             mediaType: "anime" as const,
             views: episode.views || 0,
             status: (episode.animeId?.status || '').toLowerCase(),
@@ -185,24 +178,16 @@ function serializeMovieList(movies: Anime[]) {
 // ============================================================================
 
 /**
- * Hero section with site title, description, and popular anime slider
- * @param popularAnime - Array of popular anime to display in slider
+ * Hero section with site title, description, and random episodes slider
+ * @param randomEpisodes - Array of random episodes to display in slider
  */
-const HeroSection = ({ popularAnime }: { popularAnime: Anime[] }) => {
-    const serializedPopularAnime = serializePopularAnime(popularAnime);
+const HeroSection = ({ randomEpisodes }: { randomEpisodes: any[] }) => {
+    const serializedRandomEpisodes = serializeRandomEpisodes(randomEpisodes);
     const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
 
     return (
-        <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-secondary to-background-tertiary border border-primary-500/30 shadow-xl p-4 md:p-8 w-full">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 sm:mb-6 bg-gradient-to-r from-primary-300 via-text-primary to-primary-300 bg-clip-text text-transparent text-center">
-                {siteName} - Hentai Online Subtitrat
-            </h1>
-            <p className="text-base sm:text-lg text-text-secondary text-center mb-6 sm:mb-8 px-2">
-                Descoperă cele mai noi hentai-uri subtitrate în română, cu o interfață modernă și ușor de folosit.
-            </p>
-            <div className="relative">
-                <AnimeSlider items={serializedPopularAnime} />
-            </div>
+        <div className="w-full">
+            <AnimeSlider items={serializedRandomEpisodes} />
         </div>
     );
 };
@@ -213,37 +198,32 @@ const HeroSection = ({ popularAnime }: { popularAnime: Anime[] }) => {
  * @param recentAnimes - Array of recently added anime series
  * @param recentMovies - Array of recently added movies/specials
  */
-const ContentSection = ({ 
-    recentEpisodes, 
-    recentAnimes, 
+const ContentSection = ({
+    recentEpisodes,
+    recentAnimes,
 }: {
     recentEpisodes: Episode[];
     recentAnimes: Anime[];
 }) => {
     // Serialize all data
-    const serializedEpisodes = serializeRecentEpisodes(recentEpisodes);
+    const serializedEpisodes = serializeRecentEpisodes(recentEpisodes).slice(0, 3);
     const serializedAnimes = serializeAnimeList(recentAnimes);
 
     return (
-        <div className="space-y-4 sm:space-y-6">
-            {/* Recent Episodes Section */}
+        <div className="space-y-10 sm:space-y-12 mt-8 sm:mt-10">
             <ErrorBoundary fallback={<ContentError />}>
-                <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-tertiary/80 to-background-secondary/80 border border-primary-500/20 shadow-lg p-4 md:p-6 w-full">
-                    <MediaGrid
-                        title="Ultimele Episoade"
-                        items={serializedEpisodes}
-                    />
-                </div>
+                <MediaGrid
+                    title="Ultimele Episoade"
+                    items={serializedEpisodes}
+                />
             </ErrorBoundary>
-            
-            {/* Recent Anime Series Section */}
+
             <ErrorBoundary fallback={<ContentError />}>
-                <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-tertiary/80 to-background-secondary/80 border border-primary-500/20 shadow-lg p-4 md:p-6 w-full">
-                    <MediaGridAnime
-                        title="Ultimele Hentai-uri"
-                        items={serializedAnimes}
-                    />
-                </div>
+                <MediaGridAnime
+                    title="Ultimele Hentai-uri"
+                    items={serializedAnimes}
+                    viewAllHref="/hentais"
+                />
             </ErrorBoundary>
         </div>
     );
@@ -258,49 +238,31 @@ const ContentSection = ({
  * Displays popular anime slider and recent content sections
  * Uses single database call for optimal performance
  */
-export default async function Home() {  
+export default async function Home() {
     // Single optimized database call for all home page data
-    const { 
-        popularAnime, 
-        recentEpisodes, 
-        recentAnimes, 
+    const {
+        randomEpisodes,
+        recentEpisodes,
+        recentAnimes,
     } = await getHomePageData();
-    
+
     return (
-        <div>
-            <div className="container mx-auto py-4 sm:py-8 flex flex-col items-center justify-center">
-                {/* Structured Data for SEO */}
-                <Script
-                    id="homepage-structured-data"
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify(getHomeStructuredData())
-                    }}
-                    strategy="afterInteractive"
-                />
-                
-                <div className="w-full max-w-8xl flex flex-col gap-4 sm:gap-6 md:gap-8 items-center justify-center">
-                    <div className="w-full flex flex-col gap-4 sm:gap-6 items-center justify-center">
-                        
-                        {/* Hero Section with Popular Anime Slider */}
-                        <ErrorBoundary fallback={<HeroError />}>
-                            <Suspense fallback={<HeroSkeleton />}>
-                                <HeroSection popularAnime={popularAnime} />
-                            </Suspense>
-                        </ErrorBoundary>
-                        
-                        {/* Content Sections (Episodes, Anime, Movies) */}
-                        <ErrorBoundary fallback={<ContentError />}>
-                            <Suspense fallback={<SectionSkeleton />}>
-                                <ContentSection 
-                                    recentEpisodes={recentEpisodes}
-                                    recentAnimes={recentAnimes}
-                                />
-                            </Suspense>
-                        </ErrorBoundary>
-                    </div>
-                </div>
-            </div>
+        <div className="py-4 sm:py-6">
+            <Script id="homepage-structured-data" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(getHomeStructuredData()) }} strategy="afterInteractive" />
+
+            {/* Hero Slider */}
+            <ErrorBoundary fallback={<HeroError />}>
+                <Suspense fallback={<HeroSkeleton />}>
+                    <HeroSection randomEpisodes={randomEpisodes} />
+                </Suspense>
+            </ErrorBoundary>
+
+            {/* Content */}
+            <ErrorBoundary fallback={<ContentError />}>
+                <Suspense fallback={<SectionSkeleton />}>
+                    <ContentSection recentEpisodes={recentEpisodes} recentAnimes={recentAnimes} />
+                </Suspense>
+            </ErrorBoundary>
         </div>
     );
 }

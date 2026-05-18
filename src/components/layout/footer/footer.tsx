@@ -1,184 +1,150 @@
+"use client";
 import Link from "next/link";
-import {
-    HiHome,
-    HiFilm,
-    HiMail,
-    HiInformationCircle,
-    HiExclamationCircle,
-    HiShieldCheck,
-    HiUserGroup,
-    HiHeart
-} from "react-icons/hi";
-import { FaDiscord, FaTwitter, FaInstagram, FaBook, FaTiktok, FaGhost } from "react-icons/fa";
+import { HiHome, HiFilm, HiMail, HiInformationCircle, HiExclamationCircle, HiShieldCheck, HiUserGroup, HiHeart, HiArrowUp } from "react-icons/hi";
+import { FaDiscord, FaTwitter, FaInstagram, FaTiktok, FaGhost } from "react-icons/fa";
 
 const Footer = () => {
-    const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
 
-    const navigation = [
-        { name: "Acasă", href: "/home", icon: HiHome, ariaLabel: "Navighează la pagina principală" },
-        { name: "Hentai", href: `/hentais`, icon: FaGhost, ariaLabel: "Răsfoiește colecția noastră de hentai" },
-        { name: "Watchlist", href: "/watchlist", icon: HiHeart, ariaLabel: "Vezi lista ta de urmărire" },
-        { name: "Echipă", href: "/staff", icon: HiShieldCheck, ariaLabel: "Echipă" },
-        { name: "Recrutare", href: "/recruit", icon: HiUserGroup, ariaLabel: "Recrutare" },
-        { name: "Donează", href: "/donate", icon: HiHeart, ariaLabel: "Donează" },
-        { name: "Anime", href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro", icon: FaGhost, ariaLabel: "Răsfoiește colecția noastră de anime" },
-    ];
+  return (
+    <footer className="mt-auto bg-[#070809] border-t border-white/4" role="contentinfo" aria-label="Subsol site">
+      <div className="max-w-[1440px] mx-auto px-6 py-12 sm:py-14">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-10">
 
-    const legal = [
-        { name: "Despre noi", href: "/about", icon: HiInformationCircle, ariaLabel: "Află mai multe despre HentaiUnited" },
-        { name: "Contact", href: "/contact", icon: HiMail, ariaLabel: "Contactează HentaiUnited" },
-        { name: "DMCA", href: "/dmca", icon: HiExclamationCircle, ariaLabel: "Raportează încălcarea drepturilor de autor" },
-        { name: "Echipă", href: "/staff", icon: HiUserGroup, ariaLabel: "Cunoaște echipa" },
-        { name: "Recrutare", href: "/recruit", icon: HiUserGroup, ariaLabel: "Hai în echipa noastră" },
-        { name: "Donează", href: "/donate", icon: HiHeart, ariaLabel: "Susține HentaiUnited cu o donație" }
-    ];
-
-    const social = [
-        { name: "Discord", href: "https://discord.gg/eAX557MEes", icon: FaDiscord, ariaLabel: "Alătură-te serverului nostru Discord" },
-        { name: "Twitter", href: process.env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/HentaiUnited", icon: FaTwitter, ariaLabel: "Urmărește-ne pe Twitter" },
-        { name: "Instagram", href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/HentaiUnited/", icon: FaInstagram, ariaLabel: "Urmărește-ne pe Instagram" },
-        { name: "TikTok", href: process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@HentaiUnited.ro", icon: FaTiktok, ariaLabel: "Urmărește-ne pe TikTok" },
-    ];
-
-    return (
-        <footer className="mt-auto bg-[#1a1625]/95 border-t border-purple-900/20 backdrop-blur-sm" role="contentinfo" aria-label="Subsol site">
-            <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-                    {/* About */}
-                    <section aria-label="Despre HentaiUnited" className="lg:col-span-2">
-                        <h3 className="text-xl font-bold mb-4 text-purple-400">{process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}</h3>
-                        <p className="text-gray-400 leading-relaxed mb-4">
-                            Bine ai venit la {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} - platforma ta preferată pentru hentai în România.
-                            Oferim o selecție vastă de conținut de înaltă calitate, actualizat regulat pentru publicul adult.
-                        </p>
-                        <div className="flex space-x-4">
-                            {social.map((item) => (
-                                <a
-                                    key={item.name}
-                                    href={item.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer nofollow"
-                                    className="text-gray-400 hover:text-purple-400 transition-colors"
-                                    aria-label={`Vizitează ${item.name}ul nostru`}
-                                >
-                                    <item.icon className="w-6 h-6" />
-                                </a>
-                            ))}
-                        </div>
-                        <div className="mt-5">
-                            <a
-                                href="https://theporndude.vip/"
-                                target="_blank"
-                                rel="noopener noreferrer nofollow"
-                                aria-label="Best Porn Sites"
-                                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 to-purple-500/10 text-gray-200 border border-white/10 hover:bg-white/10 transition"
-                            >
-                                <span className="font-semibold">Best Porn Sites</span>
-                            </a>
-                        </div>
-                    </section>
-
-                    {/* Content */}
-                    <nav aria-label="Navigare conținut" className="space-y-4">
-                        <h3 className="text-lg font-semibold text-purple-400">Conținut</h3>
-                        <ul className="space-y-2">
-                            {navigation.filter(item => ["Acasă", "Hentai", "Filme", "Watchlist"].includes(item.name)).map((item) => (
-                                <li key={item.name}>
-                                    <Link
-                                        href={item.href}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
-                                        aria-label={item.ariaLabel}
-                                    >
-                                        <item.icon className="w-4 h-4" aria-hidden="true" />
-                                        <span>{item.name}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            {navigation.filter(item => ["Manga"].includes(item.name)).map((item) => (
-                                <li key={item.name}>
-                                    <a
-                                        href={item.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer nofollow"
-                                        className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
-                                        aria-label={item.ariaLabel}
-                                    >
-                                        <item.icon className="w-4 h-4" aria-hidden="true" />
-                                        <span>{item.name}</span>
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                    {/* Community */}
-                    <nav aria-label="Linkuri comunitate" className="space-y-4">
-                        <h3 className="text-lg font-semibold text-purple-400">Comunitate</h3>
-                        <ul className="space-y-2">
-                            {legal.filter(item => ["Echipă", "Recrutare", "Donează"].includes(item.name)).map((item) => (
-                                <li key={item.name}>
-                                    <Link
-                                        href={item.href}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
-                                    >
-                                        <item.icon className="w-4 h-4" aria-hidden="true" />
-                                        <span>{item.name}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                            <li>
-                                <a
-                                    href={process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/SwvnaKc49N"}
-                                    target="_blank"
-                                    rel="noopener noreferrer nofollow"
-                                    className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
-                                >
-                                    <FaDiscord className="w-4 h-4" aria-hidden="true" />
-                                    <span>Discord</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-
-                    {/* Legal */}
-                    <nav aria-label="Linkuri legale" className="space-y-4">
-                        <h3 className="text-lg font-semibold text-purple-400">Legal</h3>
-                        <ul className="space-y-2">
-                            {legal.filter(item => ["Despre noi", "Contact", "DMCA"].includes(item.name)).map((item) => (
-                                <li key={item.name}>
-                                    <Link
-                                        href={item.href}
-                                        className="flex items-center gap-2 text-gray-400 hover:text-purple-400 transition-colors"
-                                    >
-                                        <item.icon className="w-4 h-4" aria-hidden="true" />
-                                        <span>{item.name}</span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </nav>
-                </div>
-
-                {/* Disclaimer and Copyright */}
-                <div className="mt-12 pt-8 border-t border-purple-900/20">
-                    <div className="text-sm text-gray-400 mb-4 max-w-3xl">
-                        <p className="mb-2">
-                            <strong className="text-purple-400">Disclaimer:</strong> {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} nu stochează niciun fișier pe serverele sale.
-                            Tot conținutul este furnizat de terțe părți neafiliate. Nu suntem responsabili pentru conținutul găzduit pe platformele terțe.
-                        </p>
-                        <p>
-                            Toate mărcile comerciale, imaginile și conținutul video aparțin proprietarilor lor de drept.
-                        </p>
-                        <p>
-                            {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} respectă proprietatea intelectuală și drepturile de autor.
-                        </p>
-                    </div>
-                    <div className="text-center text-gray-400">
-                        <p>Copyright (C) {currentYear} IncarnateWill / HentaiUnited. Toate drepturile rezervate.</p>
-                    </div>
-                </div>
+          {/* Brand column */}
+          <div className="col-span-2 sm:col-span-2 md:col-span-4 lg:col-span-2 space-y-5">
+            <div>
+              <h3 className="text-lg font-extrabold mb-2" style={{ background: 'linear-gradient(90deg, #a78bfa, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                {process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
+                Platforma ta preferată pentru hentai subtitrat în română. Conținut HD, actualizat zilnic, fără reclame intruzive.
+              </p>
             </div>
-        </footer>
-    );
+            {/* Socials */}
+            <div className="flex items-center gap-2">
+              {[
+                { href: process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/eAX557MEes", icon: FaDiscord, label: "Discord", hoverColor: 'hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-indigo-500/10' },
+                { href: process.env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/HentaiUnited", icon: FaTwitter, label: "Twitter", hoverColor: 'hover:text-sky-400 hover:border-sky-500/40 hover:bg-sky-500/10' },
+                { href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/HentaiUnited/", icon: FaInstagram, label: "Instagram", hoverColor: 'hover:text-pink-400 hover:border-pink-500/40 hover:bg-pink-500/10' },
+                { href: process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@HentaiUnited.ro", icon: FaTiktok, label: "TikTok", hoverColor: 'hover:text-white hover:border-white/30 hover:bg-white/10' },
+              ].map(({ href, icon: Icon, label, hoverColor }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  aria-label={label}
+                  className={`w-9 h-9 rounded-full bg-white/4 border border-white/8 flex items-center justify-center text-gray-500 transition-all duration-200 ${hoverColor}`}
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
+            {/* ThePornDude */}
+            <a
+              href="https://theporndude.vip/"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              aria-label="Best Porn Sites"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/4 text-xs text-gray-400 border border-white/6 hover:bg-white/8 hover:text-gray-200 transition-all"
+            >
+              Best Porn Sites
+            </a>
+          </div>
+
+          {/* Conținut */}
+          <nav aria-label="Conținut" className="space-y-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 pb-1 border-b border-white/5">Conținut</h4>
+            <ul className="space-y-2">
+              {[
+                { name: "Acasă", href: "/home", icon: HiHome },
+                { name: "Hentai", href: "/hentais", icon: HiFilm },
+                { name: "Watchlist", href: "/watchlist", icon: HiHeart },
+                { name: "Anime", href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro", icon: FaGhost, ext: true },
+              ].map(({ name, href, icon: Icon, ext }) => (
+                <li key={name}>
+                  {ext ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors">
+                      <Icon className="w-3.5 h-3.5 text-gray-700" />{name}
+                    </a>
+                  ) : (
+                    <Link href={href} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors">
+                      <Icon className="w-3.5 h-3.5 text-gray-700" />{name}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Comunitate */}
+          <nav aria-label="Comunitate" className="space-y-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 pb-1 border-b border-white/5">Comunitate</h4>
+            <ul className="space-y-2">
+              {[
+                { name: "Echipă", href: "/staff", icon: HiShieldCheck },
+                { name: "Recrutare", href: "/recruit", icon: HiUserGroup },
+                { name: "Donează", href: "/donate", icon: HiHeart },
+                { name: "Discord", href: process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/SwvnaKc49N", icon: FaDiscord, ext: true },
+              ].map(({ name, href, icon: Icon, ext }) => (
+                <li key={name}>
+                  {ext ? (
+                    <a href={href} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors">
+                      <Icon className="w-3.5 h-3.5 text-gray-700" />{name}
+                    </a>
+                  ) : (
+                    <Link href={href} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors">
+                      <Icon className="w-3.5 h-3.5 text-gray-700" />{name}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Legal */}
+          <nav aria-label="Legal" className="space-y-3">
+            <h4 className="text-[11px] font-bold uppercase tracking-widest text-gray-500 pb-1 border-b border-white/5">Legal</h4>
+            <ul className="space-y-2">
+              {[
+                { name: "Despre noi", href: "/about", icon: HiInformationCircle },
+                { name: "Contact", href: "/contact", icon: HiMail },
+                { name: "DMCA", href: "/dmca", icon: HiExclamationCircle },
+              ].map(({ name, href, icon: Icon }) => (
+                <li key={name}>
+                  <Link href={href} className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-200 transition-colors">
+                    <Icon className="w-3.5 h-3.5 text-gray-700" />{name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: '1px solid transparent', borderImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent) 1' }}>
+          <div className="space-y-1 text-center sm:text-left">
+            <p className="text-xs text-gray-600 max-w-2xl">
+              <span className="text-gray-500 font-medium">Disclaimer:</span> {process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} nu stochează fișiere pe serverele sale. Conținutul este furnizat de terți. Toate mărcile aparțin proprietarilor lor.
+            </p>
+            <p className="text-xs text-gray-700">
+              Copyright © {currentYear} IncarnateWill / {process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Toate drepturile rezervate.
+            </p>
+          </div>
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-300 bg-white/4 hover:bg-white/8 rounded-full border border-white/6 transition-all shrink-0"
+            aria-label="Înapoi sus"
+          >
+            <HiArrowUp className="w-3.5 h-3.5" />
+            Sus
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

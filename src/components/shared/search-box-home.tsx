@@ -92,15 +92,16 @@ export default function SearchBoxHome() {
     }, [handleSearch]);
 
     return (
-        <div className="relative w-full max-w-2xl mx-auto" ref={searchBoxRef}>
+        <div className="relative w-full max-w-2xl" ref={searchBoxRef}>
             <div className={cn(
-                "relative flex rounded-full overflow-hidden",
-                "border border-neutral-700/50 shadow-lg",
-                "focus-within:ring-2 focus-within:ring-primary-500/50",
-                "focus-within:border-primary-500/50",
+                "relative flex rounded-2xl overflow-hidden",
+                "border shadow-2xl",
+                isFocused
+                    ? "border-primary-500/60 shadow-primary-500/20 ring-2 ring-primary-500/20"
+                    : "border-white/10 shadow-black/50",
                 "transition-all duration-300 ease-out",
-                "bg-gradient-to-r from-neutral-800/90 to-neutral-800/80",
-                "backdrop-blur-sm"
+                "bg-[#12141c]/95",
+                "backdrop-blur-xl"
             )}>
                 <div className="relative flex-1">
                     <input
@@ -109,37 +110,38 @@ export default function SearchBoxHome() {
                         onChange={(e) => setQuery(e.target.value)}
                         onFocus={() => setIsFocused(true)}
                         onKeyDown={handleKeyDown}
-                        placeholder="Cauta hentai..."
+                        placeholder="Caută hentai după titlu..."
                         className={cn(
                             "w-full px-5 py-4 pl-12 pr-12",
-                            "bg-transparent text-white placeholder:text-neutral-400",
+                            "bg-transparent text-white placeholder:text-gray-500",
                             "focus:outline-none transition-all duration-200",
-                            "text-lg font-medium"
+                            "text-base font-medium"
                         )}
+                        style={{ color: 'white' }}
                         aria-label="Cauta hentai"
                     />
-                    <HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-neutral-400 pointer-events-none" />
+                    <HiSearch className={cn(
+                        "absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none transition-colors duration-200",
+                        isFocused ? "text-primary-400" : "text-gray-500"
+                    )} />
                     {query && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
+                        <button
                             onClick={() => setQuery('')}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-white z-10"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-500 hover:text-white rounded-full hover:bg-white/10 transition-all z-10"
                             aria-label="Clear search"
                         >
                             <HiX className="w-4 h-4" />
-                        </Button>
+                        </button>
                     )}
                 </div>
-                <Button
-                    variant="primary"
-                    size="lg"
+                <button
                     onClick={handleSearch}
-                    className="flex-shrink-0 px-8 rounded-l-none border-l border-neutral-700/50"
-                    aria-label="Perform search"
+                    className="flex-shrink-0 px-6 m-1.5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-bold text-sm transition-all duration-200 hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary-500/30 flex items-center gap-2"
+                    aria-label="Cauta"
                 >
-                    <HiSearch className="w-5 h-5" />
-                </Button>
+                    <HiSearch className="w-4 h-4" />
+                    <span className="hidden sm:inline">Caută</span>
+                </button>
             </div>
 
             {isFocused && (query.length >= 2 || results.length > 0) && (

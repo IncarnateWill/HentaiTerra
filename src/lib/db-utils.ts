@@ -890,22 +890,68 @@ export const cleanupOrphanedWatchlistEntries = async (userId: string) => {
 };
 
 // Add these new functions without user context
+export const getRandomEpisodes = cache(
+    async (limit: number = 10) => {
+        const cacheKey = `random_episodes_${limit}`;
+        
+        return fetchWithCache(cacheKey, async () => {
+            await connectToDatabase();
+            
+            const episodes = await Episode.aggregate([
+                { $sample: { size: limit } },
+                {
+                    $lookup: {
+                        from: 'animes',
+                        localField: 'animeId',
+                        foreignField: '_id',
+                        as: 'animeDetails'
+                    }
+                },
+                { $unwind: '$animeDetails' },
+                {
+                    $lookup: {
+                        from: 'genres',
+                        localField: 'animeDetails.genres',
+                        foreignField: '_id',
+                        as: 'genres'
+                    }
+                },
+                {
+                    $project: {
+                        episodeId: 1,
+                        episodeNumber: 1,
+                        thumbnail: 1,
+                        displayTitle: 1,
+                        'animeDetails.name': 1,
+                        'animeDetails.description': 1,
+                        genres: { name: 1 }
+                    }
+                }
+            ]);
+            
+            return episodes;
+        }, 60); // 1 minute cache
+    }
+);
+
 export const getHomePageData = cache(
     async () => {
         await connectToDatabase();
         
-        const [popularAnime, recentEpisodes, recentAnimes, recentMovies] = await Promise.all([
+        const [popularAnime, recentEpisodes, recentAnimes, recentMovies, randomEpisodes] = await Promise.all([
             getPopularAnime(10),
             getRecentEpisodes(6),
             getRecentAnimes(6),
-            getRecentMovies(6)
+            getRecentMovies(6),
+            getRandomEpisodes(10)
         ]);
         
         return {
             popularAnime,
             recentEpisodes,
             recentAnimes,
-            recentMovies
+            recentMovies,
+            randomEpisodes
         };
     }
 );

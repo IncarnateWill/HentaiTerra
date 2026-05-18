@@ -7,8 +7,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Image from "next/image";
 import EpisodePaginationWrapper from "@/components/video/EpisodePaginationWrapper";
-import FAQ, { watchPageFAQ } from "@/components/shared/FAQ";
-import AdditionalNavigation, { mainNavigationLinks } from "@/components/shared/AdditionalNavigation";
+import { watchPageFAQ } from "@/components/shared/FAQ";
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
 
 export const revalidate = 60;
@@ -84,6 +83,9 @@ interface Anime {
   _id: string;
   episodes: Episode[];
   status?: string;
+  mediaType?: string;
+  malid?: number;
+  createdAt?: string | Date;
 }
 
 interface Episode {
@@ -127,8 +129,6 @@ function validateEpisode(episode: any): episode is Episode {
     episode.episodeId &&
     episode.animeId &&
     episode.animeId.name &&
-    episode.animeId.episodes &&
-    Array.isArray(episode.animeId.episodes) &&
     typeof episode.episodeNumber === 'number' &&
     episode.videoUrl
   );
@@ -376,27 +376,6 @@ function generateEpisodeStructuredData(episode: Episode, episodeTitle: string, t
   };
 }
 
-/**
- * Generates TVSeries structured data for SEO
- */
-function generateSeriesStructuredData(episode: Episode, thumbnailUrl: string, siteUrl: string, totalEpisodes: number) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "TVSeries",
-    name: episode.animeId.name,
-    url: `${siteUrl}/hentai/${episode.animeId._id}`,
-    description: episode.animeId.description || 'No description available',
-    image: episode.animeId.poster || thumbnailUrl,
-    genre: (episode.genres || []).map(g => g.name),
-    creator: {
-      "@type": "Organization",
-      name: episode.animeId.studio || "Unknown Studio"
-    },
-    inLanguage: "ro",
-    numberOfEpisodes: totalEpisodes,
-  };
-}
-
 // ============================================================================
 // METADATA GENERATION
 // ============================================================================
@@ -565,10 +544,8 @@ function getAdjacentEpisodes(episodes: Episode[], currentEpisodeId: string) {
 
 export default async function WatchPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ mediaId: string }>;
-  searchParams: Promise<{ page?: string }>;
 }) {
   try {
     const { mediaId } = await params;
@@ -590,38 +567,65 @@ export default async function WatchPage({
     }
 
     // Validate episode data
-    if (!episode || !validateEpisode(episode)) {
+    if (!episode) {
+      console.error(`[WatchPage] Episode not found for mediaId: ${mediaId}`);
+      notFound();
+    }
+    
+    if (!validateEpisode(episode)) {
+      console.error(`[WatchPage] Episode validation failed for mediaId: ${mediaId}`, {
+        hasEpisodeId: !!episode.episodeId,
+        hasAnimeId: !!episode.animeId,
+        hasAnimeName: !!episode.animeId?.name,
+        hasEpisodes: !!episode.animeId?.episodes,
+        episodesIsArray: Array.isArray(episode.animeId?.episodes),
+        hasEpisodeNumber: typeof episode.episodeNumber === 'number',
+        hasVideoUrl: !!episode.videoUrl
+      });
       notFound();
     }
 
     // Fetch recommended anime in parallel (non-blocking)
     const recommendedCacheKey = `recommended_anime_${episode.animeId._id}`;
-    let recommendedAnime = await getCachedData<any[]>(recommendedCacheKey);
+    let recommendedAnimeData = await getCachedData<any[]>(recommendedCacheKey);
 
-    if (!recommendedAnime) {
-      recommendedAnime = await getRecommendedAnimes(episode.animeId._id.toString());
-      if (recommendedAnime) {
-        await setCachedData(recommendedCacheKey, recommendedAnime, 3600); // Cache for 1 hour
+    if (!recommendedAnimeData) {
+      recommendedAnimeData = await getRecommendedAnimes(episode.animeId._id.toString());
+      if (recommendedAnimeData) {
+        await setCachedData(recommendedCacheKey, recommendedAnimeData, 3600); // Cache for 1 hour
       }
     }
+    const recommendedAnime = Array.isArray(recommendedAnimeData) ? recommendedAnimeData : [];
 
     // Validate episodes array
     const episodes = episode.animeId.episodes || [];
     if (!Array.isArray(episodes) || episodes.length === 0) {
-      notFound();
+      console.error(`[WatchPage] Episodes array is empty or not an array for mediaId: ${mediaId}. AnimeId: ${episode.animeId._id}`);
+      // Don't 404 yet, try to proceed with just this episode
     }
 
     // Get adjacent episodes
-    const { sortedEpisodes, currentIndex, nextEpisode, previousEpisode } = 
-      getAdjacentEpisodes(episodes, episode.episodeId);
+    let { sortedEpisodes, currentIndex, nextEpisode, previousEpisode } = 
+      getAdjacentEpisodes(episodes.length > 0 ? episodes : [episode], episode.episodeId);
     
     if (currentIndex === -1) {
-      notFound();
+      console.warn(`[WatchPage] Current episode not found in episodes array for mediaId: ${mediaId}. Falling back to single episode list.`);
+      sortedEpisodes = [episode];
+      currentIndex = 0;
+      nextEpisode = null;
+      previousEpisode = null;
     }
 
     // Prepare data for rendering
     const episodeTitle = `${episode.animeId.name} - Episodul ${episode.episodeNumber} - ${episode.name || 'Untitled'}`;
-    const mediaData = prepareMediaData(episode);
+    const mediaData = {
+      ...prepareMediaData(episode),
+      animeId: episode.animeId._id.toString(),
+      mediaType: episode.animeId.mediaType,
+      rating: episode.animeId.malid ? (episode.animeId.malid % 10).toFixed(1) : 'N/A',
+      season: 'Spring 2026',
+      status: episode.animeId.status
+    };
     const siteUrl = process.env.SITE_URL || "https://HentaiUnited.ro";
     const thumbnailUrl = resolveThumbnailUrl(episode.thumbnail, mediaData.posterPath, siteUrl);
 
@@ -629,7 +633,6 @@ export default async function WatchPage({
     const jsonLd = generateVideoStructuredData(episode, episodeTitle, thumbnailUrl, siteUrl);
     const breadcrumbList = generateBreadcrumbStructuredData(episode, siteUrl);
     const episodeStructuredData = generateEpisodeStructuredData(episode, episodeTitle, thumbnailUrl, siteUrl);
-    const seriesStructuredData = generateSeriesStructuredData(episode, thumbnailUrl, siteUrl, sortedEpisodes.length);
 
     // Serialize episodes for client-side use
     const serializedEpisodes = sortedEpisodes.map(serializeEpisode);
@@ -639,213 +642,197 @@ export default async function WatchPage({
     // ========================================================================
 
     return (
-      <div className="container mx-auto py-6 flex flex-col items-center justify-center">
-        {/* SEO Meta Tags */}
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <meta httpEquiv="content-language" content="ro" />
-        <link rel="canonical" href={`${siteUrl}/watch/${episode.episodeId}`} />
-        <link rel="alternate" hrefLang="ro" href={`${siteUrl}/watch/${episode.episodeId}`} />
-        
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(episodeStructuredData) }}
-        />
+      <div className="min-h-screen text-gray-200">
+        <div className="container mx-auto px-4 py-6 max-w-[1400px]">
+          {/* SEO Meta Tags */}
+          <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+          <meta httpEquiv="content-language" content="ro" />
+          <link rel="canonical" href={`${siteUrl}/watch/${episode.episodeId}`} />
+          
+          {/* Structured Data */}
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(episodeStructuredData) }} />
 
-        <div className="w-full max-w-8xl flex flex-col gap-8 items-center justify-center">
-          <div className="w-full flex flex-col gap-6 items-center justify-center">
-            
-            {/* Video Player Section */}
-            <div className="rounded-2xl bg-gradient-to-br from-background-secondary/90 to-background-tertiary/90 border border-primary-500/30 shadow-xl p-4 md:p-8 w-full">
-              <h1 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-primary-300 via-text-primary to-primary-300 bg-clip-text text-transparent text-center">
-                {episodeTitle}
-              </h1>
-              
-              <div className="relative aspect-video bg-dark-300 rounded-xl overflow-hidden mb-4">
-                <Suspense fallback={<LoadingVideo />}>
-                  <VideoPlayer
-                    episodeId={episode.episodeId}
-                    videoUrl={mediaData.videoUrl}
-                    videoUrlBackup={mediaData.videoUrlBackup || ''}
-                    videoUrlBackup2={mediaData.videoUrlBackup2 || ''}
-                    videoUrlBackup3={mediaData.videoUrlBackup3 || ''}
-                    animeId={episode.animeId._id.toString()}
-                    width={1920}
-                    height={1080}
-                    title={episodeTitle}
-                    loading="lazy"
-                    thumbnailUrl={thumbnailUrl}
-                  />
-                </Suspense>
-                
-                <Suspense fallback={<LoadingButtons />}>
-                  <AutoWatchMarker 
-                    episodeId={episode.episodeId}
-                    animeId={episode.animeId._id.toString()}
-                  />
-                </Suspense>
-              </div>
+          {/* Breadcrumbs */}
+          <nav className="flex items-center gap-2 text-xs font-medium text-gray-500 mb-6 overflow-x-auto whitespace-nowrap pb-2">
+            <Link href="/" className="hover:text-white transition-colors">HOME</Link>
+            <span className="text-gray-700">/</span>
+            <Link href="/hentais" className="hover:text-white transition-colors">HENTAI</Link>
+            <span className="text-gray-700">/</span>
+            <Link href={`/hentai/${episode.animeId._id}`} className="hover:text-white transition-colors uppercase">{episode.animeId.name}</Link>
+            <span className="text-gray-700">/</span>
+            <span className="text-gray-300 uppercase">EPISODE {episode.episodeNumber}</span>
+          </nav>
 
-              {/* Episode Navigation */}
-              <nav className="flex justify-between items-center my-3 gap-2">
-                <div className="flex gap-2">
-                  {previousEpisode && (
-                    <Link
-                      href={`/watch/${previousEpisode.episodeId}`}
-                      className="px-4 py-2 bg-gradient-to-r from-primary-700 to-secondary-700 text-text-primary rounded-full hover:from-primary-800 hover:to-secondary-800 transition shadow-md"
-                    >
-                      ← Ep. {previousEpisode.episodeNumber}
-                    </Link>
-                  )}
-                  {episode.animeId._id && (
+          <div className="flex flex-col gap-8">
+            {/* Top Section: Player and Episodes side-by-side */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+              <div className="space-y-4">
+                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/5">
+                  <Suspense fallback={<LoadingVideo />}>
+                    <VideoPlayer
+                      episodeId={episode.episodeId}
+                      videoUrl={mediaData.videoUrl}
+                      videoUrlBackup={mediaData.videoUrlBackup || ''}
+                      videoUrlBackup2={mediaData.videoUrlBackup2 || ''}
+                      videoUrlBackup3={mediaData.videoUrlBackup3 || ''}
+                      animeId={episode.animeId._id.toString()}
+                      width={1920}
+                      height={1080}
+                      title={episodeTitle}
+                      loading="lazy"
+                      thumbnailUrl={thumbnailUrl}
+                    />
+                  </Suspense>
+                  
+                  <Suspense fallback={<LoadingButtons />}>
+                    <AutoWatchMarker 
+                      episodeId={episode.episodeId}
+                      animeId={episode.animeId._id.toString()}
+                    />
+                  </Suspense>
+                </div>
+
+                {/* Player Controls/Info */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center gap-4">
+                    <div className="space-y-0.5">
+                      <h2 className="text-lg font-bold text-white leading-tight">Episode {episode.episodeNumber}</h2>
+                      <p className="text-xs text-gray-500 font-medium">{episode.name || 'Unfading Resolve'}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {previousEpisode && (
+                      <Link
+                        href={`/watch/${previousEpisode.episodeId}`}
+                        className="p-2.5 bg-white/5 hover:bg-white/10 rounded-lg transition-all border border-white/5 group"
+                        title="Previous Episode"
+                      >
+                        <svg className="w-5 h-5 text-gray-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </Link>
+                    )}
                     <Link
                       href={`/hentai/${episode.animeId._id}`}
-                      className="px-4 py-2 bg-gradient-to-r from-secondary-600 to-primary-600 text-text-primary rounded-full hover:from-secondary-700 hover:to-primary-700 transition shadow-md"
+                      className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-bold text-gray-300 border border-white/5 transition-all"
                     >
-                      Hentai
+                      All Episodes
                     </Link>
-                  )}
+                    {nextEpisode && (
+                      <Link
+                        href={`/watch/${nextEpisode.episodeId}`}
+                        className="p-2.5 bg-primary-500 hover:bg-primary-600 rounded-lg transition-all shadow-lg shadow-primary-500/20 group"
+                        title="Next Episode"
+                      >
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    )}
+                  </div>
                 </div>
-                
-                <div className="flex gap-2">
-                  {nextEpisode && (
-                    <Link
-                      href={`/watch/${nextEpisode.episodeId}`}
-                      className="px-4 py-2 bg-gradient-to-r from-primary-700 to-secondary-700 text-text-primary rounded-full hover:from-primary-800 hover:to-secondary-800 transition shadow-md"
-                    >
-                      Ep. {nextEpisode.episodeNumber} →
-                    </Link>
-                  )}
-                </div>
-              </nav>
 
-              {/* Action Buttons (Like/Dislike/Views) */}
-              <Suspense fallback={<LoadingButtons />}>  
-                <ActionButtons
-                  episodeId={episode.episodeId}
-                  animeId={episode.animeId._id.toString()}
-                  initialLikes={episode.likes || 0}
-                  initialDislikes={episode.dislikes || 0}
-                  views={episode.views || 0}
-                  nume={episode.name || 'Untitled'}
-                />
-              </Suspense>
-            </div>
+                {/* Stats & Actions */}
+                <Suspense fallback={<LoadingButtons />}>  
+                  <ActionButtons
+                    episodeId={episode.episodeId}
+                    animeId={episode.animeId._id.toString()}
+                    initialLikes={episode.likes || 0}
+                    initialDislikes={episode.dislikes || 0}
+                    views={episode.views || 0}
+                    nume={episode.name || 'Untitled'}
+                  />
+                </Suspense>
+              </div>
 
-            {/* Episodes List */}
-            <div className="rounded-2xl bg-gradient-to-br from-background-secondary/80 to-background-tertiary/80 border border-primary-500/20 shadow-lg p-4 md:p-6 w-full">
-              <Suspense fallback={<LoadingEpisodes />}>
-                <EpisodePaginationWrapper
-                  episodes={serializedEpisodes}
-                  currentEpisodeId={episode.episodeId}
-                />
-              </Suspense>
-            </div>
-
-            {/* Media Info */}
-            <div className="rounded-2xl bg-gradient-to-br from-background-secondary/80 to-background-tertiary/80 border border-primary-500/20 shadow-lg p-4 md:p-6 w-full">
-              <Suspense fallback={<LoadingInfo />}>
-                <MediaInfo media={{
-                  title: mediaData.title,
-                  alternativeTitles: mediaData.alternativeTitles,
-                  synopsis: mediaData.synopsis,
-                  posterPath: mediaData.posterPath,
-                  genres: mediaData.genres,
-                  creator: mediaData.creator,
-                  releaseDate: mediaData.releaseDate,
-                  uploadDate: mediaData.uploadDate,
-                  censorship: mediaData.censorship,
-                  traducator: mediaData.traducator || 'Unknown',
-                  encoder: mediaData.encoder || 'Unknown',
-                  verificator: mediaData.verificator || 'Unknown',
-                  animeId: episode.animeId._id.toString(),
-                  status: (episode.animeId.status || '').toLowerCase()
-                }} />
-              </Suspense>
-            </div>
-
-            {/* Comments Section */}
-            <div className="rounded-2xl bg-gradient-to-br from-background-secondary/80 to-background-tertiary/80 border border-primary-500/20 shadow-lg p-4 md:p-6 w-full">
-              <Suspense fallback={<LoadingComments />}>
-                <DisqusDiscussionEmbed
-                  identifier={episode.episodeId}
-                  title={episodeTitle}
-                />
-              </Suspense>
-            </div>
-
-            {/* FAQ Section */}
-            <FAQ 
-              title="Întrebări Frecvente - Vizionare"
-              items={watchPageFAQ}
-            />
-
-            {/* Navigation Links */}
-            <AdditionalNavigation 
-              title="Navigare Rapidă"
-              links={mainNavigationLinks}
-            />
-          </div>
-
-          {/* Recommended Anime Section */}
-          {recommendedAnime.length > 0 && (
-            <div className="w-full max-w-8xl mt-8 rounded-2xl bg-gradient-to-br from-background-secondary/80 to-background-tertiary/80 border border-primary-500/20 shadow-lg p-4 md:p-6">
-              <h2 className="text-2xl font-bold mb-4 text-text-primary">Serii Recomandate</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {recommendedAnime.slice(0, 6).map((anime: any) => (
-                  <a 
-                    key={anime._id} 
-                    href={`/hentai/${anime._id}`}
-                    className="block group hover:opacity-90 transition-all duration-300"
-                  >
-                    <div className="relative pb-[140%] overflow-hidden rounded-lg bg-dark-300 shadow-lg transform group-hover:scale-105 transition-transform duration-300">
-                      <Image 
-                        src={anime.poster || "/default-thumbnail.jpg"} 
-                        alt={anime.name}
-                        className="absolute inset-0 w-full h-full object-cover"
-                        loading="lazy"
-                        fill
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="absolute bottom-0 left-0 right-0 p-3 text-text-primary">
-                          <p className="text-sm font-medium truncate">{anime.name}</p>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-text-secondary">
-                            <span>{anime.episodeCount} episoade</span>
-                            <span>•</span>
-                            <span>{(anime.totalViews || 0).toLocaleString()} vizualizări</span>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {anime.genres.slice(0, 2).map((genre: any) => (
-                              <span 
-                                key={genre._id}
-                                className="text-xs px-1.5 py-0.5 bg-text-primary/20 rounded-full"
-                              >
-                                {genre.name}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                ))}
+              {/* Episodes Side List */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/5 overflow-hidden flex flex-col h-[400px] lg:h-auto lg:max-h-[calc(100vh-200px)]">
+                <Suspense fallback={<LoadingEpisodes />}>
+                  <EpisodePaginationWrapper
+                    episodes={serializedEpisodes}
+                    currentEpisodeId={episode.episodeId}
+                    pageSize={50} // Show more in the side list
+                  />
+                </Suspense>
               </div>
             </div>
-          )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
+              {/* Main Content (Bottom) */}
+              <div className="space-y-8">
+              {/* Media Info */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/5 flex flex-col">
+                <Suspense fallback={<LoadingInfo />}>
+                  <MediaInfo media={mediaData} />
+                </Suspense>
+              </div>
+
+              {/* Comments */}
+              <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-primary-500 rounded-full"></span>
+                  Comments
+                </h3>
+                <Suspense fallback={<LoadingComments />}>
+                  <DisqusDiscussionEmbed
+                    identifier={episode.episodeId}
+                    title={episodeTitle}
+                  />
+                </Suspense>
+              </div>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-8">
+                {/* Recommended */}
+                {recommendedAnime.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <span className="w-1.5 h-5 bg-primary-500 rounded-full"></span>
+                      Recommended
+                    </h3>
+                    <div className="flex flex-col gap-4">
+                      {recommendedAnime.slice(0, 5).map((anime: any) => (
+                        <Link 
+                          key={anime._id} 
+                          href={`/hentai/${anime._id}`}
+                          className="flex gap-3 group"
+                        >
+                          <div className="relative w-20 aspect-[2/3] flex-shrink-0 rounded-lg overflow-hidden ring-1 ring-white/5">
+                            <Image 
+                              src={anime.poster || "/default-thumbnail.jpg"} 
+                              alt={anime.name}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              sizes="80px"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-center min-w-0">
+                            <h4 className="text-sm font-bold text-gray-200 group-hover:text-primary-400 transition-colors line-clamp-2 leading-tight mb-1">
+                              {anime.name}
+                            </h4>
+                            <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold uppercase tracking-wider">
+                              <span>{anime.episodeCount} EP</span>
+                              <span>•</span>
+                              <span>{anime.totalViews?.toLocaleString()} VIEWS</span>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   } catch (error) {
-    // Log errors but don't expose them to users
-    // console.log('Error in WatchPage:', error);
+    console.error('Error in WatchPage:', error);
     notFound();
   }
 }
