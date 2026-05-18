@@ -4,6 +4,7 @@ import MediaGrid from "@/components/ui/media-grid-anime";
 import Pagination from "@/components/ui/pagination";
 import { Metadata } from 'next';
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Caută după Gen și Popularitate`,
@@ -62,8 +63,62 @@ export default async function FilterPage({ searchParams }: any) {
                 .filter(([_, value]) => Boolean(value))
         );
 
+        const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+        const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+        const pageUrl = `${siteUrl}/filter`;
+
+        const filterSchema = {
+            "@context": "https://schema.org",
+            "@type": "SearchResultsPage",
+            "name": `Filtrează Hentai | ${siteName}`,
+            "description": `Rezultatele filtrării avansate pe ${siteName}. Am găsit ${totalCount} serii.`,
+            "url": pageUrl,
+            "mainEntity": {
+                "@type": "ItemList",
+                "numberOfItems": totalCount,
+                "itemListElement": serializedData.animes.slice(0, 10).map((anime: any, idx: number) => ({
+                    "@type": "ListItem",
+                    "position": idx + 1,
+                    "url": `${siteUrl}/hentai/${anime.id}`,
+                    "name": anime.name
+                }))
+            }
+        };
+
+        const breadcrumbSchema = {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Acasă",
+                    "item": siteUrl
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Filtru",
+                    "item": pageUrl
+                }
+            ]
+        };
+
         return (
-            <div className="container mx-auto py-8">
+            <>
+                <Script
+                    id="filter-structured-data"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(filterSchema) }}
+                    strategy="afterInteractive"
+                />
+                <Script
+                    id="filter-breadcrumb-structured-data"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+                    strategy="afterInteractive"
+                />
+                <div className="container mx-auto py-8">
                 <FilterOptions
                     allGenres={serializedData.genres}
                     selectedGenres={genreList}
@@ -97,6 +152,7 @@ export default async function FilterPage({ searchParams }: any) {
                     </div>
                 )}
             </div>
+            </>
         );
     } catch (error) {
         await logToDiscordWebhook(`Filter page error: ${error}`);

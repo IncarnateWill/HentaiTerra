@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FaDiscord, FaTwitter, FaInstagram, FaYoutube, FaTwitch, FaUsers, FaStar } from 'react-icons/fa';
 import { HiSparkles } from 'react-icons/hi';
+import Script from 'next/script';
 
 export const dynamic = 'force-dynamic';
 // Caching disabled for Cloudflare conflict diagnosis
@@ -11,6 +12,23 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
     title: `Echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} - Staff și Contributori`,
     description: `Cunoaște echipa din spatele ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}. Traducători, encoderi, și staff-ul care face totul posibil.`,
+    alternates: {
+        canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/staff`
+    },
+    openGraph: {
+        title: `Echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} - Staff și Contributori`,
+        description: `Cunoaște echipa din spatele ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}. Traducători, encoderi, și staff-ul care face totul posibil.`,
+        url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/staff`,
+        type: 'profile',
+        images: [
+            {
+                url: process.env.NEXT_PUBLIC_OG_IMAGE || 'https://images2.alphacoders.com/913/913209.jpg',
+                width: 1200,
+                height: 630,
+                alt: `Echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}`
+            }
+        ]
+    }
 };
 
 interface StaffMember {
@@ -107,8 +125,67 @@ export default async function StaffPage() {
         return acc;
     }, {} as Record<string, StaffMember[]>);
 
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const pageUrl = `${siteUrl}/staff`;
+
+    const staffListSchema = {
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": `Echipa ${siteName} - Staff și Contributori`,
+        "description": `Cunoaște echipa din spatele ${siteName}. Traducători, encoderi, și staff-ul care face totul posibil.`,
+        "url": pageUrl,
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": staffMembers.length,
+            "itemListElement": staffMembers.map((member, idx) => ({
+                "@type": "ListItem",
+                "position": idx + 1,
+                "item": {
+                    "@type": "Person",
+                    "name": member.username || 'Staff Member',
+                    "image": member.imageUrl || `${siteUrl}/favicon.ico`,
+                    "jobTitle": member.roles ? member.roles.map(r => getRoleDisplayName(r)).join(', ') : 'Contributor',
+                    "description": member.bio || `Membru al echipei ${siteName}`
+                }
+            }))
+        }
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Acasă",
+                "item": siteUrl
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Echipa",
+                "item": pageUrl
+            }
+        ]
+    };
+
     return (
-        <div className="min-h-screen">
+        <>
+            <Script
+                id="staff-structured-data"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(staffListSchema) }}
+                strategy="afterInteractive"
+            />
+            <Script
+                id="staff-breadcrumb-structured-data"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+                strategy="afterInteractive"
+            />
+            <div className="min-h-screen">
             {/* Hero Section */}
             <div className="relative overflow-hidden">
                 <div className="absolute inset-0 pointer-events-none" />
@@ -339,5 +416,6 @@ export default async function StaffPage() {
                 </div>
             </div>
         </div>
+        </>
     );
 }

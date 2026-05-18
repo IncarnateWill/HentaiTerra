@@ -1,5 +1,14 @@
 import Link from "next/link";
 import { FaLock } from "react-icons/fa";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Forbidden - 403 Access Denied',
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function ForbiddenPage() {
   return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: `DMCA Statement | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Declarație DMCA`,
@@ -20,8 +21,58 @@ export const metadata: Metadata = {
 };
 
 const DMCAAdvancedStatement: React.FC = () => {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const pageUrl = `${siteUrl}/dmca`;
+
+  const dmcaSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": `DMCA Statement | ${siteName}`,
+    "description": `Declarația DMCA pentru ${siteName}. Informații despre drepturile de autor și procedura de notificare pentru încălcarea proprietății intelectuale.`,
+    "url": pageUrl,
+    "mainEntity": {
+      "@type": "WebPage",
+      "name": "DMCA Copyright Infringement Policy",
+      "url": pageUrl,
+      "description": "Procedura de notificare și detalii despre respectarea drepturilor de autor pe site."
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Acasă",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "DMCA",
+        "item": pageUrl
+      }
+    ]
+  };
+
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', lineHeight: '1.8', maxWidth: '800px', margin: '0 auto' }}>
+    <>
+      <Script
+        id="dmca-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(dmcaSchema) }}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="dmca-breadcrumb-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        strategy="afterInteractive"
+      />
+      <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', lineHeight: '1.8', maxWidth: '800px', margin: '0 auto' }}>
       <h1 style={{ textAlign: 'center' }}>DMCA Statement / Declarație DMCA</h1>
       
       <section style={{ marginBottom: '40px' }}>
@@ -52,6 +103,7 @@ const DMCAAdvancedStatement: React.FC = () => {
         </p>
       </section>
     </div>
+    </>
   );
 };
 

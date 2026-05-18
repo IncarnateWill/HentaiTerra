@@ -5,13 +5,27 @@ import Link from 'next/link';
 import { WatchlistClient } from "@/components/ui/WatchListClient";
 import { Suspense } from 'react';
 import { logToDiscordWebhook } from '@/lib/discord-webhook';
+import Script from 'next/script';
 
 // Caching disabled for Cloudflare conflict diagnosis
 // export const revalidate = 0;
 
 export const metadata = {
-  title: 'My Watchlist - HentaiUnited',
-  description: 'Manage your hentai watchlist on HentaiUnited',
+  title: 'Watchlist-ul Meu - HentaiUnited',
+  description: 'Gestionează watchlist-ul tău de hentai pe HentaiUnited. Urmărește seriile începute, plănuite sau finalizate.',
+  alternates: {
+    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/watchlist`
+  },
+  openGraph: {
+    title: 'Watchlist-ul Meu - HentaiUnited',
+    description: 'Gestionează watchlist-ul tău de hentai pe HentaiUnited.',
+    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/watchlist`,
+    type: 'website'
+  },
+  robots: {
+    index: false,
+    follow: false
+  }
 };
 
 // Enhanced types with better type safety
@@ -257,15 +271,66 @@ const WatchlistLoading = () => (
 );
 
 export default async function WatchlistPage() {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const pageUrl = `${siteUrl}/watchlist`;
+
+  const watchlistSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": `Watchlist-ul Meu | ${siteName}`,
+    "description": `Gestionează watchlist-ul tău de hentai pe ${siteName}.`,
+    "url": pageUrl
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Acasă",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Watchlist",
+        "item": pageUrl
+      }
+    ]
+  };
+
+  const scriptsBlock = (
+    <>
+      <Script
+        id="watchlist-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(watchlistSchema) }}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="watchlist-breadcrumb-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        strategy="afterInteractive"
+      />
+    </>
+  );
+
   // Authentication check with better error handling
   const { userId } = await auth();
   if (!userId) {
     return (
-      <ErrorCard 
-        title="Authentication Required"
-        message="Please sign in to access your watchlist and track your hentai progress."
-        showHomeLink
-      />
+      <>
+        {scriptsBlock}
+        <ErrorCard 
+          title="Authentication Required"
+          message="Please sign in to access your watchlist and track your hentai progress."
+          showHomeLink
+        />
+      </>
     );
   }
 
@@ -277,11 +342,14 @@ export default async function WatchlistPage() {
 
     if (!user) {
       return (
-        <ErrorCard 
-          title="Profile Not Found"
-          message='Unable to load your profile. Please contact "incarnatewill" on Discord for assistance.'
-          showHomeLink
-        />
+        <>
+          {scriptsBlock}
+          <ErrorCard 
+            title="Profile Not Found"
+            message='Unable to load your profile. Please contact "incarnatewill" on Discord for assistance.'
+            showHomeLink
+          />
+        </>
       );
     }
 
@@ -308,32 +376,43 @@ export default async function WatchlistPage() {
     
     const totalAnimes = watchlist.animes?.length || 0;
     if (totalAnimes === 0) {
-      return <EmptyWatchlist />;
+      return (
+        <>
+          {scriptsBlock}
+          <EmptyWatchlist />
+        </>
+      );
     }
 
     const animesByStatus = groupAnimesByStatus(watchlist.animes!);      
     
     return (
-      <Suspense fallback={<WatchlistLoading />}>
-        <WatchlistClient 
-          animesByStatus={animesByStatus}
-          statusConfig={STATUS_CONFIG}
-          statusOrder={STATUS_ORDER}
-          totalAnimes={totalAnimes}
-          userId={userIdString}
-          stats={watchlistStats}
-        />
-      </Suspense>
+      <>
+        {scriptsBlock}
+        <Suspense fallback={<WatchlistLoading />}>
+          <WatchlistClient 
+            animesByStatus={animesByStatus}
+            statusConfig={STATUS_CONFIG}
+            statusOrder={STATUS_ORDER}
+            totalAnimes={totalAnimes}
+            userId={userIdString}
+            stats={watchlistStats}
+          />
+        </Suspense>
+      </>
     );
   } catch (error) {
     await logToDiscordWebhook(`Error in WatchlistPage: ${error}`);
     return (
-      <ErrorCard 
-        title="Something Went Wrong"
-        message="We encountered an error while loading your watchlist. Please try again later."
-        showHomeLink
-        showRetry
-      />
+      <>
+        {scriptsBlock}
+        <ErrorCard 
+          title="Something Went Wrong"
+          message="We encountered an error while loading your watchlist. Please try again later."
+          showHomeLink
+          showRetry
+        />
+      </>
     );
   }
 }

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import Head from 'next/head';
 import { motion } from 'framer-motion';
 import { useUser } from '@clerk/nextjs';
 import { logToDiscordWebhook } from '@/lib/discord-webhook';
@@ -105,14 +104,6 @@ const RecruitPage = () => {
 
     return (
         <>
-            <Head>
-                <title>Alătură-te Echipei {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')} | Recrutări pentru Traducători și Editori</title>
-                <meta name="description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! Căutăm traducători și editori pasionați de hentai. Aplică acum pentru a contribui la comunitatea hentai din România.`} />
-                <meta name="keywords" content={`${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}, recrutare, traducători hentai, editori hentai, comunitate hentai, România`} />
-                <meta property="og:title" content={`Alătură-te Echipei ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}`} />
-                <meta property="og:description" content={`Devino parte din echipa ${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! Aplică acum pentru rolurile disponibile.`} />
-            </Head>
-
             <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

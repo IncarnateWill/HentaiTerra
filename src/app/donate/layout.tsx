@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: `Donații | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Susține Comunitatea Hentai`,
@@ -30,5 +31,60 @@ export default function DonateLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const pageUrl = `${siteUrl}/donate`;
+
+  const donateSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": `Donații | ${siteName}`,
+    "description": `Ajută-ne să menținem ${siteName} și să continuăm să oferim conținut de calitate. Donațiile tale susțin direct dezvoltarea platformei și comunitatea hentai din România.`,
+    "url": pageUrl,
+    "potentialAction": {
+      "@type": "DonateAction",
+      "recipient": {
+        "@type": "Organization",
+        "name": siteName,
+        "url": siteUrl
+      }
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Acasă",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Donații",
+        "item": pageUrl
+      }
+    ]
+  };
+
+  return (
+    <>
+      <Script
+        id="donate-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(donateSchema) }}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="donate-breadcrumb-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        strategy="afterInteractive"
+      />
+      {children}
+    </>
+  );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: `Contact | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Contactați-ne`,
@@ -20,8 +21,58 @@ export const metadata: Metadata = {
 };
 
 const ContactUsPage: React.FC = () => {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const pageUrl = `${siteUrl}/contact`;
+
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": `Contact | ${siteName}`,
+    "description": `Contactați echipa ${siteName} pentru întrebări, sugestii sau notificări legale.`,
+    "url": pageUrl,
+    "mainEntity": {
+      "@type": "Organization",
+      "name": siteName,
+      "url": siteUrl,
+      "email": `contact@${siteName.toLowerCase()}.ro`
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Acasă",
+        "item": siteUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Contact",
+        "item": pageUrl
+      }
+    ]
+  };
+
   return (
-    <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', lineHeight: '1.8', maxWidth: '800px', margin: '0 auto' }}>
+    <>
+      <Script
+        id="contact-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactSchema) }}
+        strategy="afterInteractive"
+      />
+      <Script
+        id="contact-breadcrumb-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        strategy="afterInteractive"
+      />
+      <div style={{ padding: '40px', fontFamily: 'Arial, sans-serif', lineHeight: '1.8', maxWidth: '800px', margin: '0 auto' }}>
       <h1 style={{ textAlign: 'center' }}>Contact Us / Contactați-ne</h1>
       
       <section style={{ marginBottom: '40px' }}>
@@ -65,6 +116,7 @@ const ContactUsPage: React.FC = () => {
         </p>
       </section>
     </div>
+    </>
   );
 };
 

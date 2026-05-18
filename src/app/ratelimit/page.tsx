@@ -1,6 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { HiExclamationCircle } from 'react-icons/hi';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Too Many Requests - Rate Limited',
+  robots: {
+    index: false,
+    follow: false
+  }
+};
 
 export default function RateLimitPage() {
   return (

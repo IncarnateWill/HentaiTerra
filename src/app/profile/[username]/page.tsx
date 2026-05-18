@@ -5,6 +5,7 @@ import ProfileClient from "../ProfileClient";
 import { Metadata } from "next";
 import Image from "next/image";
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
+import Script from "next/script";
 
 
 // Import icons
@@ -192,8 +193,68 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         .replace(/'/g, '&#039;');
     };
     
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const pageUrl = `${siteUrl}/profile/${sanitizedUsername}`;
+
+    const profileSchema = {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "name": `Profilul lui ${plainUser.username} | ${siteName}`,
+      "description": plainUser.bio || `Profilul public al utilizatorului ${plainUser.username} pe ${siteName}.`,
+      "url": pageUrl,
+      "mainEntity": {
+        "@type": "Person",
+        "name": plainUser.username,
+        "image": plainUser.imageUrl || `${siteUrl}/favicon.ico`,
+        "jobTitle": plainUser.role || 'User',
+        "knowsAbout": "Anime & Hentai"
+      }
+    };
+
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Acasă",
+          "item": siteUrl
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Profil",
+          "item": pageUrl
+        }
+      ]
+    };
+
+    const scriptsBlock = (
+      <>
+        <Script
+          id={`profile-${plainUser.username}-structured-data`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(profileSchema) }}
+          strategy="afterInteractive"
+        />
+        <Script
+          id={`profile-${plainUser.username}-breadcrumb`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+          strategy="afterInteractive"
+        />
+      </>
+    );
+
     if (isOwner) {
-      return <ProfileClient user={plainUser} heading={plainUser.username} economyData={economyData} />;
+      return (
+        <>
+          {scriptsBlock}
+          <ProfileClient user={plainUser} heading={plainUser.username} economyData={economyData} />
+        </>
+      );
     }
     
     const rank = economyData.rank;
@@ -202,7 +263,9 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
     // Enhanced public profile view - updated to match the preview UI
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <>
+        {scriptsBlock}
+        <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="bg-gradient-to-b from-[#1E1A2E] to-[#272336] rounded-xl shadow-lg overflow-hidden">
           {/* Profile header with gradient background */}
           <div className="bg-gradient-to-r from-purple-900/30 to-indigo-900/30 p-6">
@@ -389,6 +452,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
           </div>
         </div>
       </div>
+      </>
     );
   } catch (error) {
     await logToDiscordWebhook(`Error loading profile page: ${error}`);
