@@ -112,7 +112,7 @@ export default function AnimeWithEpisodesPage() {
           </div>
 
           {/* Search Bar */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
             <div className="flex flex-col sm:flex-row gap-4 items-center">
               <div className="relative flex-1 max-w-md">
                 <input
@@ -130,7 +130,7 @@ export default function AnimeWithEpisodesPage() {
           </div>
 
           {/* Anime Grid */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+          <div className="bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
             {loading ? (
               <div className="p-12 text-center">
                 <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -163,7 +163,7 @@ export default function AnimeWithEpisodesPage() {
                     {animes.map(anime => (
                       <div
                         key={anime._id}
-                        className="bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-2xl border border-slate-600/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group"
+                        className="bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-700/50 hover:border-blue-500/40 shadow-lg hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-1 group"
                       >
                         <div className="p-4 space-y-4">
                           {/* Poster */}

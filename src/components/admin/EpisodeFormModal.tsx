@@ -168,8 +168,9 @@ export default function EpisodeFormModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 p-4">
-      <div className="bg-neutral-900 p-6 rounded-xl border border-purple-500/30 min-w-[340px] max-w-full w-full sm:w-[800px] max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
+        <div className="bg-slate-900/90 backdrop-blur-2xl p-6 rounded-xl border border-slate-700/50 shadow-2xl min-w-[340px] max-w-full w-full sm:w-[800px] relative">
         <button
           type="button"
           className="absolute top-4 right-4 text-gray-400 hover:text-red-400 text-2xl font-bold focus:outline-none transition-colors"
@@ -186,7 +187,7 @@ export default function EpisodeFormModal({
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-neutral-800/50 p-4 rounded-lg border border-neutral-700/50">
+          <div className="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50">
             <h3 className="text-lg font-semibold mb-4 text-purple-300">Basic Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -194,7 +195,7 @@ export default function EpisodeFormModal({
                 <input
                   type="text"
                   name="name"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-purple-500 transition-colors"
                   value={form.name}
                   onChange={handleFormChange}
                   required
@@ -207,7 +208,7 @@ export default function EpisodeFormModal({
                 <input
                   type="number"
                   name="episodeNumber"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-purple-500 transition-colors"
                   value={form.episodeNumber}
                   onChange={handleFormChange}
                   min={1}
@@ -221,7 +222,7 @@ export default function EpisodeFormModal({
                 <input
                   type="text"
                   name="duration"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-purple-500 transition-colors"
                   value={form.duration}
                   onChange={handleFormChange}
                   placeholder="e.g., 24:30"
@@ -231,7 +232,7 @@ export default function EpisodeFormModal({
           </div>
 
           {/* Media URLs */}
-          <div className="bg-neutral-800/50 p-4 rounded-lg border border-neutral-700/50">
+          <div className="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50">
             <h3 className="text-lg font-semibold mb-4 text-blue-300">Media URLs</h3>
             <div className="space-y-4">
               <div>
@@ -239,7 +240,7 @@ export default function EpisodeFormModal({
                 <input
                   type="url"
                   name="thumbnail"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
                   value={form.thumbnail}
                   onChange={handleFormChange}
                   placeholder="https://example.com/thumbnail.jpg"
@@ -251,7 +252,7 @@ export default function EpisodeFormModal({
                 <input
                   type="url"
                   name="videoUrl"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
                   value={form.videoUrl}
                   onChange={handleFormChange}
                   required
@@ -265,7 +266,7 @@ export default function EpisodeFormModal({
                   <input
                     type="url"
                     name="videoUrlBackup"
-                    className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
                     value={form.videoUrlBackup}
                     onChange={handleFormChange}
                     placeholder="Backup video URL"
@@ -277,7 +278,7 @@ export default function EpisodeFormModal({
                   <input
                     type="url"
                     name="videoUrlBackup2"
-                    className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
                     value={form.videoUrlBackup2}
                     onChange={handleFormChange}
                     placeholder="Backup video URL"
@@ -289,7 +290,7 @@ export default function EpisodeFormModal({
                   <input
                     type="url"
                     name="videoUrlBackup3"
-                    className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-blue-500 transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
                     value={form.videoUrlBackup3}
                     onChange={handleFormChange}
                     placeholder="Backup video URL"
@@ -300,14 +301,14 @@ export default function EpisodeFormModal({
           </div>
 
           {/* Team Assignment */}
-          <div className="bg-neutral-800/50 p-4 rounded-lg border border-neutral-700/50">
+          <div className="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50">
             <h3 className="text-lg font-semibold mb-4 text-green-300">Team Assignment</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-300">Verificator</label>
                 <select
                   name="verificator"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
                   value={userOptions.verificator.some(u => u.username === form.verificator) ? form.verificator : ""}
                   onChange={handleFormChange}
                 >
@@ -319,7 +320,7 @@ export default function EpisodeFormModal({
                 <input
                   type="text"
                   name="verificator"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="Or type a name..."
                   value={userOptions.verificator.some(u => u.username === form.verificator) ? "" : (form.verificator || "")}
                   onChange={handleFormChange}
@@ -339,7 +340,7 @@ export default function EpisodeFormModal({
                 <label className="block text-sm font-medium mb-2 text-gray-300">Encoder</label>
                 <select
                   name="encoder"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
                   value={userOptions.encoder.some(u => u.username === form.encoder) ? form.encoder : ""}
                   onChange={handleFormChange}
                 >
@@ -351,7 +352,7 @@ export default function EpisodeFormModal({
                 <input
                   type="text"
                   name="encoder"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="Or type a name..."
                   value={userOptions.encoder.some(u => u.username === form.encoder) ? "" : (form.encoder || "")}
                   onChange={handleFormChange}
@@ -371,7 +372,7 @@ export default function EpisodeFormModal({
                 <label className="block text-sm font-medium mb-2 text-gray-300">Traducator</label>
                 <select
                   name="traducator"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors mb-2"
                   value={userOptions.traducator.some(u => u.username === form.traducator) ? form.traducator : ""}
                   onChange={handleFormChange}
                 >
@@ -383,7 +384,7 @@ export default function EpisodeFormModal({
                 <input
                   type="text"
                   name="traducator"
-                  className="w-full px-3 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-green-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-green-500 transition-colors"
                   placeholder="Or type a name..."
                   value={userOptions.traducator.some(u => u.username === form.traducator) ? "" : (form.traducator || "")}
                   onChange={handleFormChange}
@@ -427,6 +428,7 @@ export default function EpisodeFormModal({
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>
   );

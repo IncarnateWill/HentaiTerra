@@ -9,6 +9,7 @@ import Image from "next/image";
 import EpisodePaginationWrapper from "@/components/video/EpisodePaginationWrapper";
 import { watchPageFAQ } from "@/components/shared/FAQ";
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
+import WatchPointsTracker from "@/components/video/WatchPointsTracker";
 
 export const revalidate = 60;
 
@@ -64,6 +65,8 @@ const AutoWatchMarker = dynamic(() => import("@/components/video/auto-watch-mark
   loading: () => <LoadingButtons />,
   ssr: true
 });
+
+
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -171,14 +174,14 @@ function serializeEpisode(episode: any) {
 function generateKeywords(episode: Episode): string[] {
   const episodeTitle = `${episode.animeId.name} - Episodul ${episode.episodeNumber} - ${episode.name}`;
   const altTitles = episode.animeId.alternativeTitles || [];
-  
+
   return [
     episodeTitle,
     ...altTitles.slice(1, 4),
     `${episode.animeId.name} episodul ${episode.episodeNumber}`,
     // Generate variations with different suffixes
-    ...['online', 'rosub', 'subtitrat'].flatMap(suffix => 
-      altTitles.slice(0, 3).map(title => 
+    ...['online', 'rosub', 'subtitrat'].flatMap(suffix =>
+      altTitles.slice(0, 3).map(title =>
         `${title || ''} episodul ${episode.episodeNumber || 1} ${suffix}`
       )
     ),
@@ -192,7 +195,7 @@ function generateKeywords(episode: Episode): string[] {
     // Generic hentai keywords
     "hentai rosub",
     "hentai online românia",
-    "hentai hd gratis", 
+    "hentai hd gratis",
     "hentai episoade noi",
     "hentai subtitrat ro"
   ];
@@ -220,39 +223,39 @@ function resolveThumbnailUrl(thumbnail: string, posterPath: string, siteUrl: str
  */
 function formatDuration(duration?: string | number): string | undefined {
   if (!duration) return undefined;
-  
+
   // If duration is a number, treat it as seconds
   if (typeof duration === 'number') {
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
     return `PT${minutes}M${seconds}S`;
   }
-  
+
   // If duration is a string, parse it
   if (typeof duration === 'string') {
     // Match patterns like '24m', '1h 30m', '90m', etc.
     const hourMatch = duration.match(/(\d+)h/);
     const minuteMatch = duration.match(/(\d+)m/);
     const secondMatch = duration.match(/(\d+)s/);
-    
+
     const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
     const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
     const seconds = secondMatch ? parseInt(secondMatch[1]) : 0;
-    
+
     // Convert everything to total minutes and seconds
     const totalMinutes = (hours * 60) + minutes;
     const totalSeconds = seconds;
-    
+
     if (totalMinutes === 0 && totalSeconds === 0) return undefined;
-    
+
     // Build ISO 8601 duration string
     let result = 'PT';
     if (totalMinutes > 0) result += `${totalMinutes}M`;
     if (totalSeconds > 0) result += `${totalSeconds}S`;
-    
+
     return result;
   }
-  
+
   return undefined;
 }
 
@@ -387,7 +390,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { mediaId } = await params;
-    
+
     // Validate mediaId
     if (!validateMediaId(mediaId)) {
       return {
@@ -435,8 +438,8 @@ export async function generateMetadata({
         }],
         ...(episode.duration && { duration: episode.duration }),
         ...(episode.releaseDate && { releaseDate: episode.releaseDate }),
-        ...(episode.genres?.length && { 
-          tags: episode.genres.map((genre: Genre) => genre.name) 
+        ...(episode.genres?.length && {
+          tags: episode.genres.map((genre: Genre) => genre.name)
         }),
       },
       twitter: {
@@ -472,7 +475,7 @@ export async function generateMetadata({
         "og:video:series": episode.animeId.name,
         "og:video:episode": episode.episodeNumber.toString(),
         ...(episode.releaseDate && { "og:video:release_date": episode.releaseDate }),
-        ...(episode.animeId.studio && { 
+        ...(episode.animeId.studio && {
           "og:video:actor": episode.animeId.studio,
           "og:video:director": episode.animeId.studio,
         }),
@@ -501,8 +504,8 @@ function prepareMediaData(episode: Episode) {
     alternativeTitles: episode.animeId.alternativeTitles || [],
     synopsis: episode.animeId.description || 'No description available',
     posterPath: episode.animeId.poster || '',
-    genres: (episode.genres || []).map((genre: any) => ({ 
-      name: genre.name || 'Unknown', 
+    genres: (episode.genres || []).map((genre: any) => ({
+      name: genre.name || 'Unknown',
       _id: genre._id ? genre._id.toString() : ''
     })),
     creator: episode.animeId.studio || 'Unknown Studio',
@@ -525,11 +528,11 @@ function prepareMediaData(episode: Episode) {
 function getAdjacentEpisodes(episodes: Episode[], currentEpisodeId: string) {
   const sortedEpisodes = [...episodes].sort((a, b) => a.episodeNumber - b.episodeNumber);
   const currentIndex = sortedEpisodes.findIndex(ep => ep.episodeId === currentEpisodeId);
-  
+
   if (currentIndex === -1) {
     return { sortedEpisodes, currentIndex, nextEpisode: null, previousEpisode: null };
   }
-  
+
   return {
     sortedEpisodes,
     currentIndex,
@@ -549,7 +552,7 @@ export default async function WatchPage({
 }) {
   try {
     const { mediaId } = await params;
-    
+
     // Validate mediaId
     if (!validateMediaId(mediaId)) {
       notFound();
@@ -571,7 +574,7 @@ export default async function WatchPage({
       console.error(`[WatchPage] Episode not found for mediaId: ${mediaId}`);
       notFound();
     }
-    
+
     if (!validateEpisode(episode)) {
       console.error(`[WatchPage] Episode validation failed for mediaId: ${mediaId}`, {
         hasEpisodeId: !!episode.episodeId,
@@ -605,9 +608,9 @@ export default async function WatchPage({
     }
 
     // Get adjacent episodes
-    let { sortedEpisodes, currentIndex, nextEpisode, previousEpisode } = 
+    let { sortedEpisodes, currentIndex, nextEpisode, previousEpisode } =
       getAdjacentEpisodes(episodes.length > 0 ? episodes : [episode], episode.episodeId);
-    
+
     if (currentIndex === -1) {
       console.warn(`[WatchPage] Current episode not found in episodes array for mediaId: ${mediaId}. Falling back to single episode list.`);
       sortedEpisodes = [episode];
@@ -648,7 +651,7 @@ export default async function WatchPage({
           <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
           <meta httpEquiv="content-language" content="ro" />
           <link rel="canonical" href={`${siteUrl}/watch/${episode.episodeId}`} />
-          
+
           {/* Structured Data */}
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
           <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
@@ -668,8 +671,8 @@ export default async function WatchPage({
           <div className="flex flex-col gap-8">
             {/* Top Section: Player and Episodes side-by-side */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-              <div className="space-y-4">
-                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/5">
+              <div className="space-y-6">
+                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(var(--color-primary-500),0.15)] ring-1 ring-white/10">
                   <Suspense fallback={<LoadingVideo />}>
                     <VideoPlayer
                       episodeId={episode.episodeId}
@@ -685,17 +688,19 @@ export default async function WatchPage({
                       thumbnailUrl={thumbnailUrl}
                     />
                   </Suspense>
-                  
+
                   <Suspense fallback={<LoadingButtons />}>
-                    <AutoWatchMarker 
+                    <AutoWatchMarker
                       episodeId={episode.episodeId}
                       animeId={episode.animeId._id.toString()}
                     />
                   </Suspense>
+                  
+                  <WatchPointsTracker episodeId={episode.episodeId} />
                 </div>
 
                 {/* Player Controls/Info */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white/5 p-4 rounded-xl border border-white/5">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-dark-400/50 backdrop-blur-xl p-5 rounded-2xl border border-white/5 shadow-xl">
                   <div className="flex items-center gap-4">
                     <div className="space-y-0.5">
                       <h2 className="text-lg font-bold text-white leading-tight">Episode {episode.episodeNumber}</h2>
@@ -736,7 +741,7 @@ export default async function WatchPage({
                 </div>
 
                 {/* Stats & Actions */}
-                <Suspense fallback={<LoadingButtons />}>  
+                <Suspense fallback={<LoadingButtons />}>
                   <ActionButtons
                     episodeId={episode.episodeId}
                     animeId={episode.animeId._id.toString()}
@@ -749,7 +754,7 @@ export default async function WatchPage({
               </div>
 
               {/* Episodes Side List */}
-              <div className="bg-white/5 rounded-2xl p-6 border border-white/5 overflow-hidden flex flex-col h-[400px] lg:h-auto lg:max-h-[calc(100vh-200px)]">
+              <div className="bg-dark-400/30 backdrop-blur-xl rounded-3xl p-6 border border-white/5 shadow-2xl ring-1 ring-white/5 overflow-hidden flex flex-col h-[400px] lg:h-auto lg:max-h-[calc(100vh-200px)]">
                 <Suspense fallback={<LoadingEpisodes />}>
                   <EpisodePaginationWrapper
                     episodes={serializedEpisodes}
@@ -763,26 +768,28 @@ export default async function WatchPage({
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
               {/* Main Content (Bottom) */}
               <div className="space-y-8">
-              {/* Media Info */}
-              <div className="bg-white/5 rounded-2xl p-6 border border-white/5 flex flex-col">
-                <Suspense fallback={<LoadingInfo />}>
-                  <MediaInfo media={mediaData} />
-                </Suspense>
-              </div>
+                {/* Media Info */}
+                <div className="bg-dark-400/30 backdrop-blur-xl rounded-3xl p-6 border border-white/5 shadow-2xl ring-1 ring-white/5 flex flex-col">
+                  <Suspense fallback={<LoadingInfo />}>
+                    <MediaInfo media={mediaData} />
+                  </Suspense>
+                </div>
 
-              {/* Comments */}
-              <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
-                <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-                  <span className="w-1.5 h-6 bg-primary-500 rounded-full"></span>
-                  Comments
-                </h3>
-                <Suspense fallback={<LoadingComments />}>
-                  <DisqusDiscussionEmbed
-                    identifier={episode.episodeId}
-                    title={episodeTitle}
-                  />
-                </Suspense>
-              </div>
+                {/* Comments */}
+                <div className="bg-dark-400/30 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/5 shadow-2xl ring-1 ring-white/5">
+                  <div className="flex items-center gap-3 mb-8">
+                    <div className="w-1.5 h-8 bg-gradient-to-b from-primary-400 to-primary-600 rounded-full shadow-[0_0_10px_rgba(var(--color-primary-500),0.5)]"></div>
+                    <h3 className="text-2xl font-black text-white tracking-tight">
+                      Comentarii
+                    </h3>
+                  </div>
+                  <Suspense fallback={<LoadingComments />}>
+                    <DisqusDiscussionEmbed
+                      identifier={episode.episodeId}
+                      title={episodeTitle}
+                    />
+                  </Suspense>
+                </div>
               </div>
 
               {/* Sidebar */}
@@ -796,14 +803,14 @@ export default async function WatchPage({
                     </h3>
                     <div className="flex flex-col gap-4">
                       {recommendedAnime.slice(0, 5).map((anime: any) => (
-                        <Link 
-                          key={anime._id} 
+                        <Link
+                          key={anime._id}
                           href={`/hentai/${anime._id}`}
                           className="flex gap-3 group"
                         >
                           <div className="relative w-20 aspect-[2/3] flex-shrink-0 rounded-lg overflow-hidden ring-1 ring-white/5">
-                            <Image 
-                              src={anime.poster || "/default-thumbnail.jpg"} 
+                            <Image
+                              src={anime.poster || "/default-thumbnail.jpg"}
                               alt={anime.name}
                               fill
                               className="object-cover transition-transform duration-500 group-hover:scale-110"

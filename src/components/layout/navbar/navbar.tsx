@@ -13,6 +13,8 @@ import { isFullAdmin, canManageContent } from "@/lib/admin-permissions";
 import { cn } from "@/components/ui";
 import { useDebounce } from "@/hooks/use-debounce";
 import Image from "next/image";
+import { Coins, Store, ShoppingBag } from "lucide-react";
+import { getUserPoints } from "@/actions/economy.actions";
 
 interface NavItem {
   name: string;
@@ -40,6 +42,7 @@ export default function Navbar() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isStaffOrAdmin, setIsStaffOrAdmin] = useState(false);
+  const [userPoints, setUserPoints] = useState(0);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -110,6 +113,24 @@ export default function Navbar() {
     setTimeout(fetchProfile, 500);
   }, [isSignedIn]);
 
+  // Fetch points & listen for updates
+  useEffect(() => {
+    if (!isSignedIn) return;
+    const fetchPoints = async () => {
+      const res = await getUserPoints();
+      if (res.points !== undefined) setUserPoints(res.points);
+    };
+    fetchPoints();
+
+    const handlePointsUpdate = (e: any) => {
+      if (e.detail?.points !== undefined) {
+        setUserPoints(e.detail.points);
+      }
+    };
+    window.addEventListener("points-updated", handlePointsUpdate);
+    return () => window.removeEventListener("points-updated", handlePointsUpdate);
+  }, [isSignedIn]);
+
   // Search functionality
   useEffect(() => {
     if (debouncedQuery.length < 2) { setSearchResults([]); return; }
@@ -164,6 +185,8 @@ export default function Navbar() {
     { name: "Acasă", href: "/home", icon: HiHome, ariaLabel: "Acasă" },
     { name: "Hentai", href: "/hentais", icon: HiFilm, ariaLabel: "Hentai" },
     { name: "Anime", href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro", icon: FaGhost, ariaLabel: "Anime", external: true },
+    { name: "Shop", href: "/shop", icon: ShoppingBag, ariaLabel: "Shop", requireAuth: true },
+    { name: "Marketplace", href: "/marketplace", icon: Store, ariaLabel: "Marketplace", requireAuth: true },
     { name: "Watchlist", href: "/watchlist", icon: HiHeart, ariaLabel: "Watchlist", requireAuth: true },
     { name: "Echipă", href: "/staff", icon: HiShieldCheck, ariaLabel: "Echipă" },
   ];
@@ -473,6 +496,10 @@ export default function Navbar() {
                       <HiShieldCheck className="w-3 h-3" /> Staff
                     </span>
                   )}
+                </Link>
+                <Link href="/points" className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer">
+                  <Coins size={14} />
+                  <span className="text-sm font-bold">{userPoints}</span>
                 </Link>
                 <UserButton />
               </div>

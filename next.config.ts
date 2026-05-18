@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/cards/:path*',
+        destination: '/api/uploads/cards/:path*',
+      },
+    ];
+  },
+
   // Image optimization
   images: {
     remotePatterns: [

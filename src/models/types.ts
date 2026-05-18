@@ -63,6 +63,8 @@ export interface IUser extends Document {
         youtube: string;
         twitch: string;
     };
+    points?: number;
+    rankId?: Types.ObjectId;
 }
 
 export interface IWatchlist extends Document {
@@ -86,3 +88,97 @@ export interface IWatchlist extends Document {
 //     updatedAt: Date;
 //     parentCommentId?: Types.ObjectId;
 // }
+
+export interface ICard extends Document {
+    name: string;
+    imageUrl: string;
+    rarity: 'simple' | 'bune' | 'epic' | 'legendar';
+    description?: string;
+    pricePoints?: number;
+    priceMoney?: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IUserCard extends Document {
+    userId: Types.ObjectId;
+    cardId: Types.ObjectId;
+    isShowcased?: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IShopPrice extends Document {
+    rarity: 'simple' | 'bune' | 'epic' | 'legendar';
+    pricePoints?: number;
+    priceMoney?: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface ITask extends Document {
+    title: string;
+    description?: string;
+    points: number;
+    taskType: 'watch_episodes' | 'custom';
+    requiredEpisodes?: number;
+    difficulty?: 'easy' | 'medium' | 'hard';
+    premium: boolean;
+    active: boolean;
+    recurrence?: 'none' | 'daily' | 'weekly' | 'monthly';
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IUserTaskProgress extends Document {
+    userId: Types.ObjectId;
+    taskId: Types.ObjectId;
+    completed: boolean;
+    completedDate?: Date;
+    progress: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IWatchHistory extends Document {
+    userId: Types.ObjectId;
+    episodeId: Types.ObjectId;
+    watchTimeSeconds: number;
+    pointsEarned: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IMarketplaceListing extends Document {
+    sellerId: Types.ObjectId;
+    userCardId: Types.ObjectId;
+    pricePoints: number;
+    active: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface IRank extends Document {
+    name: string;
+    color: string;
+    requiredPoints?: number;
+    priceMoney?: number;
+    isPremium: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface ILootbox extends Document {
+    name: string;
+    iconUrl: string;
+    pricePoints?: number;
+    priceMoney?: number;
+    cardsCount: number;
+    active: boolean;
+    rarities: {
+        rarity: 'simple' | 'bune' | 'epic' | 'legendar';
+        chance: number;
+    }[];
+    createdAt: Date;
+    updatedAt: Date;
+}

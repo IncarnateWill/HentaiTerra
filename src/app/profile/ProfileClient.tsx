@@ -22,6 +22,10 @@ import {
 } from "react-icons/fa";
 import Image from "next/image";
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
+import { useEffect } from "react";
+import { claimTask } from "@/actions/economy.actions";
+import toast from "react-hot-toast";
+import { Coins, CheckCircle, Clock } from "lucide-react";
 
 const defaultSocial = {
   discord: '',
@@ -210,8 +214,58 @@ const ProfilePreview = ({ user, onClose }: { user: any; onClose: () => void }) =
   );
 };
 
-export default function ProfileClient({ user, heading }: { user: any, heading?: string }) {
+export default function ProfileClient({ user, heading, economyData }: { user: any, heading?: string, economyData?: any }) {
+  const rank = economyData?.rank;
+  const watchHistory = economyData?.watchHistory || [];
+  const showcasedCards = economyData?.userCards?.filter((c: any) => c.isShowcased) || [];
+
   const [profile, setProfile] = useState<any>(user);
+  const [points, setPoints] = useState<number>(user.points || 0);
+  const [tasks, setTasks] = useState<any[]>(economyData?.tasks || []);
+  const [userProgress, setUserProgress] = useState<any[]>(economyData?.progress || []);
+  const [claiming, setClaiming] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handlePointsUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && typeof customEvent.detail.points === 'number') {
+        setPoints(customEvent.detail.points);
+      }
+    };
+    window.addEventListener("points-updated", handlePointsUpdate);
+    return () => window.removeEventListener("points-updated", handlePointsUpdate);
+  }, []);
+
+  async function handleClaim(task: any) {
+    setClaiming(task._id);
+    const res = await claimTask(task._id);
+    if (res.success) {
+      toast.success('Puncte revendicate cu succes!');
+      setPoints(res.points!);
+      window.dispatchEvent(new CustomEvent("points-updated", { detail: { points: res.points } }));
+      
+      // Update progress state locally
+      const progressExist = userProgress.find(p => p.taskId === task._id);
+      if (progressExist) {
+        setUserProgress(userProgress.map(p => p.taskId === task._id ? { ...p, completed: true } : p));
+      } else {
+        setUserProgress([...userProgress, { taskId: task._id, completed: true, progress: 1 }]);
+      }
+    } else {
+      toast.error(res.error || 'Eroare la revendicare');
+    }
+    setClaiming(null);
+  }
+
+  function isTaskCompleted(task: any) {
+    const progress = userProgress.find((p: any) => p.taskId === task._id);
+    if (!progress) return false;
+    if (task.taskType === "watch_episodes") {
+      return (progress.progress || 0) >= (task.requiredEpisodes || 1);
+    }
+    return !!progress.completed;
+  }
+
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState<any>({
     bio: user.bio || '',
@@ -447,6 +501,21 @@ export default function ProfileClient({ user, heading }: { user: any, heading?: 
               <div className="mt-2 text-gray-400 text-sm">
                 {safeText(profile.email)}
               </div>
+
+              <div className="mt-4 flex gap-4 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs">Puncte</span>
+                  <span className="font-bold text-amber-400 text-lg">{points}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs">Rank</span>
+                  {rank ? (
+                    <span className="font-bold text-lg" style={{ color: rank.color }}>{rank.name}</span>
+                  ) : (
+                    <span className="font-bold text-gray-300 text-lg">Incepător</span>
+                  )}
+                </div>
+              </div>
               
               {/* Preview button */}
               <button
@@ -623,6 +692,128 @@ export default function ProfileClient({ user, heading }: { user: any, heading?: 
             )}
           </div>
         </form>
+
+        <div className="p-6 border-t border-purple-900/20">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-gray-300 text-lg font-medium">Misiuni Zilnice</h3>
+            <a href="/points" className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1">
+              Vezi Toate <FaArrowLeft className="rotate-180" />
+            </a>
+          </div>
+
+          {tasks.filter(t => !t.premium).length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tasks.filter(t => !t.premium).slice(0, 4).map(task => {
+                const isCompleted = isTaskCompleted(task);
+                const progress = userProgress.find((p: any) => p.taskId === task._id);
+                const currentProgress = progress?.progress || 0;
+                const progressPercent = task.requiredEpisodes ? Math.min((currentProgress / task.requiredEpisodes) * 100, 100) : 0;
+
+                return (
+                  <div key={task._id} className="bg-neutral-900/50 p-4 rounded-xl border border-purple-900/20 flex flex-col justify-between gap-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-sm font-bold text-gray-200">{task.title}</h4>
+                        {task.description && <p className="text-xs text-gray-400 mt-1">{task.description}</p>}
+                      </div>
+                      <span className={`text-xs font-bold px-2 py-1 rounded ${isCompleted ? 'bg-green-500/20 text-green-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                        +{task.points} pct
+                      </span>
+                    </div>
+
+                    {task.requiredEpisodes && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs text-gray-400">
+                          <span>{currentProgress} / {task.requiredEpisodes} episoade</span>
+                          <span>{Math.round(progressPercent)}%</span>
+                        </div>
+                        <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-purple-500 transition-all" style={{ width: `${progressPercent}%` }} />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-2">
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        {isCompleted ? (
+                          <>
+                            <CheckCircle size={12} className="text-green-400" />
+                            <span>Completat</span>
+                          </>
+                        ) : (
+                          <>
+                            <Clock size={12} />
+                            <span className="capitalize">{task.difficulty || 'easy'}</span>
+                          </>
+                        )}
+                      </div>
+
+                      {!isCompleted && !task.requiredEpisodes && (
+                        <button
+                          onClick={() => handleClaim(task)}
+                          disabled={claiming === task._id}
+                          className="text-xs px-2.5 py-1 rounded bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 transition-colors disabled:opacity-50"
+                        >
+                          {claiming === task._id ? 'Claiming...' : 'Revendică'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="bg-neutral-900/40 rounded-lg p-6 text-center">
+              <p className="text-gray-400 text-sm">Nu sunt misiuni disponibile momentan.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t border-purple-900/20">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-gray-300 text-lg font-medium">Cartonașele Mele</h3>
+            <a href={`/profile/${profile.username}/cards`} className="text-sm text-purple-400 hover:text-purple-300 flex items-center gap-1">
+              Vezi Toate <FaArrowLeft className="rotate-180" />
+            </a>
+          </div>
+
+          {showcasedCards.length > 0 ? (
+            <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+              {showcasedCards.map((c: any) => (
+                <div key={c._id} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-purple-500/30">
+                  <Image src={c.cardId.imageUrl} alt={c.cardId.name} fill className="object-cover" />
+                  <div className="absolute bottom-0 w-full bg-black/80 text-center text-xs p-1 text-white font-bold">{c.cardId.name}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-neutral-900/40 rounded-lg p-6 text-center">
+              <p className="text-gray-400 text-sm">Nu ai niciun cartonaș showcase. Mergi la colecție pentru a le selecta.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 border-t border-purple-900/20">
+          <h3 className="text-gray-300 text-lg font-medium mb-4">Istoric Vizionări (Private)</h3>
+          {watchHistory.length > 0 ? (
+            <div className="space-y-3">
+              {watchHistory.map((w: any) => (
+                <div key={w._id} className="bg-neutral-900/50 p-3 rounded-lg border border-purple-900/20 flex justify-between items-center">
+                  <div>
+                    <div className="text-sm font-bold text-gray-200">{w.episodeId?.animeId?.name}</div>
+                    <div className="text-xs text-gray-400">{w.episodeId?.displayTitle}</div>
+                  </div>
+                  <div className="text-xs text-amber-400 font-bold">+{w.pointsEarned} pct</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-neutral-900/40 rounded-lg p-6 text-center">
+              <p className="text-gray-400">Nu ai vizionat niciun episod încă.</p>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

@@ -602,8 +602,13 @@ export default async function AnimeDetailsPage({
                     </div>
                     
                     {/* Episodes Section */}
-                    <div className="mt-8">
-                        <h2 className="text-2xl font-bold mb-4 text-text-primary">Episoade</h2>
+                    <div className="mt-12 bg-dark-400/30 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-1.5 h-8 bg-gradient-to-b from-primary-400 to-primary-600 rounded-full shadow-[0_0_10px_rgba(var(--color-primary-500),0.5)]"></div>
+                            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                                Episoade
+                            </h2>
+                        </div>
                         {anime.episodes && anime.episodes.length > 0 ? (
                             <>
                                 <AnimeEpisodeList 
@@ -622,9 +627,14 @@ export default async function AnimeDetailsPage({
                                 )}
                             </>
                         ) : (
-                            <div className="bg-dark-500/30 p-6 rounded-lg border border-dark-400">
-                                <p className="text-text-secondary text-lg italic">
-                                    Nici un episod nu a fost postat inca
+                            <div className="flex flex-col items-center justify-center py-16 px-4 bg-dark-500/20 rounded-2xl border border-white/5 border-dashed">
+                                <div className="w-16 h-16 bg-dark-400/50 rounded-full flex items-center justify-center mb-4 border border-white/5">
+                                    <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                                <p className="text-gray-400 text-lg font-medium">
+                                    Niciun episod nu a fost postat încă
                                 </p>
                             </div>
                         )}
@@ -634,46 +644,42 @@ export default async function AnimeDetailsPage({
 
             {/* Recommended Series Section */}
             {recommendedAnime && recommendedAnime.length > 0 && (
-                <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4 text-text-primary">Serii Recomandate</h2>
+                <div className="mt-12 bg-dark-400/30 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-1.5 h-8 bg-gradient-to-b from-secondary-400 to-secondary-600 rounded-full shadow-[0_0_10px_rgba(var(--color-secondary-500),0.5)]"></div>
+                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                            Serii Recomandate
+                        </h2>
+                    </div>
                     <Suspense fallback={<LoadingRecommendations />}>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
                             {recommendedAnime.map((recommended: RecommendedAnime) => (
                                 <a 
                                     key={recommended._id} 
                                     href={`/hentai/${recommended._id}`}
-                                    className="block group hover:opacity-90 transition-all duration-300"
+                                    className="block group relative"
                                 >
-                                    <div className="relative pb-[140%] overflow-hidden rounded-lg bg-dark-300 shadow-lg transform group-hover:scale-105 transition-transform duration-300">
+                                    <div className="absolute -inset-0.5 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"></div>
+                                    <div className="relative pb-[140%] overflow-hidden rounded-2xl bg-dark-500 ring-1 ring-white/10 shadow-xl">
                                         <Image 
                                             src={recommended.poster || "/default-thumbnail.jpg"} 
                                             alt={recommended.name}
-                                            className="absolute inset-0 w-full h-full object-cover"
+                                            className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
                                             loading="lazy"
                                             fill
                                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div className="absolute bottom-0 left-0 right-0 p-3 text-text-primary">
-                                                <p className="text-sm font-medium truncate">
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                                <p className="text-sm font-bold truncate drop-shadow-md">
                                                     {recommended.name}
                                                 </p>
-                                                <div className="flex items-center gap-2 mt-1 text-xs text-text-secondary">
-                                                    <span>{recommended.episodeCount} episoade</span>
+                                                <div className="flex items-center gap-2 mt-2 text-[11px] text-gray-300 font-medium">
+                                                    <span className="bg-white/10 px-2 py-0.5 rounded backdrop-blur-sm">{recommended.episodeCount} ep</span>
                                                     <span>•</span>
                                                     <span>
-                                                        {(recommended.totalViews || 0).toLocaleString()} vizualizări
+                                                        {(recommended.totalViews || 0).toLocaleString()} viz
                                                     </span>
-                                                </div>
-                                                <div className="flex flex-wrap gap-1 mt-1">
-                                                    {recommended.genres.slice(0, 2).map((genre: Genre) => (
-                                                        <span 
-                                                            key={genre._id}
-                                                            className="text-xs px-1.5 py-0.5 bg-text-primary/20 rounded-full"
-                                                        >
-                                                            {genre.name}
-                                                        </span>
-                                                    ))}
                                                 </div>
                                             </div>
                                         </div>

@@ -215,8 +215,9 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50 p-4">
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
+        <div className="bg-slate-900/90 backdrop-blur-2xl rounded-2xl border border-slate-700/50 shadow-2xl max-w-2xl w-full">
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50">
           <div className="flex items-center justify-between">
@@ -257,7 +258,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
               <div className="flex gap-3">
                 <input
                   type="text"
-                  className="flex-1 px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="flex-1 px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={malUrl}
                   onChange={e => setMalUrl(e.target.value)}
                   placeholder="https://myanimelist.net/anime/12345/Title or 12345"
@@ -299,7 +300,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <input
                   type="text"
                   name="name"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={form.name ?? ""}
                   onChange={handleChange}
                   required
@@ -313,7 +314,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <input
                   type="text"
                   name="malId"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={form.malId ?? ""}
                   onChange={handleChange}
                   placeholder="e.g., 12345"
@@ -327,7 +328,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <input
                   type="text"
                   name="alternativeTitles"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={form.alternativeTitles ?? ""}
                   onChange={handleChange}
                   placeholder="English, Japanese, Romanian titles (comma separated)"
@@ -340,7 +341,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <label className="block text-sm font-medium text-slate-300 mb-2">Description *</label>
                 <textarea
                   name="description"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all resize-vertical"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all resize-vertical"
                   value={form.description ?? ""}
                   onChange={handleChange}
                   rows={4}
@@ -356,7 +357,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                   <input
                     type="text"
                     name="genres"
-                    className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={form.genres ?? ""}
                     onChange={handleChange}
                     placeholder="Action, Adventure, Fantasy"
@@ -368,7 +369,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                   <input
                     type="text"
                     name="studio"
-                    className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={form.studio ?? ""}
                     onChange={handleChange}
                     placeholder="Studio name"
@@ -383,7 +384,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                   <input
                     type="text"
                     name="poster"
-                    className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={form.poster ?? ""}
                     onChange={handleChange}
                     placeholder="https://example.com/poster.jpg"
@@ -393,7 +394,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                   <label className="block text-sm font-medium text-slate-300 mb-2">Media Type</label>
                   <select
                     name="mediaType"
-                    className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     value={form.mediaType ?? "anime"}
                     onChange={handleChange}
                   >
@@ -411,7 +412,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <label className="block text-sm font-medium text-slate-300 mb-2">Status</label>
                 <select
                   name="status"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={form.status ?? "upcoming"}
                   onChange={handleChange}
                 >
@@ -428,7 +429,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
                 <label className="block text-sm font-medium text-slate-300 mb-2">Censorship</label>
                 <select
                   name="censorship"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={form.censorship ?? "censored"}
                   onChange={handleChange}
                 >
@@ -480,6 +481,7 @@ export default function AnimeFormModal({ open, onClose, onSave, initialData, mod
             </button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

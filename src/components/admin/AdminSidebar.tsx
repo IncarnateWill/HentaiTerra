@@ -6,7 +6,12 @@ import {
   Film, 
   PlayCircle, 
   Shield,
-  Settings
+  Settings,
+  Coins,
+  Store,
+  WalletCards,
+  Award,
+  ListTodo
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -44,12 +49,40 @@ const AdminSidebar = ({ user }: AdminSidebarProps) => {
         icon: PlayCircle,
         color: "text-orange-400 hover:text-orange-300",
         bgColor: "hover:bg-orange-500/10"
+      },
+      {
+        href: "/admin/economy/shop",
+        label: "Shop Config",
+        icon: Store,
+        color: "text-amber-400 hover:text-amber-300",
+        bgColor: "hover:bg-amber-500/10"
+      },
+      {
+        href: "/admin/economy/cards",
+        label: "Cards",
+        icon: WalletCards,
+        color: "text-pink-400 hover:text-pink-300",
+        bgColor: "hover:bg-pink-500/10"
+      },
+      {
+        href: "/admin/economy/ranks",
+        label: "Ranks",
+        icon: Award,
+        color: "text-yellow-400 hover:text-yellow-300",
+        bgColor: "hover:bg-yellow-500/10"
+      },
+      {
+        href: "/admin/economy/tasks",
+        label: "Tasks",
+        icon: ListTodo,
+        color: "text-teal-400 hover:text-teal-300",
+        bgColor: "hover:bg-teal-500/10"
       }
     ] : [])
   ];
 
   return (
-    <aside className="w-72 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen border-r border-slate-700/50 shadow-2xl">
+    <aside className="w-72 bg-slate-900/60 backdrop-blur-xl min-h-screen border-r border-slate-700/50 shadow-2xl relative z-20">
       {/* Header */}
       <div className="p-6 border-b border-slate-700/50">
         <div className="flex items-center gap-3">
@@ -74,7 +107,7 @@ const AdminSidebar = ({ user }: AdminSidebarProps) => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${item.bgColor} ${item.color}`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group hover:pl-6 border border-transparent hover:border-slate-700/30 ${item.bgColor} ${item.color}`}
               >
                 <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
                 <span className="font-medium">{item.label}</span>

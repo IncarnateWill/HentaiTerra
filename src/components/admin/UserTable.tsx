@@ -25,7 +25,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, onRolesChange, onDelete, o
     {users.map(user => (
       <div
         key={user.clerkId}
-        className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-2xl"
+        className="bg-slate-900/40 backdrop-blur-md rounded-2xl shadow-xl border border-slate-700/50 hover:border-slate-600/50 transition-all duration-300 hover:shadow-2xl group"
       >
         <div className="p-6">
           {/* User Info Header */}

@@ -81,33 +81,34 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                 />
 
                 {/* Hero Section */}
-                <section className="relative overflow-hidden">
-                    <div className="container mx-auto py-8 sm:py-16 px-4 relative z-10">
-                        <div className="text-center max-w-4xl mx-auto">
-                            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 sm:mb-6 bg-gradient-to-r from-primary-300 via-text-primary to-primary-300 bg-clip-text text-transparent leading-tight">
-                                Hentai Online Subtitrat în Română
-                            </h1>
-                            <p className="text-lg sm:text-xl text-text-secondary mb-6 sm:mb-8 leading-relaxed max-w-3xl mx-auto">
-                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit,
-                                calitate HD și actualizări zilnice cu cele mai noi episoade și serii hentai.
-                            </p>
-                            <p className="text-base sm:text-lg text-text-muted max-w-3xl mx-auto">
-                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit,
-                                calitate HD și actualizări zilnice cu cele mai noi episoade și serii hentai.
-                            </p>
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 rounded-full border border-primary-500/30">
-                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                <span className="text-sm text-text-secondary font-medium">
-                                    {totalCount.toLocaleString()} hentai disponibile
+                <section className="relative overflow-hidden pt-12 pb-8 sm:pt-20 sm:pb-16">
+                    {/* Background Effects */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary-600/20 rounded-full blur-[120px] opacity-50 pointer-events-none"></div>
+                    <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-secondary-600/10 rounded-full blur-[100px] opacity-40 pointer-events-none"></div>
+                    
+                    <div className="container mx-auto px-4 relative z-10">
+                        <div className="text-center max-w-4xl mx-auto space-y-6">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-dark-400/50 backdrop-blur-md rounded-full border border-white/5 shadow-xl">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"></div>
+                                <span className="text-sm text-gray-300 font-medium">
+                                    {totalCount.toLocaleString()} serii disponibile
                                 </span>
                             </div>
+                            
+                            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 tracking-tight text-white drop-shadow-lg">
+                                Hentai Online <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600">Subtitrat</span>
+                            </h1>
+                            <p className="text-lg sm:text-xl text-gray-400 leading-relaxed max-w-2xl mx-auto font-medium">
+                                Descoperă cea mai mare colecție de hentai subtitrat în română. Streaming gratuit,
+                                calitate HD și actualizări zilnice.
+                            </p>
                         </div>
                     </div>
                 </section>
 
                 {/* Main Content */}
-                <main className="container mx-auto py-8 px-4">
-                    <div className="bg-gradient-to-br from-background-tertiary/50 to-background-secondary/50 backdrop-blur-sm border border-primary-500/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+                <main className="container mx-auto pb-16 px-4 relative z-10">
+                    <div className="bg-dark-400/30 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
                         <ClientFilterWrapper
                             initialGenres={serializedGenres}
                             initialAnimes={serializedAnimes}
@@ -121,23 +122,26 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
     } catch (error) {
         await logToDiscordWebhook(`Error in FilterPage: ${error}`);
         return (
-            <main className="container mx-auto py-16 px-4">
-                <div className="max-w-2xl mx-auto text-center">
-                    <div className="rounded-xl sm:rounded-2xl bg-gradient-to-br from-background-secondary to-background-tertiary border border-primary-500/30 shadow-xl p-4 sm:p-8 md:p-12 w-full text-center">
-                        <div className="w-16 h-16 bg-semantic-error/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg className="w-8 h-8 text-semantic-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <main className="container mx-auto py-24 px-4 min-h-[60vh] flex items-center justify-center">
+                <div className="max-w-md w-full mx-auto text-center">
+                    <div className="rounded-3xl bg-dark-400/30 backdrop-blur-xl border border-white/5 shadow-2xl p-8 sm:p-10 w-full text-center relative overflow-hidden">
+                        {/* Glow effect */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-red-500/10 blur-[50px] pointer-events-none"></div>
+                        
+                        <div className="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-500/20 rotate-3 shadow-lg">
+                            <svg className="w-10 h-10 text-red-400 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold text-text-primary mb-4">
-                            Oops! Ceva nu a mers bine
+                        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 tracking-tight">
+                            Oops! Ceva nu a mers
                         </h2>
-                        <p className="text-lg text-text-secondary mb-6">
+                        <p className="text-gray-400 mb-8 leading-relaxed">
                             A apărut o eroare la încărcarea rezultatelor pe HentaiUnited. Te rugăm să încerci din nou.
                         </p>
                         <button
                             onClick={() => window.location.reload()}
-                            className="inline-flex items-center px-6 py-3 bg-semantic-error hover:bg-red-700 text-text-primary font-semibold rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-lg"
+                            className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 hover:-translate-y-0.5"
                         >
                             Încearcă din nou
                         </button>

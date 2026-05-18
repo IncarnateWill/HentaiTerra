@@ -80,7 +80,8 @@ export async function GET() {
           pfp: (user as any).pfp || (user as any).imageUrl || '',
           social: (user as any).social || {},
           role: (user as any).role,
-          roles: userRoles
+          roles: userRoles,
+          points: (user as any).points || 0
         }
       });
     } catch (queryError) {
@@ -261,7 +262,8 @@ export async function PATCH(req: NextRequest) {
           pfp: user.pfp || user.imageUrl || '',
           social: user.social || {},
           role: user.role,
-          roles: userRoles
+          roles: userRoles,
+          points: user.points || 0
         }
       });
     } catch (updateError) {

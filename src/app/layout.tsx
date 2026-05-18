@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/navbar/navbar";
 import Footer from "@/components/layout/footer/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import ContentWarning from "@/components/shared/content-warning";
+import Script from 'next/script';
 
 const poppins = Poppins({
   weight: ['400', '500', '600', '700'],
@@ -61,32 +62,6 @@ export default function RootLayout({
           <link rel="dns-prefetch" href="https://www.chatbro.com" />
           <link rel="preconnect" href="https://www.chatbro.com" />
           <meta name="format-detection" content="telephone=no" />
-
-          {/* Service Worker */}
-          <script dangerouslySetInnerHTML={{ __html: `
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').catch(function(e) { console.log('SW failed:', e); });
-              });
-            }
-          ` }} />
-
-          {/* Chatbro — deferred */}
-          <script dangerouslySetInnerHTML={{ __html: `
-            function initChatbro() {
-              function ChatbroLoader(chats,async){
-                async=!1!==async;
-                var params={embedChatsParameters:chats instanceof Array?chats:[chats],lang:navigator.language||navigator.userLanguage,needLoadCode:'undefined'==typeof Chatbro,embedParamsVersion:localStorage.embedParamsVersion,chatbroScriptVersion:localStorage.chatbroScriptVersion},
-                xhr=new XMLHttpRequest;
-                xhr.withCredentials=!0,xhr.onload=function(){eval(xhr.responseText)},xhr.onerror=function(){console.error('Chatbro loading error')},
-                xhr.open('GET','https://www.chatbro.com/embed.js?'+btoa(unescape(encodeURIComponent(JSON.stringify(params)))),async),xhr.send()
-              }
-              ChatbroLoader({encodedChatId: '4915d'});
-            }
-            if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', function() { setTimeout(initChatbro, 2000); });
-            } else { setTimeout(initChatbro, 2000); }
-          ` }} />
         </head>
         <body className={`${poppins.className} antialiased min-h-screen bg-[#0a0b0f] text-gray-100 flex flex-col`}>
           <ContentWarning />
@@ -95,6 +70,25 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+
+          {/* Service Worker registration */}
+          <Script id="service-worker" strategy="afterInteractive">{`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').catch(function(e) {
+                  console.log('SW registration failed:', e);
+                });
+              });
+            }
+          `}</Script>
+
+          {/* Chatbro live chat — loaded deferred to avoid blocking */}
+          <Script
+            id="chatbro-loader"
+            strategy="lazyOnload"
+            src="https://www.chatbro.com/embed.js"
+            data-chat-id="4915d"
+          />
         </body>
       </html>
     </ClerkProvider>

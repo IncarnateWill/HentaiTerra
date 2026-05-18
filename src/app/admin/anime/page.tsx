@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import AnimeFormModal from "@/components/admin/AnimeFormModal";
 import { canManageContent } from "@/lib/admin-permissions";
 import Image from "next/image";
+import { Eye, Edit, Trash2, ShieldAlert } from "lucide-react";
 
 
 interface AnimeRow {
@@ -156,8 +157,8 @@ export default function AdminAnimePage() {
     <div className="space-y-6">
       {!hasPermission ? (
         <div className="p-12 text-center">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-2xl">🚫</span>
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-500/20">
+            <ShieldAlert className="w-8 h-8 text-red-500" />
           </div>
           <p className="text-red-400 text-lg mb-2">Access Denied</p>
           <p className="text-slate-400">You do not have permission to access this page or the resource you requested.</p>
@@ -182,7 +183,7 @@ export default function AdminAnimePage() {
 
 
           {/* Search Bar */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+          <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
             <div className="flex flex-col sm:flex-row gap-4 items-center">
               <div className="relative flex-1 max-w-md">
                 <input
@@ -199,7 +200,7 @@ export default function AdminAnimePage() {
             </div>
           </div>
           {/* Anime Table */}
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+          <div className="bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
             {loading ? (
               <div className="p-12 text-center">
                 <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -241,7 +242,7 @@ export default function AdminAnimePage() {
                     </thead>
                     <tbody>
                       {anime.map((a, idx) => (
-                        <tr key={a._id} className="border-t border-slate-700/50 hover:bg-slate-800/50 transition-colors">
+                        <tr key={a._id} className="border-t border-slate-700/50 hover:bg-slate-800/80 transition-colors group">
                           <td className="px-6 py-4 align-middle">
                             {a.poster ? (
                               <Image width={160} height={200} src={a.poster} alt={a.title || a.name} className="w-16 h-20 object-cover rounded-lg shadow-lg" />
@@ -325,26 +326,26 @@ export default function AdminAnimePage() {
                           <td className="px-6 py-4 align-middle">
                             <div className="flex gap-2">
                               <button
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-green-500/20"
                                 onClick={() => window.open(`/hentai/${a._id}`, '_blank')}
                               >
-                                <span>👁️</span>
+                                <Eye className="w-4 h-4" />
                                 View
                               </button>
 
                               <button
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-blue-500/20"
                                 onClick={() => handleEdit(a)}
                               >
-                                <span>✏️</span>
+                                <Edit className="w-4 h-4" />
                                 Edit
                               </button>
                               <button
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2 shadow-lg hover:shadow-red-500/20"
                                 onClick={() => handleDelete(a._id)}
                                 disabled={actionLoading}
                               >
-                                <span>🗑️</span>
+                                <Trash2 className="w-4 h-4" />
                                 Delete
                               </button>
                             </div>
@@ -377,19 +378,21 @@ export default function AdminAnimePage() {
                 </div>
               </>
             )}
-            <AnimeFormModal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              onSave={handleModalSave}
-              initialData={modalMode === 'edit' ? editAnime : undefined}
-              mode={modalMode}
-            />
             {actionLoading && (
-              <div className="mt-4 text-purple-400">Processing...</div>
+              <div className="mt-4 p-6 text-purple-400 font-medium">Processing...</div>
             )}
           </div>
         </>
       )}
+
+      {/* Render modal OUTSIDE the container to prevent stacking context traps */}
+      <AnimeFormModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleModalSave}
+        initialData={modalMode === 'edit' ? editAnime : undefined}
+        mode={modalMode}
+      />
     </div>
   );
 }

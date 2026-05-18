@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import UserTable from "@/components/admin/UserTable";
 import { isFullAdmin } from "@/lib/admin-permissions";
-import { Search, Users, Filter, Plus, Download, RefreshCw } from "lucide-react";
+import { Search, Users, Filter, Plus, Download, RefreshCw, X, ExternalLink } from "lucide-react";
 
 interface UserRow {
   username?: string;
@@ -197,14 +197,14 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="bg-slate-900/40 backdrop-blur-md p-6 rounded-2xl border border-slate-700/50 shadow-xl">
         <div className="flex flex-col sm:flex-row gap-4 items-center">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
               placeholder="Search by username or email..."
-              className="w-full pl-10 pr-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <select
-              className="pl-10 pr-8 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all appearance-none cursor-pointer min-w-[180px]"
+              className="pl-10 pr-8 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all appearance-none cursor-pointer min-w-[180px]"
               value={roleFilter}
               onChange={e => setRoleFilter(e.target.value)}
             >
@@ -231,7 +231,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+      <div className="bg-slate-900/40 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
         {loading ? (
           <div className="p-12 text-center">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -301,15 +301,16 @@ export default function AdminUsersPage() {
 
       {/* Edit Modal */}
       {editUser && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-2xl border border-slate-700/50 shadow-2xl min-w-[400px] max-w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
+            <div className="bg-slate-900/90 backdrop-blur-2xl p-8 rounded-2xl border border-slate-700/50 shadow-2xl min-w-[400px] max-w-full relative">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">Edit User</h2>
               <button
                 onClick={handleEditCancel}
-                className="text-slate-400 hover:text-white transition-colors"
+                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-xl transition-all"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
             
@@ -323,7 +324,8 @@ export default function AdminUsersPage() {
                     rel="noopener noreferrer"
                     className="text-green-400 hover:text-green-300 text-sm font-medium px-3 py-1 rounded-lg border border-green-500/30 hover:bg-green-500/10 transition-colors flex items-center gap-2"
                   >
-                    👤 View Profile Page
+                    <ExternalLink className="w-4 h-4" />
+                    View Profile Page
                   </a>
                 </div>
               </div>
@@ -334,7 +336,7 @@ export default function AdminUsersPage() {
                 <label className="block text-sm font-medium text-slate-300 mb-2">Username</label>
                 <input
                   type="text"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={editForm.username}
                   onChange={e => setEditForm(f => ({ ...f, username: e.target.value }))}
                   disabled={editLoading}
@@ -345,7 +347,7 @@ export default function AdminUsersPage() {
                 <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
                 <input
                   type="email"
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={editForm.email}
                   onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
                   disabled={editLoading}
@@ -355,7 +357,7 @@ export default function AdminUsersPage() {
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Roles</label>
                 <select
-                  className="w-full px-4 py-3 bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                   value={editForm.roles.join(",")}
                   onChange={e => setEditForm(f => ({ ...f, roles: e.target.value.split(",") }))}
                   disabled={editLoading}
@@ -391,6 +393,7 @@ export default function AdminUsersPage() {
               </button>
             </div>
           </div>
+        </div>
         </div>
       )}
     </div>

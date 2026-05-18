@@ -150,7 +150,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   try {
     await dbConnection;
     
-    const user = await User.findOne({ username: sanitizedUsername }).select('username clerkId imageUrl bio social role roles').lean() as any;
+    const user = await User.findOne({ username: sanitizedUsername }).select('username clerkId imageUrl bio social role roles points').lean() as any;
     
     if (!user) {
       return <ProfileNotFound />;
@@ -158,6 +158,10 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
     
     const { userId } = await auth();
     const isOwner = userId && user.clerkId === userId;
+    
+    // Fetch economy data
+    const { getProfileEconomyData } = await import("@/actions/economy.actions");
+    const economyData = await getProfileEconomyData(sanitizedUsername);
     
     // Fix: Use JSON.parse(JSON.stringify()) to handle Date objects and other non-serializable values
     // Also add try/catch to handle potential JSON serialization errors
@@ -189,9 +193,13 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
     };
     
     if (isOwner) {
-      return <ProfileClient user={plainUser} heading={plainUser.username} />;
+      return <ProfileClient user={plainUser} heading={plainUser.username} economyData={economyData} />;
     }
     
+    const rank = economyData.rank;
+    const watchHistory = economyData.watchHistory || [];
+    const showcasedCards = economyData.userCards?.filter((c: any) => c.isShowcased) || [];
+
     // Enhanced public profile view - updated to match the preview UI
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
@@ -270,6 +278,21 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                   Pasionat de anime
                 </div>
                 
+                <div className="mt-4 flex gap-4 text-sm">
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 text-xs">Puncte</span>
+                    <span className="font-bold text-amber-400 text-lg">{plainUser.points || 0}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 text-xs">Rank</span>
+                    {rank ? (
+                      <span className="font-bold text-lg" style={{ color: rank.color }}>{rank.name}</span>
+                    ) : (
+                      <span className="font-bold text-gray-300 text-lg">Incepător</span>
+                    )}
+                  </div>
+                </div>
+                
                 {/* Bio with styled container */}
                 {plainUser.bio ? (
                   <div className="mt-4 bg-purple-900/10 border border-purple-900/20 rounded-lg p-3">
@@ -324,13 +347,44 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
               </div>
             </div>
             
+            {/* Showcase section */}
+            {showcasedCards.length > 0 && (
+              <div className="mt-8 border-t border-purple-900/20 pt-6">
+                <h3 className="text-gray-300 text-lg font-medium mb-4 flex items-center justify-between">
+                  <span>Cartonașe Showcased</span>
+                </h3>
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+                  {showcasedCards.map((c: any) => (
+                    <div key={c._id} className="relative aspect-[3/4] rounded-lg overflow-hidden border border-purple-500/30">
+                      <Image src={c.cardId.imageUrl} alt={c.cardId.name} fill className="object-cover" />
+                      <div className="absolute bottom-0 w-full bg-black/80 text-center text-xs p-1 text-white font-bold">{c.cardId.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Activity section */}
             <div className="mt-8 border-t border-purple-900/20 pt-6">
-              <h3 className="text-gray-300 text-lg font-medium mb-4">Activitate</h3>
+              <h3 className="text-gray-300 text-lg font-medium mb-4">Activitate Recentă</h3>
               
-              <div className="bg-neutral-900/40 rounded-lg p-6 text-center">
-                <p className="text-gray-400">Nu există activitate recentă de afișat</p>
-              </div>
+              {watchHistory.length > 0 ? (
+                <div className="space-y-3">
+                  {watchHistory.map((w: any) => (
+                    <div key={w._id} className="bg-neutral-900/50 p-3 rounded-lg border border-purple-900/20 flex justify-between items-center">
+                      <div>
+                        <div className="text-sm font-bold text-gray-200">{w.episodeId?.animeId?.name}</div>
+                        <div className="text-xs text-gray-400">{w.episodeId?.displayTitle}</div>
+                      </div>
+                      <div className="text-xs text-amber-400 font-bold">+{w.pointsEarned} pct</div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-neutral-900/40 rounded-lg p-6 text-center">
+                  <p className="text-gray-400">Nu există activitate recentă de afișat</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

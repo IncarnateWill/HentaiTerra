@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Overview */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="bg-slate-900/40 backdrop-blur-xl p-6 rounded-2xl border border-slate-700/50 shadow-xl hover:border-slate-600/50 transition-colors duration-300">
         <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
           <BarChart3 className="w-5 h-5 text-blue-400" />
           Platform Overview
@@ -144,7 +144,7 @@ export default async function AdminDashboard() {
       )}
 
       {/* User Info Card */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl border border-slate-700/50 shadow-xl">
+      <div className="bg-slate-900/40 backdrop-blur-xl p-6 rounded-2xl border border-slate-700/50 shadow-xl hover:border-slate-600/50 transition-colors duration-300">
         <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-3">
           <Shield className="w-5 h-5 text-blue-400" />
           Your Account

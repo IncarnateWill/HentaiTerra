@@ -35,9 +35,9 @@ export default function QuickActionCard({ action, index }: QuickActionCardProps)
   return (
     <div
       key={index}
-      className={`p-6 rounded-2xl border transition-all duration-300 hover:scale-105 ${
+      className={`p-6 rounded-2xl border transition-all duration-300 group hover:-translate-y-1 ${
         action.available === true
-          ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-700/50 hover:border-slate-600/50 cursor-pointer shadow-xl hover:shadow-2xl'
+          ? 'bg-slate-900/50 backdrop-blur-md border-slate-700/50 hover:border-blue-500/40 cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-blue-500/10'
           : 'bg-slate-800/30 border-slate-700/30 opacity-50 cursor-not-allowed'
       }`}
       onClick={() => {
@@ -75,7 +75,7 @@ export default function QuickActionCard({ action, index }: QuickActionCardProps)
           </p>
         </div>
         {action.available === true && (
-          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 transition-transform duration-300 group-hover:translate-x-1 group-hover:bg-blue-500/30">
             <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
