@@ -45,3 +45,7 @@ next-env.d.ts
 
 # trae
 .trae
+
+/logs
+logs/imports/import-log.jsonl
+logs/imports/import-stats.json
