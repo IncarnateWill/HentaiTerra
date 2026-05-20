@@ -39,17 +39,17 @@ export default function LootboxCard({ lootbox, userPoints, buying, onBuy }: Loot
   return (
     <div className={`relative flex flex-col items-center gap-4 p-5 rounded-2xl border ${v.border} bg-neutral-900/60 shadow-xl backdrop-blur-sm ${v.glow} hover:scale-[1.02] transition-transform duration-200 h-full`}>
       {/* Lootbox image */}
-      <div className="relative w-32 h-32 select-none flex items-center justify-center">
+      <div className="relative w-48 h-48 select-none flex items-center justify-center -mt-2 mb-2">
         {lootbox.iconUrl ? (
           <Image
             src={lootbox.iconUrl}
             alt={lootbox.name}
-            width={128}
-            height={128}
-            className="object-contain drop-shadow-xl animate-pulse-glow"
+            width={192}
+            height={192}
+            className="object-contain drop-shadow-2xl animate-pulse-glow"
           />
         ) : (
-          <div className="text-6xl">🎁</div>
+          <div className="text-7xl">🎁</div>
         )}
       </div>
 

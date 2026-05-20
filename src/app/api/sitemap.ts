@@ -12,7 +12,7 @@ const dbConnection = connectToDatabase().catch(async (error) => {
 });
 
 // Constants
-const SITE_URL = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro') as string;
+const SITE_URL = (process.env.SITE_URL || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiTerra.ro') as string;
 const DEFAULT_LAST_MODIFIED = new Date();
 const BATCH_SIZE = 1000; // For pagination
 
@@ -77,14 +77,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '_id updatedAt',
         skip
       );
-      
+
       const hentaiPages = animeBatch.map(anime => ({
         url: `${SITE_URL}/hentai/${anime._id}`,
         lastModified: anime.updatedAt || DEFAULT_LAST_MODIFIED,
         changeFrequency: 'weekly' as const,
         priority: 0.9,
       }));
-      
+
       sitemapEntries.push(...hentaiPages);
     }
 
@@ -95,19 +95,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         'episodeId updateDate',
         skip
       );
-      
+
       const episodePages = episodeBatch.map(episode => ({
         url: `${SITE_URL}/watch/${episode.episodeId}`,
         lastModified: episode.updateDate || DEFAULT_LAST_MODIFIED,
         changeFrequency: 'daily' as const,
         priority: 0.8,
       }));
-      
+
       sitemapEntries.push(...episodePages);
     }
 
     console.log(`Generated sitemap with ${sitemapEntries.length} URLs`);
-    
+
     // Return the sitemap in the format Next.js expects
     return sitemapEntries;
   } catch (error) {

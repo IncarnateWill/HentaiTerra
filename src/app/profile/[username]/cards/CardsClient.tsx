@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { toggleShowcaseCard } from '@/actions/economy.actions';
+import { toggleShowcaseCard, quickSellCard } from '@/actions/economy.actions';
 import { createListing, cancelListing } from '@/actions/marketplace.actions';
 import toast from 'react-hot-toast';
 import { Star, Tag, Coins, Trash } from 'lucide-react';
@@ -15,6 +15,7 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
   const [sellCardId, setSellCardId] = useState<string | null>(null);
   const [pricePoints, setPricePoints] = useState<string>('');
   const [listing, setListing] = useState<boolean>(false);
+  const [selectedCard, setSelectedCard] = useState<any>(null);
 
   // Sorting state
   const [sortBy, setSortBy] = useState<string>('recent');
@@ -117,6 +118,26 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
     }
   };
 
+  const handleQuickSell = async (cardId: string, price: number) => {
+    if (!confirm(`Ești sigur că vrei să vinzi acest cartonaș pentru ${price} puncte?`)) return;
+    
+    setLoadingId(cardId);
+    try {
+      const res = await quickSellCard(cardId);
+      if (res.error) {
+        toast.error(res.error);
+      } else {
+        toast.success(`Cartonaș vândut pentru ${price} puncte!`);
+        window.dispatchEvent(new CustomEvent('points-updated', { detail: res.newPoints }));
+        setCards(prev => prev.filter(c => c._id !== cardId));
+      }
+    } catch (e) {
+      toast.error('Eroare la vânzarea rapidă.');
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
   if (cards.length === 0) {
     return (
       <div className="bg-slate-900/50 rounded-xl p-12 text-center border border-slate-800">
@@ -156,7 +177,7 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-6">
         {sortedCards.map(c => {
           const card = c.cardId;
           const isShowcased = c.isShowcased;
@@ -166,13 +187,13 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
 
           return (
             <div key={c._id} className="relative aspect-[3/4] rounded-xl overflow-hidden group shadow-lg flex flex-col justify-end border border-white/5 bg-slate-900">
-              <div className="absolute inset-0 z-0">
+              <div className="absolute inset-0 z-0 cursor-pointer" onClick={() => setSelectedCard(card)}>
                 <Image src={card.imageUrl} alt={card.name} fill className="object-cover transition-transform group-hover:scale-105" />
               </div>
               
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 z-1" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/20 z-1 pointer-events-none" />
               
-              <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 rounded text-[10px] font-bold uppercase border border-white/10 text-white backdrop-blur-sm z-2">
+              <div className="absolute top-2 left-2 px-2 py-1 bg-black/80 rounded text-[10px] font-bold uppercase border border-white/10 text-white backdrop-blur-sm z-2 pointer-events-none">
                 {card.rarity}
               </div>
 
@@ -210,12 +231,28 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
                   </div>
                 ) : (
                   isOwner && (
-                    <button
-                      onClick={() => setSellCardId(c._id)}
-                      className="mt-1 w-full py-1 rounded bg-purple-600/35 hover:bg-purple-600/60 text-purple-200 border border-purple-500/30 text-[10px] font-bold transition-all"
-                    >
-                      Vinde pe Marketplace
-                    </button>
+                    <div className="flex gap-1.5 w-full mt-1">
+                      <button
+                        onClick={() => card.sellPricePoints && handleQuickSell(c._id, card.sellPricePoints)}
+                        disabled={isUpdating || !card.sellPricePoints}
+                        className={`flex-1 py-1.5 rounded text-[10px] md:text-xs font-bold transition-all flex items-center justify-center gap-1 ${
+                          card.sellPricePoints 
+                            ? 'bg-green-600/35 hover:bg-green-600/60 text-green-200 border border-green-500/30'
+                            : 'bg-slate-700/35 text-slate-500 border border-slate-600/30 cursor-not-allowed'
+                        }`}
+                        title="Vinde direct la sistem"
+                      >
+                        {card.sellPricePoints ? <><Coins size={12} /> {card.sellPricePoints}</> : 'N/A'}
+                      </button>
+                      <button
+                        onClick={() => setSellCardId(c._id)}
+                        disabled={isUpdating}
+                        className="flex-1 py-1.5 rounded bg-purple-600/35 hover:bg-purple-600/60 text-purple-200 border border-purple-500/30 text-[10px] md:text-xs font-bold transition-all"
+                        title="Vinde pe Marketplace către alți jucători"
+                      >
+                        Market
+                      </button>
+                    </div>
                   )
                 )}
               </div>
@@ -262,6 +299,40 @@ export default function CardsClient({ initialCards, isOwner }: { initialCards: a
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Card Details Modal */}
+      {selectedCard && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4" onClick={() => setSelectedCard(null)}>
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+            <div className="relative w-full md:w-1/2 aspect-[3/4] md:aspect-auto md:h-[500px]">
+              <Image src={selectedCard.imageUrl} alt={selectedCard.name} fill className="object-cover" />
+            </div>
+            <div className="p-6 md:w-1/2 flex flex-col bg-gradient-to-b from-slate-900 to-slate-950">
+              <div className="text-xs uppercase tracking-wider font-bold mb-2 inline-block px-3 py-1 bg-white/5 border border-white/10 rounded-full w-fit" style={{
+                color: selectedCard.rarity === 'legendar' ? '#f59e0b' : 
+                       selectedCard.rarity === 'epic' ? '#a855f7' : 
+                       selectedCard.rarity === 'bune' ? '#22c55e' : '#94a3b8'
+              }}>
+                {selectedCard.rarity}
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-6 drop-shadow-md">{selectedCard.name}</h2>
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                  {selectedCard.description || 'Acest cartonaș nu are o descriere momentan.'}
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-white/10">
+                <button 
+                  onClick={() => setSelectedCard(null)} 
+                  className="w-full py-2.5 bg-white/5 hover:bg-white/10 text-white rounded-xl transition-colors font-bold text-sm border border-white/10"
+                >
+                  Închide
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

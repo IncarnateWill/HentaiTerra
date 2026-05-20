@@ -44,11 +44,13 @@ export default function WatchPointsTracker({ episodeId }: { episodeId: string })
                 !shortEpBonusGivenRef.current
             ) {
                 shortEpBonusGivenRef.current = true;
-                const bonus = Math.floor(Math.random() * 10) + 1;
+                const bonus = Math.floor(Math.random() * 3) + 1;
                 const res = await awardWatchPoints(episodeId, elapsed, bonus, historyIdRef.current || undefined);
                 if (res.success) {
                     if (res.historyId) historyIdRef.current = res.historyId;
-                    toast.success(`Ai câștigat un bonus de ${bonus} puncte pentru vizionare!`);
+                    if (res.addedPoints && res.addedPoints > 0) {
+                        toast.success(`Ai câștigat un bonus de ${res.addedPoints} puncte pentru vizionare!`);
+                    }
                     window.dispatchEvent(new CustomEvent("points-updated", { detail: { points: res.points } }));
                 }
             }
@@ -61,24 +63,28 @@ export default function WatchPointsTracker({ episodeId }: { episodeId: string })
                 
                 let earnedNow = 0;
                 for (let k = 0; k < newIntervals; k++) {
-                    earnedNow += Math.floor(Math.random() * 46) + 5; // Random between 5 and 50
+                    earnedNow += Math.floor(Math.random() * 6) + 2; // Random between 2 and 7
                 }
                 
                 const res = await awardWatchPoints(episodeId, elapsed, earnedNow, historyIdRef.current || undefined);
                 if (res.success) {
                     if (res.historyId) historyIdRef.current = res.historyId;
-                    toast.success(`Ai câștigat ${earnedNow} puncte pentru vizionare!`);
+                    if (res.addedPoints && res.addedPoints > 0) {
+                        toast.success(`Ai câștigat ${res.addedPoints} puncte pentru vizionare!`);
+                    }
                     window.dispatchEvent(new CustomEvent("points-updated", { detail: { points: res.points } }));
                 }
 
                 // Mid-length bonus
                 if (intervalsCompleted === MID_EP_BONUS_INTERVAL && !midEpBonusGivenRef.current) {
                     midEpBonusGivenRef.current = true;
-                    const bonus = Math.floor(Math.random() * 10) + 1;
+                    const bonus = Math.floor(Math.random() * 3) + 1;
                     const bonusRes = await awardWatchPoints(episodeId, elapsed, bonus, historyIdRef.current || undefined);
                     if (bonusRes.success) {
                         if (bonusRes.historyId) historyIdRef.current = bonusRes.historyId;
-                        toast.success(`Bonus extra de ${bonus} puncte!`);
+                        if (bonusRes.addedPoints && bonusRes.addedPoints > 0) {
+                            toast.success(`Bonus extra de ${bonusRes.addedPoints} puncte!`);
+                        }
                         window.dispatchEvent(new CustomEvent("points-updated", { detail: { points: bonusRes.points } }));
                     }
                 }

@@ -12,7 +12,7 @@ export default function AdminCardsPage() {
   const [editingCard, setEditingCard] = useState<any>(null);
 
   const [formData, setFormData] = useState({
-    name: '', imageUrl: '', rarity: 'simple', description: ''
+    name: '', imageUrl: '', rarity: 'simple', description: '', sellPricePoints: 0
   });
   const [uploading, setUploading] = useState(false);
 
@@ -74,7 +74,7 @@ export default function AdminCardsPage() {
         toast.success('Cartonaș creat!');
       }
       setEditingCard(null);
-      setFormData({ name: '', imageUrl: '', rarity: 'simple', description: '' });
+      setFormData({ name: '', imageUrl: '', rarity: 'simple', description: '', sellPricePoints: 0 });
       loadCards();
     } catch (e) {
       toast.error('Eroare la salvare');
@@ -83,7 +83,7 @@ export default function AdminCardsPage() {
 
   const handleEdit = (c: any) => {
     setEditingCard(c);
-    setFormData({ name: c.name, imageUrl: c.imageUrl, rarity: c.rarity, description: c.description || '' });
+    setFormData({ name: c.name, imageUrl: c.imageUrl, rarity: c.rarity, description: c.description || '', sellPricePoints: c.sellPricePoints || 0 });
   };
 
   const handleDelete = async (id: string) => {
@@ -180,12 +180,16 @@ export default function AdminCardsPage() {
               <label className="block text-sm text-slate-400 mb-1">Descriere</label>
               <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white" rows={3}></textarea>
             </div>
+            <div>
+              <label className="block text-sm text-slate-400 mb-1">Preț de Vânzare către Sistem (Puncte)</label>
+              <input type="number" min="0" value={formData.sellPricePoints} onChange={e => setFormData({...formData, sellPricePoints: parseInt(e.target.value) || 0})} className="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-white" />
+            </div>
             <div className="pt-4 flex gap-2">
               <button type="submit" className="flex-1 bg-primary text-white py-2 rounded-lg font-bold flex items-center justify-center gap-2">
                 {editingCard ? <Edit size={16} /> : <Plus size={16} />} Salvează
               </button>
               {editingCard && (
-                <button type="button" onClick={() => { setEditingCard(null); setFormData({name:'', imageUrl:'', rarity:'simple', description:''}); }} className="px-4 bg-slate-700 text-white rounded-lg">Anulează</button>
+                <button type="button" onClick={() => { setEditingCard(null); setFormData({name:'', imageUrl:'', rarity:'simple', description:'', sellPricePoints:0}); }} className="px-4 bg-slate-700 text-white rounded-lg">Anulează</button>
               )}
             </div>
           </form>

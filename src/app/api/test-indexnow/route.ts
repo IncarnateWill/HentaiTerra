@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { User } from '@/models';
 import { isFullAdmin } from '@/lib/admin-permissions';
-import { 
-  submitUrlToIndexNow, 
+import {
+  submitUrlToIndexNow,
   submitMainPagesToIndexNow,
   submitAnimeToIndexNow,
-  submitEpisodeToIndexNow 
+  submitEpisodeToIndexNow
 } from '@/lib/indexnow';
 
 export async function POST(req: NextRequest) {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
           submitAnimeToIndexNow('test-anime-id', 'Test Hentai'),
           submitEpisodeToIndexNow('test-anime-id', 'test-episode-id', 'Test Episode 1')
         ]);
-        
+
         const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
         result = successCount > 0;
         message = `Tested all functions - ${successCount}/${results.length} succeeded`;
@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('IndexNow test error:', error);
     return NextResponse.json(
-      { 
-        error: 'Test failed', 
+      {
+        error: 'Test failed',
         details: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       },
@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       ],
       usage: 'POST with { "testType": "test-name" }',
       keyFile: '5adf88428cd24eb58d0f9f2cd23246df.txt',
-      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`
+      keyLocation: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiTerra.ro'}/5adf88428cd24eb58d0f9f2cd23246df.txt`
     });
 
   } catch (error) {

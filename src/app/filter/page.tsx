@@ -7,25 +7,25 @@ import { logToDiscordWebhook } from "@/lib/discord-webhook";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Caută după Gen și Popularitate`,
-  description: `Descoperă hentai-uri noi folosind filtrele avansate pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Caută după gen, popularitate, anul lansării și multe altele pentru a găsi hentai-ul perfect.`,
-  alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/filter`
-  },
-  openGraph: {
-    title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
-    description: `Descoperă hentai-uri noi folosind filtrele avansate. Caută după gen, popularitate și multe altele.`,
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/filter`,
-    type: 'website'
-  },
-  robots: {
-    index: true,
-    follow: true
-  }
+    title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Caută după Gen și Popularitate`,
+    description: `Descoperă hentai-uri noi folosind filtrele avansate pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Caută după gen, popularitate, anul lansării și multe altele pentru a găsi hentai-ul perfect.`,
+    alternates: {
+        canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/filter`
+    },
+    openGraph: {
+        title: `Filtrează Hentai | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
+        description: `Descoperă hentai-uri noi folosind filtrele avansate. Caută după gen, popularitate și multe altele.`,
+        url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/filter`,
+        type: 'website'
+    },
+    robots: {
+        index: true,
+        follow: true
+    }
 };
 
 export default async function FilterPage({ searchParams }: any) {
-    const { page, genres, sort, q } =  await searchParams;
+    const { page, genres, sort, q } = await searchParams;
     const genreList = genres?.split(',').filter(Boolean) || [];
     const sortOption = sort || 'latest';
     const searchQuery = q || '';
@@ -63,8 +63,8 @@ export default async function FilterPage({ searchParams }: any) {
                 .filter(([_, value]) => Boolean(value))
         );
 
-        const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-        const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+        const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+        const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
         const pageUrl = `${siteUrl}/filter`;
 
         const filterSchema = {
@@ -119,39 +119,39 @@ export default async function FilterPage({ searchParams }: any) {
                     strategy="afterInteractive"
                 />
                 <div className="container mx-auto py-8">
-                <FilterOptions
-                    allGenres={serializedData.genres}
-                    selectedGenres={genreList}
-                    currentSort={sortOption}
-                    searchQuery={searchQuery}
-                />
+                    <FilterOptions
+                        allGenres={serializedData.genres}
+                        selectedGenres={genreList}
+                        currentSort={sortOption}
+                        searchQuery={searchQuery}
+                    />
 
-                <div className="mt-6 mb-4">
-                    <h2 className="text-xl font-semibold">
-                        {totalCount > 0
-                            ? `Am găsit ${totalCount} rezultat${totalCount === 1 ? '' : 'e'}`
-                            : 'Nu au fost găsite hentai-uri'}
-                    </h2>
-                </div>
-
-                {totalCount > 0 ? (
-                    <>
-                        <MediaGrid items={serializedData.animes} />
-                        {totalPages > 1 && (
-                            <Pagination
-                                currentPage={Math.max(1, Math.min(Number(page) || 1, totalPages))}
-                                totalPages={totalPages}
-                                baseUrl="/filter"
-                                searchParams={cleanSearchParams}
-                            />
-                        )}
-                    </>
-                ) : (
-                    <div className="text-center py-12 text-gray-400">
-                        Încearcă alte filtre sau termeni de căutare
+                    <div className="mt-6 mb-4">
+                        <h2 className="text-xl font-semibold">
+                            {totalCount > 0
+                                ? `Am găsit ${totalCount} rezultat${totalCount === 1 ? '' : 'e'}`
+                                : 'Nu au fost găsite hentai-uri'}
+                        </h2>
                     </div>
-                )}
-            </div>
+
+                    {totalCount > 0 ? (
+                        <>
+                            <MediaGrid items={serializedData.animes} />
+                            {totalPages > 1 && (
+                                <Pagination
+                                    currentPage={Math.max(1, Math.min(Number(page) || 1, totalPages))}
+                                    totalPages={totalPages}
+                                    baseUrl="/filter"
+                                    searchParams={cleanSearchParams}
+                                />
+                            )}
+                        </>
+                    ) : (
+                        <div className="text-center py-12 text-gray-400">
+                            Încearcă alte filtre sau termeni de căutare
+                        </div>
+                    )}
+                </div>
             </>
         );
     } catch (error) {

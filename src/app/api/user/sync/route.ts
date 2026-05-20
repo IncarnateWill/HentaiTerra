@@ -104,10 +104,6 @@ export async function POST(req: NextRequest) {
           { new: true, projection: USER_RESPONSE_FIELDS }
         );
         
-        // Invalidate staff cache if user has staff role
-        const userRoles = Array.isArray(updatedUser.roles) ? updatedUser.roles : (updatedUser.role ? [updatedUser.role] : ['user']);
-        
-        
         return NextResponse.json({ user: updatedUser });
       }
       

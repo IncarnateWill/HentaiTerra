@@ -53,6 +53,7 @@ export interface IUser extends Document {
     username?: string;
     email?: string;
     imageUrl?: string;
+    role?: string;
     roles?: string[];
     createdAt: Date;
     updatedAt: Date;
@@ -96,6 +97,7 @@ export interface ICard extends Document {
     description?: string;
     pricePoints?: number;
     priceMoney?: number;
+    sellPricePoints?: number;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -9,7 +9,7 @@ export default function ContentWarning() {
 
   useEffect(() => {
     // Check if user has already accepted the warning
-    const accepted = localStorage.getItem('HentaiUnited-age-verified');
+    const accepted = localStorage.getItem('HentaiTerra-age-verified');
     if (!accepted) {
       setIsVisible(true);
     } else {
@@ -18,7 +18,7 @@ export default function ContentWarning() {
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('HentaiUnited-age-verified', 'true');
+    localStorage.setItem('HentaiTerra-age-verified', 'true');
     setHasAccepted(true);
     setIsVisible(false);
   };
@@ -38,33 +38,33 @@ export default function ContentWarning() {
         <div className="flex justify-center mb-4">
           <AlertTriangle className="w-16 h-16 text-red-500" />
         </div>
-        
+
         <h2 className="text-2xl font-bold text-white mb-4">
           ⚠️ AVERTISMENT HENTAI 18+
         </h2>
-        
+
         <div className="text-gray-300 mb-6 space-y-3">
           <p className="font-semibold text-red-400">
-            HentaiUnited conține conținut hentai explicit pentru adulți (18+)
+            HentaiTerra conține conținut hentai explicit pentru adulți (18+)
           </p>
-          
+
           <p>
-            Prin continuarea navigării pe HentaiUnited, confirmați că:
+            Prin continuarea navigării pe HentaiTerra, confirmați că:
           </p>
-          
+
           <ul className="text-left space-y-2 text-sm">
             <li>• Aveți cel puțin 18 ani</li>
             <li>• Înțelegeți că acest site conține material hentai pentru adulți</li>
             <li>• Accesați acest conținut în mod voluntar</li>
             <li>• Nu vă simțiți ofensat de conținutul explicit</li>
           </ul>
-          
+
           <p className="text-xs text-gray-400 mt-4">
-            Dacă nu aveți 18 ani sau nu doriți să vizualizați acest tip de conținut, 
+            Dacă nu aveți 18 ani sau nu doriți să vizualizați acest tip de conținut,
             vă rugăm să părăsiți site-ul acum.
           </p>
         </div>
-        
+
         <div className="flex gap-4 justify-center">
           <button
             onClick={handleDecline}
@@ -72,7 +72,7 @@ export default function ContentWarning() {
           >
             Nu am 18 ani / Ieșire
           </button>
-          
+
           <button
             onClick={handleAccept}
             className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
@@ -80,9 +80,9 @@ export default function ContentWarning() {
             Am peste 18 ani / Intru
           </button>
         </div>
-        
+
         <p className="text-xs text-gray-500 mt-4">
-          Prin apăsarea butonului &quot;Am peste 18 ani&quot;, confirmați că respectați 
+          Prin apăsarea butonului &quot;Am peste 18 ani&quot;, confirmați că respectați
           toate condițiile de mai sus.
         </p>
       </div>

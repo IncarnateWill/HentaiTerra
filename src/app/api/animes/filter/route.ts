@@ -6,7 +6,7 @@ import { getCachedData, setCachedData } from '@/lib/redis';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        
+
         const page = parseInt(searchParams.get('page') || '1');
         const perPage = parseInt(searchParams.get('perPage') || '18');
         const search = searchParams.get('search') || '';
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         if (cachedResult) {
             return NextResponse.json(cachedResult);
         }
-        
+
         const result = await getFilteredMedia({
             page,
             perPage,
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
             genres,
             sort: sort === "alphabetical" ? "title" : sort,
         });
-        
+
         // Transform the data for client consumption
         const serializedResult = {
             ...result,
@@ -37,14 +37,14 @@ export async function GET(request: NextRequest) {
                 posterPath: anime.poster || '',
                 mediaType: "anime" as const,
                 views: typeof anime.views === 'number' ? anime.views : 0,
-                alt: `${anime.title || ''} - Vizionează pe HentaiUnited`,
+                alt: `${anime.title || ''} - Vizionează pe HentaiTerra`,
                 name: anime.name || '',
                 censorship: (anime.censorship || 'censored') as 'censored' | 'uncensored'
             })) || []
         };
 
         await setCachedData(cacheKey, serializedResult, 300); // Cache for 5 minutes
-        
+
         return NextResponse.json(serializedResult);
     } catch (error) {
         await logToDiscordWebhook(`Filter API error: ${error}`);

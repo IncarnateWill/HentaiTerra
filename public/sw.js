@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'HentaiUnited-v1';
+const CACHE_VERSION = 'HentaiTerra-v1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -54,7 +54,7 @@ self.addEventListener('activate', (event) => {
       .then(cacheNames => {
         return Promise.all(
           cacheNames
-            .filter(name => name.startsWith('HentaiUnited-') && name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== IMAGE_CACHE && name !== API_CACHE)
+            .filter(name => name.startsWith('HentaiTerra-') && name !== STATIC_CACHE && name !== DYNAMIC_CACHE && name !== IMAGE_CACHE && name !== API_CACHE)
             .map(name => {
               console.log('[SW] Deleting old cache:', name);
               return caches.delete(name);
@@ -76,7 +76,7 @@ self.addEventListener('fetch', (event) => {
 
   // Skip Chrome extensions and external domains
   if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
-  if (!url.origin.toLowerCase().includes('hentaiunited.ro') && !url.origin.includes('localhost')) {
+  if (!url.origin.toLowerCase().includes('hentaiterra.ro') && !url.origin.includes('www.hentaiterra.ro') && !url.origin.includes('localhost')) {
     // Allow external resources but don't cache
     return;
   }
@@ -84,10 +84,10 @@ self.addEventListener('fetch', (event) => {
   // API requests - Network First with cache fallback
   if (url.pathname.startsWith('/api/')) {
     // Don't cache mutations, analytics, or user-specific data
-    if (url.pathname.includes('/views') || 
-        url.pathname.includes('/likes') || 
-        url.pathname.includes('/watchlist') ||
-        url.pathname.includes('/profile')) {
+    if (url.pathname.includes('/views') ||
+      url.pathname.includes('/likes') ||
+      url.pathname.includes('/watchlist') ||
+      url.pathname.includes('/profile')) {
       return; // Network only
     }
 
@@ -115,7 +115,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(request)
         .then(cached => {
           if (cached) return cached;
-          
+
           return fetch(request).then(response => {
             if (response.ok) {
               const responseClone = response.clone();
@@ -133,10 +133,10 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Static assets (JS, CSS, fonts) - Cache First
-  if (request.destination === 'script' || 
-      request.destination === 'style' || 
-      request.destination === 'font' ||
-      url.pathname.startsWith('/_next/static/')) {
+  if (request.destination === 'script' ||
+    request.destination === 'style' ||
+    request.destination === 'font' ||
+    url.pathname.startsWith('/_next/static/')) {
     event.respondWith(
       caches.match(request)
         .then(cached => cached || fetch(request).then(response => {
@@ -164,7 +164,7 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => 
+        .catch(() =>
           caches.match(request)
             .then(cached => cached || caches.match('/offline'))
         )
@@ -176,7 +176,7 @@ self.addEventListener('fetch', (event) => {
 // Background sync for failed requests
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync triggered:', event.tag);
-  
+
   if (event.tag === 'sync-watchlist') {
     event.waitUntil(
       // Sync watchlist changes when back online
@@ -185,7 +185,7 @@ self.addEventListener('sync', (event) => {
         .catch(err => console.error('[SW] Sync failed:', err))
     );
   }
-  
+
   if (event.tag === 'sync-progress') {
     event.waitUntil(
       // Sync viewing progress when back online
@@ -199,7 +199,7 @@ self.addEventListener('sync', (event) => {
 // Push notification handling
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
-  
+
   if (!event.data) return;
 
   try {
@@ -210,7 +210,7 @@ self.addEventListener('push', (event) => {
       badge: '/favicon-32x32.png',
       image: data.image, // Anime cover image
       vibrate: [200, 100, 200],
-      tag: data.tag || 'HentaiUnited-notification',
+      tag: data.tag || 'HentaiTerra-notification',
       requireInteraction: data.requireInteraction || false,
       data: {
         url: data.url || '/',
@@ -234,7 +234,7 @@ self.addEventListener('push', (event) => {
     };
 
     event.waitUntil(
-      self.registration.showNotification(data.title || 'HentaiUnited', options)
+      self.registration.showNotification(data.title || 'HentaiTerra', options)
     );
   } catch (err) {
     console.error('[SW] Push notification error:', err);

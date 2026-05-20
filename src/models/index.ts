@@ -62,6 +62,11 @@ const UserSchema = new mongoose.Schema<IUser>({
     username: { type: String },
     email: { type: String },
     imageUrl: { type: String },
+    role: {
+        type: String,
+        default: 'user',
+        enum: ['user', 'owner', 'co-owner', 'admin', 'encoder', 'verificator', 'traducator', 'staff'],
+    },
     roles: {
         type: [String],
         default: ['user'],
@@ -104,6 +109,7 @@ const CardSchema = new mongoose.Schema<ICard>({
     description: String,
     pricePoints: Number,
     priceMoney: Number,
+    sellPricePoints: Number,
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

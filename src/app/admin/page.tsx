@@ -1,11 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { User } from "@/models";
 import { isFullAdmin, canManageContent } from "@/lib/admin-permissions";
-import { 
-  Shield, 
-  Users, 
-  Film, 
-  PlayCircle, 
+import {
+  Shield,
+  Users,
+  Film,
+  PlayCircle,
   Settings,
   BarChart3
 } from "lucide-react";
@@ -176,7 +176,7 @@ export default async function AdminDashboard() {
             </div>
           </div>
         </div>
-        
+
         <div className="mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
           <div className="flex items-center gap-3">
             <Shield className="w-5 h-5 text-green-400" />
@@ -185,7 +185,7 @@ export default async function AdminDashboard() {
                 {isFullAdminUser ? "Full Administrator Access" : "Content Manager Access"}
               </p>
               <p className="text-xs text-slate-400">
-                {isFullAdminUser 
+                {isFullAdminUser
                   ? "You have complete control over users, content, and system settings."
                   : "You can manage hentai content and episodes."
                 }
@@ -199,6 +199,6 @@ export default async function AdminDashboard() {
 }
 
 export const metadata = {
-  title: 'Admin Dashboard | HentaiUnited',
-  description: 'Admin dashboard for managing users, hentai, and episodes on HentaiUnited.'
+  title: 'Admin Dashboard | HentaiTerra',
+  description: 'Admin dashboard for managing users, hentai, and episodes on HentaiTerra.'
 };

@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Admin Users | HentaiUnited',
-  description: 'Manage user accounts, roles, and permissions in the HentaiUnited admin panel.'
+  title: 'Admin Users | HentaiTerra',
+  description: 'Manage user accounts, roles, and permissions in the HentaiTerra admin panel.'
 };
 
 export default function AdminUsersLayout({ children }: { children: React.ReactNode }) {

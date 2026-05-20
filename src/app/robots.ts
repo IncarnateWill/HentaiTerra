@@ -18,18 +18,18 @@ export default function robots(): MetadataRoute.Robots {
         '/oauth/*',
         '/verify-email',
         '/verify-email/*',
-        
+
         // Clerk authentication routes
 
         '/user',
         '/user/*',
-        
+
         // User-specific content
         '/watchlist/',
         '/profile/*',
         '/profile/*/watchlist',
         '/profile/*/watchlist/*',
-        
+
         // API routes (except sitemap)
         '/api/',
         '/api/episodes/*/views',
@@ -39,7 +39,7 @@ export default function robots(): MetadataRoute.Robots {
         '/api/webhook',
         '/api/webhook/*',
         '/api/trpc/*',
-        
+
         // Next.js internal routes
         '/_next/',
         '/_next/static/',
@@ -51,7 +51,7 @@ export default function robots(): MetadataRoute.Robots {
         '/_next/webpack-hmr',
         '/__nextjs_original-stack-frame',
         '/__nextjs_launch-editor',
-        
+
         // Static assets by type
         '/_next/static/chunks/',
         '/_next/static/chunks/*',
@@ -63,7 +63,7 @@ export default function robots(): MetadataRoute.Robots {
         '/_next/static/media/*',
         '/_next/static/webpack/',
         '/_next/static/webpack/*',
-        
+
         // Build artifacts
         '/*.map$',
         '/_next/static/*/*.map',
@@ -73,7 +73,7 @@ export default function robots(): MetadataRoute.Robots {
         '/react-loadable-manifest.json',
         '/_buildManifest.js',
         '/_ssgManifest.js',
-        
+
         // Next.js special pages
         '/_error',
         '/_document',
@@ -81,28 +81,28 @@ export default function robots(): MetadataRoute.Robots {
         '/404',
         '/403',
         '/500',
-        
+
         // Static resources
         '/fonts',
         '/fonts/*',
-        
+
         // CDN & Analytics
         '/cdn-cgi/',
         '/cdn-cgi/*',
         '/analytics',
         '/analytics/*',
-        
+
         // Development & Debug
         '/debug-*',
         '/__*',
-        
+
         // Rate limiting endpoints
         '/ratelimit/',
-        
+
         // Vercel-specific
         '/.well-known/vercel/',
         '/.well-known/vercel/*',
-        
+
         // Common query parameters to ignore
         '/*?*sort=*',
         '/*?*filter=*',
@@ -110,6 +110,6 @@ export default function robots(): MetadataRoute.Robots {
         '/*?*utm_*',
       ],
     },
-    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiUnited.ro'}/api/sitemap.xml`,
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://HentaiTerra.ro'}/api/sitemap.xml`,
   }
 }

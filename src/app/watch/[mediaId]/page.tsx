@@ -9,7 +9,7 @@ import Image from "next/image";
 import EpisodePaginationWrapper from "@/components/video/EpisodePaginationWrapper";
 import { watchPageFAQ } from "@/components/shared/FAQ";
 import { logToDiscordWebhook } from "@/lib/discord-webhook";
-import WatchPointsTracker from "@/components/video/WatchPointsTracker";
+import VideoPlayerWithSources from "@/components/video/VideoPlayerClient";
 
 export const revalidate = 60;
 
@@ -41,10 +41,6 @@ const LoadingComments = () => (
 // DYNAMIC IMPORTS - Improve initial page load performance
 // ============================================================================
 
-const VideoPlayer = dynamic(() => import("@/components/video/video-player"), {
-  loading: () => <LoadingVideo />,
-  ssr: true
-});
 
 const MediaInfo = dynamic(() => import("@/components/video/media-info"), {
   loading: () => <LoadingInfo />,
@@ -58,11 +54,6 @@ const ActionButtons = dynamic(() => import("@/components/video/action-buttons"),
 
 const DisqusDiscussionEmbed = dynamic(() => import("@/components/disquss/episode"), {
   loading: () => <LoadingComments />,
-  ssr: true
-});
-
-const AutoWatchMarker = dynamic(() => import("@/components/video/auto-watch-marker"), {
-  loading: () => <LoadingButtons />,
   ssr: true
 });
 
@@ -285,7 +276,7 @@ function generateVideoStructuredData(episode: Episode, episodeTitle: string, thu
     genre: (episode.genres || []).map(g => g.name),
     publisher: {
       "@type": "Organization",
-      name: episode.animeId.studio || "HentaiUnited",
+      name: episode.animeId.studio || "HentaiTerra",
       url: siteUrl,
     },
     potentialAction: {
@@ -413,9 +404,9 @@ export async function generateMetadata({
       notFound();
     }
 
-    const siteUrl = process.env.SITE_URL || "https://HentaiUnited.ro";
+    const siteUrl = process.env.SITE_URL || "https://HentaiTerra.ro";
     const episodeTitle = `${episode.animeId.name} - Episodul ${episode.episodeNumber} - ${episode.name}`;
-    const description = `Urmareste ${episodeTitle} pe HentaiUnited subtitrat in Romana`;
+    const description = `Urmareste ${episodeTitle} pe HentaiTerra subtitrat in Romana`;
     const thumbnailUrl = resolveThumbnailUrl(episode.thumbnail, episode.animeId.poster, siteUrl);
 
     return {
@@ -428,7 +419,7 @@ export async function generateMetadata({
         type: "video.episode",
         title: episodeTitle,
         description,
-        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
         locale: "ro_RO",
         images: [{
           url: thumbnailUrl,
@@ -452,8 +443,8 @@ export async function generateMetadata({
           height: 1080,
           alt: `Thumbnail for ${episodeTitle}`,
         }],
-        creator: "@HentaiUnited",
-        site: "@HentaiUnited",
+        creator: "@HentaiTerra",
+        site: "@HentaiTerra",
       },
       alternates: {
         canonical: `${siteUrl}/watch/${mediaId}`,
@@ -629,7 +620,7 @@ export default async function WatchPage({
       season: 'Spring 2026',
       status: episode.animeId.status
     };
-    const siteUrl = process.env.SITE_URL || "https://HentaiUnited.ro";
+    const siteUrl = process.env.SITE_URL || "https://HentaiTerra.ro";
     const thumbnailUrl = resolveThumbnailUrl(episode.thumbnail, mediaData.posterPath, siteUrl);
 
     // Generate structured data
@@ -671,33 +662,21 @@ export default async function WatchPage({
           <div className="flex flex-col gap-8">
             {/* Top Section: Player and Episodes side-by-side */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-              <div className="space-y-6">
-                <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(var(--color-primary-500),0.15)] ring-1 ring-white/10">
-                  <Suspense fallback={<LoadingVideo />}>
-                    <VideoPlayer
-                      episodeId={episode.episodeId}
-                      videoUrl={mediaData.videoUrl}
-                      videoUrlBackup={mediaData.videoUrlBackup || ''}
-                      videoUrlBackup2={mediaData.videoUrlBackup2 || ''}
-                      videoUrlBackup3={mediaData.videoUrlBackup3 || ''}
-                      animeId={episode.animeId._id.toString()}
-                      width={1920}
-                      height={1080}
-                      title={episodeTitle}
-                      loading="lazy"
-                      thumbnailUrl={thumbnailUrl}
-                    />
-                  </Suspense>
-
-                  <Suspense fallback={<LoadingButtons />}>
-                    <AutoWatchMarker
-                      episodeId={episode.episodeId}
-                      animeId={episode.animeId._id.toString()}
-                    />
-                  </Suspense>
-                  
-                  <WatchPointsTracker episodeId={episode.episodeId} />
-                </div>
+              <div className="space-y-4">
+                {/* ── Video Player + Source Selector (self-contained) ── */}
+                <VideoPlayerWithSources
+                  episodeId={episode.episodeId}
+                  videoUrl={mediaData.videoUrl}
+                  videoUrlBackup={mediaData.videoUrlBackup || ''}
+                  videoUrlBackup2={mediaData.videoUrlBackup2 || ''}
+                  videoUrlBackup3={mediaData.videoUrlBackup3 || ''}
+                  animeId={episode.animeId._id.toString()}
+                  width={1920}
+                  height={1080}
+                  title={episodeTitle}
+                  loading="lazy"
+                  thumbnailUrl={thumbnailUrl}
+                />
 
                 {/* Player Controls/Info */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-dark-400/50 backdrop-blur-xl p-5 rounded-2xl border border-white/5 shadow-xl">

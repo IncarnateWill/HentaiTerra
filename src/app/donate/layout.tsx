@@ -2,22 +2,22 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: `Donații | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Susține Comunitatea Hentai`,
-  description: `Ajută-ne să menținem ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} și să continuăm să oferim conținut de calitate. Donațiile tale susțin direct dezvoltarea platformei și comunitatea hentai din România.`,
-  keywords: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}, donații, susține hentai, comunitate hentai, România, fansub, donație`,
+  title: `Donații | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Susține Comunitatea Hentai`,
+  description: `Ajută-ne să menținem ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} și să continuăm să oferim conținut de calitate. Donațiile tale susțin direct dezvoltarea platformei și comunitatea hentai din România.`,
+  keywords: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}, donații, susține hentai, comunitate hentai, România, fansub, donație`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/donate`
+    canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/donate`
   },
   openGraph: {
-    title: `Susține ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} prin Donații`,
-    description: `Ajută-ne să creștem și să îmbunătățim platforma ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} prin donațiile tale.`,
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/donate`,
+    title: `Susține ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} prin Donații`,
+    description: `Ajută-ne să creștem și să îmbunătățim platforma ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} prin donațiile tale.`,
+    url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/donate`,
     type: 'website',
     images: [{
       url: 'https://i.imgur.com/BhTbL9B.png',
       width: 1200,
       height: 630,
-      alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Susține prin donații`
+      alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Susține prin donații`
     }]
   },
   robots: {
@@ -31,8 +31,8 @@ export default function DonateLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
   const pageUrl = `${siteUrl}/donate`;
 
   const donateSchema = {

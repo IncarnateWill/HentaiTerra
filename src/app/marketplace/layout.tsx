@@ -2,15 +2,15 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: `Piața de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Cumpără și Vinde Cartonașe Hentai`,
-  description: `Vizitează piața oficială de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Schimbă, cumpără sau vinde cartonașe hentai de la simple la legendare cu alți utilizatori ai comunității.`,
+  title: `Piața de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Cumpără și Vinde Cartonașe Hentai`,
+  description: `Vizitează piața oficială de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Schimbă, cumpără sau vinde cartonașe hentai de la simple la legendare cu alți utilizatori ai comunității.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/marketplace`
+    canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/marketplace`
   },
   openGraph: {
-    title: `Piața de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
-    description: `Vizitează piața oficială de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Schimbă, cumpără sau vinde cartonașe cu alți utilizatori.`,
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/marketplace`,
+    title: `Piața de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
+    description: `Vizitează piața oficială de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Schimbă, cumpără sau vinde cartonașe cu alți utilizatori.`,
+    url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/marketplace`,
     type: 'website'
   },
   robots: {
@@ -24,8 +24,8 @@ export default function MarketplaceLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
   const pageUrl = `${siteUrl}/marketplace`;
 
   const marketplaceSchema = {

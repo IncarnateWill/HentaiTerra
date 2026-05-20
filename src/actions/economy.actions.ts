@@ -1,7 +1,7 @@
 'use server';
 
 import { connectToDatabase } from '@/lib/mongodb';
-import { User, Task, UserTaskProgress, ShopPrice, Card, UserCard, WatchHistory, Episode, Rank, Lootbox } from '@/models';
+import { User, Task, UserTaskProgress, ShopPrice, Card, UserCard, WatchHistory, Episode, Rank, Lootbox, MarketplaceListing } from '@/models';
 import { auth } from '@clerk/nextjs/server';
 import moment from 'moment-timezone';
 
@@ -258,21 +258,37 @@ export async function awardWatchPoints(episodeId: string, watchTimeSeconds: numb
             watchHistory = await WatchHistory.findOne({ userId: user._id, episodeId: episode._id });
         }
 
+        let currentEarned = 0;
+        if (watchHistory) {
+            currentEarned = watchHistory.pointsEarned || 0;
+        }
+
+        let actualPointsToAdd = pointsToAdd;
+        if (currentEarned >= 20) {
+            actualPointsToAdd = 0;
+        } else if (currentEarned + actualPointsToAdd > 20) {
+            actualPointsToAdd = 20 - currentEarned;
+        }
+
         if (!watchHistory) {
             watchHistory = await WatchHistory.create({
                 userId: user._id,
                 episodeId: episode._id,
                 watchTimeSeconds: watchTimeSeconds,
-                pointsEarned: pointsToAdd
+                pointsEarned: actualPointsToAdd
             });
         } else {
             watchHistory.watchTimeSeconds = watchTimeSeconds;
-            watchHistory.pointsEarned = (watchHistory.pointsEarned || 0) + pointsToAdd;
+            if (actualPointsToAdd > 0) {
+                watchHistory.pointsEarned = currentEarned + actualPointsToAdd;
+            }
             await watchHistory.save();
         }
 
-        user.points = (user.points || 0) + pointsToAdd;
-        await user.save();
+        if (actualPointsToAdd > 0) {
+            user.points = (user.points || 0) + actualPointsToAdd;
+            await user.save();
+        }
 
         // Check Watch Episode Tasks
         const allTasks = await Task.find({ taskType: 'watch_episodes', active: true });
@@ -313,7 +329,7 @@ export async function awardWatchPoints(episodeId: string, watchTimeSeconds: numb
             }
         }
 
-        return { success: true, points: user.points, historyId: watchHistory._id.toString() };
+        return { success: true, points: user.points, historyId: watchHistory._id.toString(), addedPoints: actualPointsToAdd };
     } catch (error) {
         console.error('Error awarding watch points:', error);
         return { error: 'Internal Server Error' };
@@ -461,6 +477,42 @@ export async function toggleShowcaseCard(userCardId: string, showcase: boolean) 
         return { success: true };
     } catch (e) {
         console.error('Error toggling showcase:', e);
+        return { error: 'Internal Server Error' };
+    }
+}
+
+export async function quickSellCard(userCardId: string) {
+    try {
+        await connectToDatabase();
+        const { userId: clerkId } = await auth();
+        if (!clerkId) return { error: 'Unauthorized' };
+
+        const user = await User.findOne({ clerkId });
+        if (!user) return { error: 'User not found' };
+
+        const userCard = await UserCard.findOne({ _id: userCardId, userId: user._id }).populate('cardId');
+        if (!userCard) return { error: 'Card not found or does not belong to you' };
+
+        const card = userCard.cardId as any;
+        if (!card || !card.sellPricePoints) {
+            return { error: 'Acest cartonaș nu are un preț de vânzare setat.' };
+        }
+
+        const price = card.sellPricePoints;
+
+        // Delete the userCard
+        await UserCard.findByIdAndDelete(userCardId);
+
+        // Delete any active marketplace listings for this card
+        await MarketplaceListing.deleteMany({ userCardId });
+
+        // Add points
+        user.points = (user.points || 0) + price;
+        await user.save();
+
+        return { success: true, newPoints: user.points, addedPoints: price };
+    } catch (e) {
+        console.error('Error quick selling card:', e);
         return { error: 'Internal Server Error' };
     }
 }

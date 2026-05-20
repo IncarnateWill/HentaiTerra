@@ -64,7 +64,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
             posterPath: anime.poster || '',
             mediaType: "anime" as const,
             views: typeof anime.views === 'number' ? anime.views : 0,
-            alt: `${anime.title || ''} - Vizionează pe HentaiUnited`,
+            alt: `${anime.title || ''} - Vizionează pe HentaiTerra`,
             name: anime.name || '',
             censorship: (anime.censorship || 'censored') as 'censored' | 'uncensored'
         })) || [];
@@ -85,7 +85,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                     {/* Background Effects */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-primary-600/20 rounded-full blur-[120px] opacity-50 pointer-events-none"></div>
                     <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-secondary-600/10 rounded-full blur-[100px] opacity-40 pointer-events-none"></div>
-                    
+
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="text-center max-w-4xl mx-auto space-y-6">
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-dark-400/50 backdrop-blur-md rounded-full border border-white/5 shadow-xl">
@@ -94,7 +94,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                                     {totalCount.toLocaleString()} serii disponibile
                                 </span>
                             </div>
-                            
+
                             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 tracking-tight text-white drop-shadow-lg">
                                 Hentai Online <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600">Subtitrat</span>
                             </h1>
@@ -127,7 +127,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                     <div className="rounded-3xl bg-dark-400/30 backdrop-blur-xl border border-white/5 shadow-2xl p-8 sm:p-10 w-full text-center relative overflow-hidden">
                         {/* Glow effect */}
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-red-500/10 blur-[50px] pointer-events-none"></div>
-                        
+
                         <div className="w-20 h-20 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-500/20 rotate-3 shadow-lg">
                             <svg className="w-10 h-10 text-red-400 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -137,7 +137,7 @@ const FilterPage = async ({ searchParams }: { searchParams: Promise<SearchParams
                             Oops! Ceva nu a mers
                         </h2>
                         <p className="text-gray-400 mb-8 leading-relaxed">
-                            A apărut o eroare la încărcarea rezultatelor pe HentaiUnited. Te rugăm să încerci din nou.
+                            A apărut o eroare la încărcarea rezultatelor pe HentaiTerra. Te rugăm să încerci din nou.
                         </p>
                         <button
                             onClick={() => window.location.reload()}

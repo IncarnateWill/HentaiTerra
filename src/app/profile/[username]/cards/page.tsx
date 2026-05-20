@@ -27,10 +27,10 @@ export async function generateMetadata(
       };
     }
 
-    const baseUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const baseUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
     const canonicalUrl = `${baseUrl}/profile/${username}/cards`;
-    const title = `Colecția de cartonașe a lui ${user.username} | HentaiUnited`;
-    const description = `Vezi toate cartonașele colecționate de ${user.username} pe HentaiUnited. Cartonașe de la simple la legendare!`;
+    const title = `Colecția de cartonașe a lui ${user.username} | HentaiTerra`;
+    const description = `Vezi toate cartonașele colecționate de ${user.username} pe HentaiTerra. Cartonașe de la simple la legendare!`;
     const imageUrl = user.imageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTQBUvIrjWFCT_r4FhlT2T3vJLLdCRRV5WFA&s';
 
     return {
@@ -54,15 +54,15 @@ export async function generateMetadata(
         ],
         type: 'website',
         locale: 'ro_RO',
-        siteName: 'HentaiUnited',
+        siteName: 'HentaiTerra',
       },
       twitter: {
         card: 'summary_large_image',
         title,
         description,
         images: [imageUrl],
-        creator: '@HentaiUnited',
-        site: '@HentaiUnited',
+        creator: '@HentaiTerra',
+        site: '@HentaiTerra',
       },
       robots: {
         index: true,
@@ -71,8 +71,8 @@ export async function generateMetadata(
     };
   } catch (error) {
     return {
-      title: "Colecție de Cartonașe | HentaiUnited",
-      description: "Vezi colecția de cartonașe pe HentaiUnited.",
+      title: "Colecție de Cartonașe | HentaiTerra",
+      description: "Vezi colecția de cartonașe pe HentaiTerra.",
     };
   }
 }
@@ -114,8 +114,8 @@ export default async function ProfileCardsPage({ params }: { params: Promise<{ u
       };
     });
 
-    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
     const pageUrl = `${siteUrl}/profile/${sanitizedUsername}/cards`;
 
     const collectionSchema = {

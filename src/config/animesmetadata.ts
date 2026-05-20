@@ -1,6 +1,6 @@
 export const animesmetadata = {
-    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Catalogul Complet de Conținut pentru Hentai 18+`,
-    description: `Explorează catalogul vast de conținut hentai subtitrat în română pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Doar pentru persoane de peste 18 ani. Filtrează după gen și descoperă conținut explicit pentru hentai. Streaming gratuit în calitate HD.`,
+    title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Catalogul Complet de Conținut pentru Hentai 18+`,
+    description: `Explorează catalogul vast de conținut hentai subtitrat în română pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Doar pentru persoane de peste 18 ani. Filtrează după gen și descoperă conținut explicit pentru hentai. Streaming gratuit în calitate HD.`,
     keywords: [
         'hentai romania',
         'hentai hd',
@@ -8,27 +8,27 @@ export const animesmetadata = {
         'hentai subtitrat in romana',
         'hentai uncensored',
         'hentai subtitrat romana',
-        'lista hentai romania', 
+        'lista hentai romania',
         'colectie hentai romania',
         'hentai online romania',
         'hentai streaming romania',
         'hentai hd romana',
         'adult content 18+',
-        `${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited').toLowerCase()} romania`
+        `${(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra').toLowerCase()} romania`
     ],
     openGraph: {
-        title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Catalogul Complet de Conținut pentru Hentai`,
-        description: `Descoperă conținut hentai subtitrat în română pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Doar pentru persoane de peste 18 ani. Filtrează după genuri și găsește conținut explicit pentru hentai. Streaming gratuit, calitate HD.`,
+        title: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Catalogul Complet de Conținut pentru Hentai`,
+        description: `Descoperă conținut hentai subtitrat în română pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Doar pentru persoane de peste 18 ani. Filtrează după genuri și găsește conținut explicit pentru hentai. Streaming gratuit, calitate HD.`,
         type: 'website',
         url: `${process.env.SITE_URL}/hentais`,
-        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited',
+        siteName: process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra',
         locale: 'ro_RO',
         images: [
             {
                 url: process.env.NEXT_PUBLIC_OG_IMAGE,
                 width: 1200,
                 height: 630,
-                alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Catalogul Complet de Conținut pentru Hentai`
+                alt: `${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Catalogul Complet de Conținut pentru Hentai`
             }
         ]
     },

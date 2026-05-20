@@ -113,19 +113,19 @@ export const animePageFAQ: FAQItem[] = [
   }
 ];
 
-// HentaiUnited specific FAQ data
-export const HentaiUnitedFAQ: FAQItem[] = [
+// HentaiTerra specific FAQ data
+export const HentaiTerraFAQ: FAQItem[] = [
   {
-    question: "Ce este HentaiUnited?",
-    answer: "HentaiUnited este o platformă dedicată pentru vizionarea de hentai tradus în română. Oferim conținut hentai subtitrat pentru publicul adult din România."
+    question: "Ce este HentaiTerra?",
+    answer: "HentaiTerra este o platformă dedicată pentru vizionarea de hentai tradus în română. Oferim conținut hentai subtitrat pentru publicul adult din România."
   },
   {
     question: "Este legal să vizionez hentai în România?",
     answer: "Da, vizionarea de hentai este legală în România pentru persoanele cu vârsta peste 18 ani. Conținutul nostru este artistic și animat, nu implică persoane reale."
   },
   {
-    question: "Ce vârstă trebuie să am pentru a viziona conținut pe HentaiUnited?",
-    answer: "Trebuie să aveți cel puțin 18 ani pentru a accesa și viziona conținutul de pe HentaiUnited. Prin accesarea site-ului, confirmați că îndepliniți această cerință."
+    question: "Ce vârstă trebuie să am pentru a viziona conținut pe HentaiTerra?",
+    answer: "Trebuie să aveți cel puțin 18 ani pentru a accesa și viziona conținutul de pe HentaiTerra. Prin accesarea site-ului, confirmați că îndepliniți această cerință."
   },
   {
     question: "Cum sunt traduse episoadele de hentai?",
@@ -136,7 +136,7 @@ export const HentaiUnitedFAQ: FAQItem[] = [
     answer: "Oferim o varietate de genuri hentai incluzând romantic, școală, fantezie, demon, și multe altele. Fiecare hentai este etichetat corespunzător pentru preferințele dvs."
   },
   {
-    question: "Este conținutul HentaiUnited gratuit?",
+    question: "Este conținutul HentaiTerra gratuit?",
     answer: "Da, conținutul nostru este gratuit pentru vizionare. Trebuie doar să creați un cont gratuit pentru a accesa toate episoadele și funcțiile site-ului."
   }
 ];

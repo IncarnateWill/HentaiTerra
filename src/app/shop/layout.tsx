@@ -2,15 +2,15 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: `Magazin de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Cumpără Pachete și Cufere`,
-  description: `Vizitează magazinul oficial de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Cumpără cutii și pachete tematice cu punctele tale și completează-ți colecția cu cartonașe exclusive.`,
+  title: `Magazin de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Cumpără Pachete și Cufere`,
+  description: `Vizitează magazinul oficial de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Cumpără cutii și pachete tematice cu punctele tale și completează-ți colecția cu cartonașe exclusive.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/shop`
+    canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/shop`
   },
   openGraph: {
-    title: `Magazin de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
-    description: `Deschide cutii și pachete de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Folosește punctele acumulate pentru a colecta cartonașe hentai rare.`,
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/shop`,
+    title: `Magazin de Cartonașe | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
+    description: `Deschide cutii și pachete de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Folosește punctele acumulate pentru a colecta cartonașe hentai rare.`,
+    url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/shop`,
     type: 'website'
   },
   robots: {
@@ -24,8 +24,8 @@ export default function ShopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
   const pageUrl = `${siteUrl}/shop`;
 
   const shopSchema = {

@@ -11,15 +11,15 @@ import Script from 'next/script';
 // export const revalidate = 0;
 
 export const metadata = {
-  title: 'Watchlist-ul Meu - HentaiUnited',
-  description: 'Gestionează watchlist-ul tău de hentai pe HentaiUnited. Urmărește seriile începute, plănuite sau finalizate.',
+  title: 'Watchlist-ul Meu - HentaiTerra',
+  description: 'Gestionează watchlist-ul tău de hentai pe HentaiTerra. Urmărește seriile începute, plănuite sau finalizate.',
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/watchlist`
+    canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/watchlist`
   },
   openGraph: {
-    title: 'Watchlist-ul Meu - HentaiUnited',
-    description: 'Gestionează watchlist-ul tău de hentai pe HentaiUnited.',
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/watchlist`,
+    title: 'Watchlist-ul Meu - HentaiTerra',
+    description: 'Gestionează watchlist-ul tău de hentai pe HentaiTerra.',
+    url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/watchlist`,
     type: 'website'
   },
   robots: {
@@ -59,49 +59,49 @@ interface WatchlistData {
 }
 
 // Enhanced status configuration with better visual hierarchy
-const STATUS_CONFIG: Record<Status, { 
-  label: string; 
-  color: string; 
-  bgColor: string; 
-  icon: string; 
+const STATUS_CONFIG: Record<Status, {
+  label: string;
+  color: string;
+  bgColor: string;
+  icon: string;
   accent: string;
   description: string;
 }> = {
-  watching: { 
-    label: 'Currently Watching', 
-    color: 'text-emerald-400', 
+  watching: {
+    label: 'Currently Watching',
+    color: 'text-emerald-400',
     bgColor: 'bg-emerald-500/10 border-emerald-400/20',
     accent: 'bg-emerald-400',
     icon: '▶️',
     description: 'Hentai you are actively watching'
   },
-  'plan-to-watch': { 
-    label: 'Plan to Watch', 
-    color: 'text-sky-400', 
+  'plan-to-watch': {
+    label: 'Plan to Watch',
+    color: 'text-sky-400',
     bgColor: 'bg-sky-500/10 border-sky-400/20',
     accent: 'bg-sky-400',
     icon: '📋',
     description: 'Hentai you plan to watch later'
   },
-  'on-hold': { 
-    label: 'On Hold', 
-    color: 'text-amber-400', 
+  'on-hold': {
+    label: 'On Hold',
+    color: 'text-amber-400',
     bgColor: 'bg-amber-500/10 border-amber-400/20',
     accent: 'bg-amber-400',
     icon: '⏸️',
     description: 'Hentai you paused watching'
   },
-  completed: { 
-    label: 'Completed', 
-    color: 'text-violet-400', 
+  completed: {
+    label: 'Completed',
+    color: 'text-violet-400',
     bgColor: 'bg-violet-500/10 border-violet-400/20',
     accent: 'bg-violet-400',
     icon: '✅',
     description: 'Hentai you finished watching'
   },
-  dropped: { 
-    label: 'Dropped', 
-    color: 'text-rose-400', 
+  dropped: {
+    label: 'Dropped',
+    color: 'text-rose-400',
     bgColor: 'bg-rose-500/10 border-rose-400/20',
     accent: 'bg-rose-400',
     icon: '❌',
@@ -110,15 +110,15 @@ const STATUS_CONFIG: Record<Status, {
 };
 
 // Enhanced error card with better UX
-const ErrorCard = ({ 
-  title, 
-  message, 
+const ErrorCard = ({
+  title,
+  message,
   showHomeLink = false,
   showRetry = false,
   onRetry
-}: { 
-  title: string; 
-  message: string; 
+}: {
+  title: string;
+  message: string;
   showHomeLink?: boolean;
   showRetry?: boolean;
   onRetry?: () => void;
@@ -147,8 +147,8 @@ const ErrorCard = ({
               </button>
             )}
             {showHomeLink && (
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-2xl transition-all duration-200 font-medium shadow-lg hover:shadow-indigo-500/25"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -217,30 +217,30 @@ const normalizeWatchlistData = (watchlistData: any): WatchlistData => {
             })),
             genres: Array.isArray(anime.animeId.genres)
               ? anime.animeId.genres.map((genre: any) => ({
-                  ...genre,
-                  _id: genre._id?.toString?.() || genre._id
-                }))
+                ...genre,
+                _id: genre._id?.toString?.() || genre._id
+              }))
               : [],
           },
           _id: anime._id?.toString?.() || anime._id,
           watchedEpisodes: anime.watchedEpisodes?.map((id: any) => id?.toString?.() || id) || [],
-          lastWatchedEpisode: anime.lastWatchedEpisode 
+          lastWatchedEpisode: anime.lastWatchedEpisode
             ? {
-                _id: anime.lastWatchedEpisode._id?.toString?.() || anime.lastWatchedEpisode._id,
-                episodeNumber: anime.lastWatchedEpisode.episodeNumber,
-                name: anime.lastWatchedEpisode.name,
-              }
+              _id: anime.lastWatchedEpisode._id?.toString?.() || anime.lastWatchedEpisode._id,
+              episodeNumber: anime.lastWatchedEpisode.episodeNumber,
+              name: anime.lastWatchedEpisode.name,
+            }
             : null
         }))
     };
   } catch (error) {
-logToDiscordWebhook(`Error normalizing watchlist data: ${error}`).catch(console.error);
+    logToDiscordWebhook(`Error normalizing watchlist data: ${error}`).catch(console.error);
     return { animes: [] };
   }
 };
 
 // Enhanced grouping with better type safety
-const groupAnimesByStatus = (animes: WatchlistItem[]): Record<Status, WatchlistItem[]> => 
+const groupAnimesByStatus = (animes: WatchlistItem[]): Record<Status, WatchlistItem[]> =>
   STATUS_ORDER.reduce((acc, status) => {
     acc[status] = animes.filter(item => item.status === status);
     return acc;
@@ -271,8 +271,8 @@ const WatchlistLoading = () => (
 );
 
 export default async function WatchlistPage() {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
   const pageUrl = `${siteUrl}/watchlist`;
 
   const watchlistSchema = {
@@ -325,7 +325,7 @@ export default async function WatchlistPage() {
     return (
       <>
         {scriptsBlock}
-        <ErrorCard 
+        <ErrorCard
           title="Authentication Required"
           message="Please sign in to access your watchlist and track your hentai progress."
           showHomeLink
@@ -344,7 +344,7 @@ export default async function WatchlistPage() {
       return (
         <>
           {scriptsBlock}
-          <ErrorCard 
+          <ErrorCard
             title="Profile Not Found"
             message='Unable to load your profile. Please contact "incarnatewill" on Discord for assistance.'
             showHomeLink
@@ -361,7 +361,7 @@ export default async function WatchlistPage() {
       getWatchlistByUserId(userIdString),
       getWatchlistStats(userIdString)
     ]);
-    
+
     // Clean up orphaned entries if there are issues with the data
     if ((watchlistData as any)?.animes?.some((anime: any) => !anime.animeId)) {
       await cleanupOrphanedWatchlistEntries(userIdString);
@@ -371,9 +371,9 @@ export default async function WatchlistPage() {
         getWatchlistStats(userIdString)
       ]);
     }
-    
+
     const watchlist = normalizeWatchlistData(watchlistData);
-    
+
     const totalAnimes = watchlist.animes?.length || 0;
     if (totalAnimes === 0) {
       return (
@@ -384,13 +384,13 @@ export default async function WatchlistPage() {
       );
     }
 
-    const animesByStatus = groupAnimesByStatus(watchlist.animes!);      
-    
+    const animesByStatus = groupAnimesByStatus(watchlist.animes!);
+
     return (
       <>
         {scriptsBlock}
         <Suspense fallback={<WatchlistLoading />}>
-          <WatchlistClient 
+          <WatchlistClient
             animesByStatus={animesByStatus}
             statusConfig={STATUS_CONFIG}
             statusOrder={STATUS_ORDER}
@@ -406,7 +406,7 @@ export default async function WatchlistPage() {
     return (
       <>
         {scriptsBlock}
-        <ErrorCard 
+        <ErrorCard
           title="Something Went Wrong"
           message="We encountered an error while loading your watchlist. Please try again later."
           showHomeLink

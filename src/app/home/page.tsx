@@ -183,7 +183,7 @@ function serializeMovieList(movies: Anime[]) {
  */
 const HeroSection = ({ randomEpisodes }: { randomEpisodes: any[] }) => {
     const serializedRandomEpisodes = serializeRandomEpisodes(randomEpisodes);
-    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
 
     return (
         <div className="w-full">

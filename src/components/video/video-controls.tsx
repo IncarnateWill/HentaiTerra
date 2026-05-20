@@ -1,7 +1,6 @@
 'use client';
 
-import { memo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { memo } from 'react';
 
 interface VideoSource {
     name: string;
@@ -12,10 +11,7 @@ interface VideoSource {
 interface VideoControlsProps {
     sources: VideoSource[];
     selectedSource: string;
-    showSources: boolean;
-    hasInteracted: boolean;
     onSourceSelect: (url: string) => void;
-    onToggleSources: () => void;
 }
 
 // Memoize the source button component to prevent unnecessary re-renders
@@ -46,12 +42,13 @@ const VideoControls = memo(({
     sources,
     selectedSource,
     onSourceSelect,
-}: Omit<VideoControlsProps, 'showSources' | 'hasInteracted' | 'onToggleSources'>) => {
+}: VideoControlsProps) => {
     return (
-        <div className="flex flex-wrap gap-2 py-4 border-t border-white/5 mt-4" role="region" aria-label="Video source selection">
-            <div className="w-full mb-2">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Select Server</span>
-            </div>
+        <div
+            className="flex flex-wrap gap-2"
+            role="region"
+            aria-label="Video source selection"
+        >
             {sources.map((source) => (
                 <SourceButton
                     key={source.url}
@@ -66,4 +63,4 @@ const VideoControls = memo(({
 
 VideoControls.displayName = 'VideoControls';
 
-export default VideoControls; 
+export default VideoControls;

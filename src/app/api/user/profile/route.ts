@@ -219,10 +219,10 @@ export async function PATCH(req: NextRequest) {
             );
           }
           
-          // Only validate non-empty URLs
-          if (data.social[platform] && !isValidUrl(data.social[platform])) {
+          // Accept plain usernames or full URLs (no strict URL validation)
+          if (data.social[platform] && data.social[platform].length > 100) {
             return NextResponse.json(
-              { error: `Invalid ${platform} URL format` },
+              { error: `${platform} value is too long (max 100 characters)` },
               { status: 400 }
             );
           }
@@ -247,10 +247,6 @@ export async function PATCH(req: NextRequest) {
         );
       }
       
-      // Invalidate staff cache if user has staff role
-      const userRoles = Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : ['user']);
-      
-      
       // Return sanitized updated user data
       return NextResponse.json({
         user: {
@@ -262,7 +258,7 @@ export async function PATCH(req: NextRequest) {
           pfp: user.pfp || user.imageUrl || '',
           social: user.social || {},
           role: user.role,
-          roles: userRoles,
+          roles: Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : ['user']),
           points: user.points || 0
         }
       });

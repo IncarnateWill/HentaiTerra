@@ -47,8 +47,8 @@ const RecruitPage = () => {
             if (isSignedIn && user) {
                 userInfo = `\nUser Info (Clerk):\nEmail: ${user.primaryEmailAddress?.emailAddress || 'Not available'}\nUsername: ${user.username || 'Not available'}\nClerk ID: ${user.id}\n`;
                 // Add site name to user info
-                userInfo += `\nSite Name: ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`;
-                
+                userInfo += `\nSite Name: ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`;
+
                 // Add social accounts if available
                 if (user.externalAccounts && user.externalAccounts.length > 0) {
                     userInfo += '\nSocial Accounts:';
@@ -75,7 +75,7 @@ const RecruitPage = () => {
                     applicationRoles: [],
                     currentExperience: ''
                 });
-                
+
                 // Show popup and set timeout for redirect
                 setShowRedirectPopup(true);
                 setTimeout(() => {
@@ -104,22 +104,22 @@ const RecruitPage = () => {
 
     return (
         <>
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 className="container mx-auto px-4 py-12 min-h-screen"
             >
-                <motion.h1 
+                <motion.h1
                     initial={{ y: -20 }}
                     animate={{ y: 0 }}
                     className="text-4xl font-bold mb-8 text-center bg-gradient-to-r from-white via-gray-200 to-neutral-400 bg-clip-text text-transparent"
                 >
-                    Devino Parte din Aventura {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited')}! 🌟
+                    Devino Parte din Aventura {(process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra')}! 🌟
                 </motion.h1>
 
                 <div className="flex flex-col md:flex-row gap-8 justify-center">
-                    <motion.form 
+                    <motion.form
                         onSubmit={handleSubmit}
                         className="w-full md:w-1/2 max-w-lg bg-neutral-900/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-purple-500/20"
                         initial={{ scale: 0.95 }}
@@ -160,23 +160,22 @@ const RecruitPage = () => {
                                 <div>
                                     <div className="text-center font-bold text-purple-400 mb-2">Hentai</div>
                                     {hentaiRoles.map((role) => (
-                                        <div 
+                                        <div
                                             key={role}
                                             onClick={() => handleRoleToggle(role)}
-                                            className={`p-2 rounded cursor-pointer border transition-colors ${
-                                                formData.applicationRoles.includes(role)
+                                            className={`p-2 rounded cursor-pointer border transition-colors ${formData.applicationRoles.includes(role)
                                                     ? 'bg-purple-600 border-purple-400'
                                                     : 'bg-neutral-800 border-neutral-700 hover:border-purple-500'
-                                            }`}
+                                                }`}
                                         >
                                             {role}
                                         </div>
                                     ))}
                                 </div>
                                 <div>
+                                </div>
                             </div>
                         </div>
-</div>
                         <div className="mb-6">
                             <label className="block text-gray-300 mb-2" htmlFor="currentExperience">Experiența Ta</label>
                             <textarea
@@ -191,21 +190,21 @@ const RecruitPage = () => {
                             />
                         </div>
 
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             className={`w-full py-2 rounded transition-all duration-300 flex items-center justify-center
                                 ${isSubmitting ? 'bg-purple-700 cursor-wait' : 'bg-purple-600 hover:bg-purple-700'}
                                 ${submitStatus === 'success' ? 'bg-green-600' : ''}
                                 ${submitStatus === 'error' ? 'bg-red-600' : ''}`}
                             disabled={isSubmitting}
                         >
-                            {isSubmitting ? 'Se trimite...' : 
-                             submitStatus === 'success' ? '✓ Trimis cu succes!' :
-                             submitStatus === 'error' ? '× Eroare la trimitere' : 'Trimite Aplicația'}
+                            {isSubmitting ? 'Se trimite...' :
+                                submitStatus === 'success' ? '✓ Trimis cu succes!' :
+                                    submitStatus === 'error' ? '× Eroare la trimitere' : 'Trimite Aplicația'}
                         </button>
                     </motion.form>
 
-                    <motion.div 
+                    <motion.div
                         className="w-full md:w-1/2 max-w-lg text-white"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -221,7 +220,7 @@ const RecruitPage = () => {
                                 <p>Verifică acuratețea și calitatea traducerilor, asigurând coerența și corectitudinea gramaticală.</p>
                             </div>
                             <div className="role-card p-4 border border-purple-500/20 rounded-lg hover:border-purple-500/40 transition-colors">
-                                <h3 className="font-bold text-purple-400 mb-2">Encoder Hentai</h3>   
+                                <h3 className="font-bold text-purple-400 mb-2">Encoder Hentai</h3>
                                 <p>Se ocupă cu procesarea tehnică, incluzând subtitrările și încărcarea episoadelor pe platformă.</p>
                             </div>
                         </div>
@@ -232,7 +231,7 @@ const RecruitPage = () => {
             {/* Redirect Popup */}
             {showRedirectPopup && (
                 <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-                    <motion.div 
+                    <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         className="bg-neutral-900 border border-purple-500 p-8 rounded-lg max-w-md text-center"
@@ -240,14 +239,14 @@ const RecruitPage = () => {
                         <h2 className="text-2xl font-bold text-purple-400 mb-4">Aplicație Trimisă cu Succes! 🎉</h2>
                         <p className="text-white mb-6">Mulțumim pentru aplicație! Te vom redirecționa către serverul nostru Discord în câteva secunde...</p>
                         <div className="w-full bg-neutral-800 h-2 rounded-full overflow-hidden">
-                            <motion.div 
+                            <motion.div
                                 className="h-full bg-purple-500"
                                 initial={{ width: 0 }}
                                 animate={{ width: "100%" }}
                                 transition={{ duration: 3 }}
                             />
                         </div>
-                        <button 
+                        <button
                             onClick={() => window.location.href = 'https://discord.gg/SwvnaKc49N'}
                             className="mt-6 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded transition-colors"
                         >

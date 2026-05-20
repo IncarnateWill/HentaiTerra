@@ -25,9 +25,9 @@ const Footer = () => {
             <div className="flex items-center gap-2">
               {[
                 { href: process.env.NEXT_PUBLIC_DISCORD_URL || "https://discord.gg/eAX557MEes", icon: FaDiscord, label: "Discord", hoverColor: 'hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-indigo-500/10' },
-                { href: process.env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/HentaiUnited", icon: FaTwitter, label: "Twitter", hoverColor: 'hover:text-sky-400 hover:border-sky-500/40 hover:bg-sky-500/10' },
-                { href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/HentaiUnited/", icon: FaInstagram, label: "Instagram", hoverColor: 'hover:text-pink-400 hover:border-pink-500/40 hover:bg-pink-500/10' },
-                { href: process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@HentaiUnited.ro", icon: FaTiktok, label: "TikTok", hoverColor: 'hover:text-white hover:border-white/30 hover:bg-white/10' },
+                { href: process.env.NEXT_PUBLIC_TWITTER_URL || "https://twitter.com/HentaiTerra", icon: FaTwitter, label: "Twitter", hoverColor: 'hover:text-sky-400 hover:border-sky-500/40 hover:bg-sky-500/10' },
+                { href: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/HentaiTerra/", icon: FaInstagram, label: "Instagram", hoverColor: 'hover:text-pink-400 hover:border-pink-500/40 hover:bg-pink-500/10' },
+                { href: process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@HentaiTerra.ro", icon: FaTiktok, label: "TikTok", hoverColor: 'hover:text-white hover:border-white/30 hover:bg-white/10' },
               ].map(({ href, icon: Icon, label, hoverColor }) => (
                 <a
                   key={label}

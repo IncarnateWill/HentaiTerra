@@ -21,7 +21,6 @@ import {
   FaUser
 } from "react-icons/fa";
 import Image from "next/image";
-import { logToDiscordWebhook } from "@/lib/discord-webhook";
 import { useEffect } from "react";
 import { claimTask } from "@/actions/economy.actions";
 import toast from "react-hot-toast";
@@ -115,7 +114,7 @@ const ProfilePreview = ({ user, onClose }: { user: any; onClose: () => void }) =
                       <div className="text-xs uppercase tracking-wider text-yellow-300/80 font-semibold mb-1 ml-1">Administrative roles:</div>
                       <div className="flex flex-wrap gap-2 items-center">
                         {previewAdmin.map((role, idx) => (
-                          <span key={role + idx} className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 via-purple-500 to-pink-500 text-xs text-white font-bold border-2 border-yellow-400 shadow-md animate-pulse uppercase tracking-wide">
+                          <span key={role + idx} className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 via-purple-500 to-pink-500 text-xs text-white font-bold border-2 border-yellow-400 shadow-md uppercase tracking-wide">
                             {role.toLowerCase() === 'owner' ? <FaCrown className="w-4 h-4 mr-1 text-yellow-300" /> : <FaShieldAlt className="w-4 h-4 mr-1 text-purple-200" />} {role}
                           </span>
                         ))}
@@ -356,11 +355,6 @@ export default function ProfileClient({ user, heading, economyData }: { user: an
         setProfile(data.user);
         setEdit(false);
         setSuccess("Profile updated successfully!");
-        
-        // Trigger a hard refresh after a short delay to show the success message
-        setTimeout(() => {
-          window.location.reload();
-        }, 20);
       } else {
         setError(data.error || "Failed to update profile.");
         
@@ -369,8 +363,7 @@ export default function ProfileClient({ user, heading, economyData }: { user: an
           setValidationErrors(data.details);
         }
       }
-    } catch (error) {
-      await logToDiscordWebhook(`Error updating profile: ${error}`);
+    } catch {
       setError("Network error. Please try again later.");
     } finally {
       setSaving(false);
@@ -465,7 +458,7 @@ export default function ProfileClient({ user, heading, economyData }: { user: an
                     <div className="text-xs uppercase tracking-wider text-yellow-300/80 font-semibold mb-1 ml-1">Administrative roles:</div>
                     <div className="flex flex-wrap gap-2 items-center">
                       {admin.map((role, idx) => (
-                        <span key={role + idx} className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 via-purple-500 to-pink-500 text-xs text-white font-bold border-2 border-yellow-400 shadow-md animate-pulse uppercase tracking-wide">
+                        <span key={role + idx} className="flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-yellow-400 via-purple-500 to-pink-500 text-xs text-white font-bold border-2 border-yellow-400 shadow-md uppercase tracking-wide">
                           {role.toLowerCase() === 'owner' ? <FaCrown className="w-4 h-4 mr-1 text-yellow-300" /> : <FaShieldAlt className="w-4 h-4 mr-1 text-purple-200" />} {role}
                         </span>
                       ))}

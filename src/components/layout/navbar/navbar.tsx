@@ -6,7 +6,7 @@ import {
   HiHome, HiFilm, HiMenu, HiX, HiUserGroup, HiHeart,
   HiUser, HiShieldCheck, HiSearch,
 } from "react-icons/hi";
-import { FaDiscord, FaGhost } from "react-icons/fa";
+import { FaDiscord, FaGhost, FaCrown } from "react-icons/fa";
 import { FaEarthEurope } from "react-icons/fa6";
 import { SignInButton, SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import { isFullAdmin, canManageContent } from "@/lib/admin-permissions";
@@ -71,10 +71,15 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Sync Clerk user
+  // Sync Clerk user — runs once per session to avoid spamming on every re-render
   useEffect(() => {
     const syncUser = async () => {
       if (!user || !isSignedIn) return;
+
+      // Only sync once per session (skip if already done)
+      const syncKey = `synced_${user.id}`;
+      if (sessionStorage.getItem(syncKey)) return;
+
       try {
         const username = user.username || user.firstName || user.id;
         const res = await fetch("/api/user/sync", {
@@ -83,20 +88,26 @@ export default function Navbar() {
           body: JSON.stringify({ clerkId: user.id, email: user.primaryEmailAddress?.emailAddress, username, imageUrl: user.imageUrl }),
         });
         if (res.status === 409) {
+          // Username taken — append last 4 chars of clerkId (strip the 'user_' prefix)
+          const suffix = user.id.replace('user_', '').slice(-4);
           await fetch("/api/user/sync", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ clerkId: user.id, email: user.primaryEmailAddress?.emailAddress, username: `${username}_${user.id.slice(-6)}`, imageUrl: user.imageUrl }),
+            body: JSON.stringify({ clerkId: user.id, email: user.primaryEmailAddress?.emailAddress, username: `${username}_${suffix}`, imageUrl: user.imageUrl }),
           });
         }
+        // Mark as synced for this session regardless of outcome
+        sessionStorage.setItem(syncKey, '1');
       } catch {}
     };
     syncUser();
   }, [user, isSignedIn]);
 
-  // Fetch roles
+  // Fetch roles — with bounded retry (max 3 attempts) if user not yet in DB
   useEffect(() => {
     if (!isSignedIn) { setUserRoles([]); setIsStaffOrAdmin(false); return; }
+    let retries = 0;
+    const MAX_RETRIES = 3;
     const fetchProfile = async () => {
       try {
         const res = await fetch("/api/user/profile");
@@ -105,8 +116,9 @@ export default function Navbar() {
           const roles = data.user?.roles || [];
           setUserRoles(roles);
           setIsStaffOrAdmin(isFullAdmin({ roles }));
-        } else if (res.status === 404) {
-          setTimeout(fetchProfile, 500);
+        } else if (res.status === 404 && retries < MAX_RETRIES) {
+          retries++;
+          setTimeout(fetchProfile, retries * 500);
         }
       } catch {}
     };
@@ -185,6 +197,7 @@ export default function Navbar() {
     { name: "Acasă", href: "/home", icon: HiHome, ariaLabel: "Acasă" },
     { name: "Hentai", href: "/hentais", icon: HiFilm, ariaLabel: "Hentai" },
     { name: "Anime", href: process.env.NEXT_PUBLIC_ANIME_URL || "https://anime-united.ro", icon: FaGhost, ariaLabel: "Anime", external: true },
+    { name: "Clasament", href: "/leaderboard", icon: FaCrown, ariaLabel: "Clasament" },
     { name: "Shop", href: "/shop", icon: ShoppingBag, ariaLabel: "Shop", requireAuth: true },
     { name: "Marketplace", href: "/marketplace", icon: Store, ariaLabel: "Marketplace", requireAuth: true },
     { name: "Watchlist", href: "/watchlist", icon: HiHeart, ariaLabel: "Watchlist", requireAuth: true },

@@ -2,15 +2,15 @@ import { Metadata } from 'next';
 import Script from 'next/script';
 
 export const metadata: Metadata = {
-  title: `Puncte și Misiuni | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'} - Câștigă Recompense Hentai`,
-  description: `Completează misiunile zilnice și acumulează puncte pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}. Folosește punctele pentru a cumpăra cartonașe rare în magazinul oficial.`,
+  title: `Puncte și Misiuni | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'} - Câștigă Recompense Hentai`,
+  description: `Completează misiunile zilnice și acumulează puncte pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}. Folosește punctele pentru a cumpăra cartonașe rare în magazinul oficial.`,
   alternates: {
-    canonical: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/points`
+    canonical: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/points`
   },
   openGraph: {
-    title: `Puncte și Misiuni | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}`,
-    description: `Rezolvă misiunile de vizionare și alte activități pentru a câștiga puncte bonus. Cumpără pachete de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited'}.`,
-    url: `${process.env.SITE_URL || 'https://HentaiUnited.ro'}/points`,
+    title: `Puncte și Misiuni | ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}`,
+    description: `Rezolvă misiunile de vizionare și alte activități pentru a câștiga puncte bonus. Cumpără pachete de cartonașe pe ${process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra'}.`,
+    url: `${process.env.SITE_URL || 'https://HentaiTerra.ro'}/points`,
     type: 'website'
   },
   robots: {
@@ -24,8 +24,8 @@ export default function PointsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-  const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+  const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
   const pageUrl = `${siteUrl}/points`;
 
   const pointsSchema = {

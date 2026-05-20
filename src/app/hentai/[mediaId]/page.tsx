@@ -152,7 +152,7 @@ function generateAlternativeTitleKeywords(alternativeTitles: string[]): string[]
  */
 function generateGenreKeywords(genreNames: string[]): string[] {
     // Limit to top 3 genres to keep it natural
-    return genreNames.slice(0, 3).map((genre: string) => 
+    return genreNames.slice(0, 3).map((genre: string) =>
         `hentai ${genre} subtitrat română`
     );
 }
@@ -164,7 +164,7 @@ function generateGenreKeywords(genreNames: string[]): string[] {
  */
 function generateYearKeywords(releaseYear?: number): string[] {
     if (!releaseYear) return [];
-    
+
     return [
         `hentai ${releaseYear} subtitrat română`,
     ];
@@ -204,7 +204,7 @@ function combineAndDeduplicateKeywords(...keywordArrays: string[][]): string[] {
  */
 function extractGenreNames(genres: any[]): string[] {
     if (!Array.isArray(genres)) return [];
-    
+
     return genres
         .map((g: any) => typeof g === 'string' ? g : g?.name)
         .filter(Boolean);
@@ -238,28 +238,28 @@ function resolvePosterUrl(poster: string, siteUrl: string): string {
  * @returns Metadata object for Next.js
  */
 function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
-    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
-    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiUnited';
-    
+    const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
+    const siteName = process.env.NEXT_PUBLIC_SITE_NAME || 'HentaiTerra';
+
     // Generate titles and descriptions
     const romanianTitle = `${anime.name} - Urmărește Online HD Gratis | ${siteName}`;
     const romanianDescription = `Urmărește ${anime.name} online HD subtitrat în română pe ${siteName}. Cel mai bun site pentru hentai-uri subtitrate în română.`.substring(0, 165);
-    
+
     // Process poster
     const posterUrl = resolvePosterUrl(anime.poster, siteUrl);
-    
+
     // Extract data
     const releaseYear = deriveReleaseYear(anime.createdAt);
     const genreNames = extractGenreNames(anime.genres);
     const alternativeTitles = anime.alternativeTitles || [];
-    
+
     // Generate all keyword categories
     const baseKeywords = generateBaseKeywords(anime.name, siteName);
     const altTitleKeywords = generateAlternativeTitleKeywords(alternativeTitles);
     const genreKeywords = generateGenreKeywords(genreNames);
     const yearKeywords = generateYearKeywords(releaseYear);
     const generalKeywords = generateGeneralKeywords(anime.name);
-    
+
     // Combine all keywords
     const keywords = combineAndDeduplicateKeywords(
         baseKeywords,
@@ -268,7 +268,7 @@ function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
         yearKeywords,
         generalKeywords
     );
-    
+
     return {
         title: romanianTitle,
         description: romanianDescription,
@@ -277,11 +277,11 @@ function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
             url: `${siteUrl}/hentai/${mediaId}`,
             title: romanianTitle,
             description: romanianDescription,
-            images: posterUrl ? [{ 
+            images: posterUrl ? [{
                 url: posterUrl,
                 width: 800,
                 height: 600,
-                alt: `Poster ${anime.name}` 
+                alt: `Poster ${anime.name}`
             }] : [],
             type: 'website',
             locale: 'ro_RO',
@@ -298,8 +298,8 @@ function generateSEOMetadata(anime: AnimeDetails, mediaId: string): Metadata {
             title: romanianTitle,
             description: romanianDescription,
             images: posterUrl ? [posterUrl] : [],
-            site: '@HentaiUnited',
-            creator: '@HentaiUnited',
+            site: '@HentaiTerra',
+            creator: '@HentaiTerra',
         },
         alternates: {
             canonical: `${siteUrl}/hentai/${mediaId}`,
@@ -423,9 +423,9 @@ function prepareMediaData(anime: AnimeDetails) {
         alternativeTitles: anime.alternativeTitles || [],
         synopsis: anime.description || 'No description available',
         posterPath: anime.poster || '',
-        genres: anime.genres.map((genre: Genre) => ({ 
-            name: genre.name, 
-            _id: genre._id.toString() 
+        genres: anime.genres.map((genre: Genre) => ({
+            name: genre.name,
+            _id: genre._id.toString()
         })),
         creator: anime.studio || 'Unknown Studio',
         releaseDate: anime.createdAt ? new Date(anime.createdAt).toLocaleDateString() : 'Unknown',
@@ -444,16 +444,16 @@ function prepareMediaData(anime: AnimeDetails) {
  */
 async function getWatchlistStatus(userId: string | null, animeId: string): Promise<string | null> {
     if (!userId) return null;
-    
+
     try {
         const user = await User.findOne({ clerkId: userId }).select('_id');
         if (!user) return null;
-        
+
         const watchlistEntry = await Watchlist.findOne({
             userId: user._id,
             'animes.animeId': animeId
         }).select('animes.$');
-        
+
         return watchlistEntry?.animes[0]?.status || null;
     } catch (error) {
         console.error('Error fetching watchlist status:', error);
@@ -472,34 +472,34 @@ export async function generateMetadata({
 }): Promise<Metadata> {
     try {
         const { mediaId } = await params;
-        
+
         // Validate ObjectId before making database queries
         if (!isValidObjectId(mediaId)) {
             await logToDiscordWebhook(`Invalid mediaId attempted: ${mediaId} - generateMetadata`);
             return {
-                title: 'Hentai nu a fost găsit | HentaiUnited',
+                title: 'Hentai nu a fost găsit | HentaiTerra',
                 description: 'ID-ul hentai-ului nu este valid.',
                 robots: { index: false, follow: false },
             };
         }
-        
+
         const anime = await getAnimeDetails(mediaId);
-        
+
         // Validate anime data
         if (!validateAnimeData(anime)) {
             await logToDiscordWebhook(`Anime not found for valid ID: ${mediaId} - generateMetadata`);
             return {
-                title: 'Hentai nu a fost găsit | HentaiUnited',
+                title: 'Hentai nu a fost găsit | HentaiTerra',
                 description: 'Hentai-ul căutat nu există în baza noastră de date.',
                 robots: { index: false, follow: false },
             };
         }
-        
+
         return generateSEOMetadata(anime, mediaId);
     } catch (error) {
         await logToDiscordWebhook(`Error in generateMetadata: ${error}`);
         return {
-            title: 'Eroare la încărcarea conținutului | HentaiUnited',
+            title: 'Eroare la încărcarea conținutului | HentaiTerra',
             description: 'A apărut o eroare la încărcarea hentai-ului.',
             robots: { index: false, follow: false },
         };
@@ -540,9 +540,9 @@ export default async function AnimeDetailsPage({
     }
 
     // Prepare data
-    const siteUrl = process.env.SITE_URL || 'https://HentaiUnited.ro';
+    const siteUrl = process.env.SITE_URL || 'https://HentaiTerra.ro';
     const mediaData = prepareMediaData(anime);
-    
+
     // Generate structured data
     const structuredData = generateTVSeriesStructuredData(anime, mediaId, siteUrl);
     const breadcrumbList = generateBreadcrumbStructuredData(anime, mediaId, siteUrl);
@@ -562,7 +562,7 @@ export default async function AnimeDetailsPage({
             <meta httpEquiv="content-language" content="ro" />
             <link rel="canonical" href={`${siteUrl}/hentai/${mediaId}`} />
             <link rel="alternate" hrefLang="ro" href={`${siteUrl}/hentai/${mediaId}`} />
-            
+
             {/* Structured Data */}
             <script
                 type="application/ld+json"
@@ -572,7 +572,7 @@ export default async function AnimeDetailsPage({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
             />
-            
+
             <div className="flex flex-col lg:flex-row lg:space-x-8">
                 <div className="lg:flex-grow lg:w-[65%]">
                     {/* Media Info Section */}
@@ -590,17 +590,17 @@ export default async function AnimeDetailsPage({
                             status: (anime.status || '').toLowerCase(),
                         }} />
                     </Suspense>
-                    
+
                     {/* Watchlist Button */}
                     <div className="flex flex-col sm:flex-row gap-4 items-start">
                         <Suspense fallback={<LoadingInfo />}>
-                            <WatchlistButton 
-                                animeId={anime._id.toString()} 
+                            <WatchlistButton
+                                animeId={anime._id.toString()}
                                 initialStatus={watchlistStatus as "watching" | "completed" | "on-hold" | "dropped" | "plan-to-watch" | null | undefined}
                             />
                         </Suspense>
                     </div>
-                    
+
                     {/* Episodes Section */}
                     <div className="mt-12 bg-dark-400/30 backdrop-blur-xl border border-white/5 rounded-3xl p-6 sm:p-8 shadow-2xl ring-1 ring-white/5">
                         <div className="flex items-center gap-3 mb-6">
@@ -611,11 +611,11 @@ export default async function AnimeDetailsPage({
                         </div>
                         {anime.episodes && anime.episodes.length > 0 ? (
                             <>
-                                <AnimeEpisodeList 
-                                    episodes={anime.episodes as any} 
-                                    currentEpisodeId="" 
+                                <AnimeEpisodeList
+                                    episodes={anime.episodes as any}
+                                    currentEpisodeId=""
                                 />
-                                
+
                                 {/* Pagination */}
                                 {anime.totalPages && anime.totalPages > 1 && (
                                     <Pagination
@@ -654,15 +654,15 @@ export default async function AnimeDetailsPage({
                     <Suspense fallback={<LoadingRecommendations />}>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
                             {recommendedAnime.map((recommended: RecommendedAnime) => (
-                                <a 
-                                    key={recommended._id} 
+                                <a
+                                    key={recommended._id}
                                     href={`/hentai/${recommended._id}`}
                                     className="block group relative"
                                 >
                                     <div className="absolute -inset-0.5 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl blur opacity-0 group-hover:opacity-30 transition duration-500"></div>
                                     <div className="relative pb-[140%] overflow-hidden rounded-2xl bg-dark-500 ring-1 ring-white/10 shadow-xl">
-                                        <Image 
-                                            src={recommended.poster || "/default-thumbnail.jpg"} 
+                                        <Image
+                                            src={recommended.poster || "/default-thumbnail.jpg"}
                                             alt={recommended.name}
                                             className="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
                                             loading="lazy"
@@ -693,15 +693,15 @@ export default async function AnimeDetailsPage({
 
             {/* FAQ Section */}
             <div className="mt-8">
-                <FAQ 
+                <FAQ
                     title="Întrebări Frecvente - Hentai"
                     items={animePageFAQ}
                 />
             </div>
-            
+
             {/* Navigation Links */}
             <div className="mt-8">
-                <AdditionalNavigation 
+                <AdditionalNavigation
                     title="Navigare Rapidă"
                     links={mainNavigationLinks}
                 />
