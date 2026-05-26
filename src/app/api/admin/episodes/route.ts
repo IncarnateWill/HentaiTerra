@@ -103,6 +103,8 @@ export async function POST(req: NextRequest) {
             name: episode.name,
             episodeNumber: episode.episodeNumber,
             thumbnail: episode.thumbnail,
+            animeId: data.animeId,
+            episodeId: episode.episodeId,
             anime: animeDetails ? {
               title: (animeDetails as any).name,
               poster: (animeDetails as any).poster,

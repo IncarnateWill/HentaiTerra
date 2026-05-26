@@ -6,6 +6,7 @@ interface EmbedField {
 
 interface DiscordEmbed {
   title?: string;
+  url?: string;
   description?: string;
   color?: number;
   image?: {
@@ -70,9 +71,12 @@ export function createAnimeEmbed(
     studios?: { name: string }[];
     genres: { name: string }[];
     alternativeTitles?: string[];
+    animeId?: string;
   },
   addedBy?: string
 ): DiscordEmbed {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hentaiterra.ro';
+  const animeUrl = anime.animeId ? `${siteUrl}/hentai/${anime.animeId}` : undefined;
   const genreNames = anime.genres.map(g => g.name).join(', ') || 'Nici un gen';
   // Handle both studio (string) and studios (array) formats
   const studioNames = anime.studio || anime.studios?.map(s => s.name).join(', ') || 'unknown';
@@ -80,6 +84,7 @@ export function createAnimeEmbed(
   
   return {
     title: anime.title,
+    url: animeUrl,
     color: getColorValue('Green'),
     image: {
       url: anime.poster,
@@ -118,6 +123,8 @@ export function createEpisodeEmbed(
     name: string;
     episodeNumber: number;
     thumbnail?: string;
+    animeId?: string;
+    episodeId?: string;
     anime?: {
       title: string;
       poster?: string;
@@ -125,8 +132,11 @@ export function createEpisodeEmbed(
   },
   addedBy?: string
 ): DiscordEmbed {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hentaiterra.ro';
+  const episodeUrl = episode.episodeId ? `${siteUrl}/watch/${episode.episodeId}` : undefined;
   return {
     title: `${episode.anime?.title || 'Unknown Anime'} - Episodul ${episode.episodeNumber}`,
+    url: episodeUrl,
     color: getColorValue('Blue'),
     image: {
       url: episode.thumbnail || episode.anime?.poster || '',
@@ -164,6 +174,7 @@ export async function notifyNewAnime(
     studios?: { name: string }[];
     genres: { name: string }[];
     alternativeTitles?: string[];
+    animeId?: string;
   },
   addedBy?: string
 ): Promise<boolean> {
@@ -183,6 +194,8 @@ export async function notifyNewEpisode(
     name: string;
     episodeNumber: number;
     thumbnail?: string;
+    animeId?: string;
+    episodeId?: string;
     anime?: {
       title: string;
       poster?: string;

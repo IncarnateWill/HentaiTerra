@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { User } from '@/models';
+import { User, Image } from '@/models';
 import { isFullAdmin } from '@/lib/admin-permissions';
-import { promises as fs } from 'fs';
 import path from 'path';
 
 export async function POST(req: NextRequest) {
@@ -45,18 +44,16 @@ export async function POST(req: NextRequest) {
     const baseName = path.basename(cleanName, fileExt);
     const filename = `${baseName}-${Date.now()}-${Math.random().toString(36).substring(2, 8)}${fileExt}`;
 
-    // Define save directory in public/uploads/cards
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'cards');
-    
-    // Ensure directory exists
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Write file
-    const filePath = path.join(uploadDir, filename);
-    await fs.writeFile(filePath, buffer);
+    // Save file data to database
+    await Image.create({
+      filename,
+      contentType: file.type || 'image/png',
+      data: buffer
+    });
 
     // Return the relative web path using the dynamic serve API
-    const fileUrl = `/api/uploads/cards/${filename}`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+    const fileUrl = `${siteUrl}/api/uploads/cards/${filename}`;
     return NextResponse.json({ success: true, url: fileUrl });
   } catch (error) {
     console.error('Error uploading card image:', error);

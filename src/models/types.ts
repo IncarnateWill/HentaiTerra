@@ -184,3 +184,11 @@ export interface ILootbox extends Document {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IImage extends Document {
+    filename: string;
+    contentType: string;
+    data: Buffer;
+    createdAt: Date;
+    updatedAt: Date;
+}

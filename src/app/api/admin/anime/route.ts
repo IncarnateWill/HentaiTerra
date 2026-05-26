@@ -102,6 +102,7 @@ const { malId, ...restSanitized } = sanitizedData;
       studio: anime.studio,
       genres: anime.genres,
       alternativeTitles: anime.alternativeTitles,
+      animeId: anime._id.toString(),
     }, addedBy);
   } catch (error) {
     await logToDiscordWebhook(`Failed to send Discord webhook for new anime: ${error}`);

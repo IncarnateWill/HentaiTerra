@@ -197,6 +197,14 @@ const LootboxSchema = new mongoose.Schema<ILootbox>({
     updatedAt: { type: Date, default: Date.now }
 });
 
+const ImageSchema = new mongoose.Schema({
+    filename: { type: String, required: true, unique: true },
+    contentType: { type: String, required: true },
+    data: { type: Buffer, required: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+});
+
 export const Anime = mongoose.models.Anime || mongoose.model('Anime', AnimeSchema);
 export const Episode = mongoose.models.Episode || mongoose.model('Episode', EpisodeSchema);
 export const Genre = mongoose.models.Genre || mongoose.model('Genre', GenreSchema);
@@ -211,3 +219,4 @@ export const WatchHistory = mongoose.models.WatchHistory || mongoose.model('Watc
 export const MarketplaceListing = mongoose.models.MarketplaceListing || mongoose.model('MarketplaceListing', MarketplaceListingSchema);
 export const Rank = mongoose.models.Rank || mongoose.model('Rank', RankSchema);
 export const Lootbox = mongoose.models.Lootbox || mongoose.model('Lootbox', LootboxSchema);
+export const Image = mongoose.models.Image || mongoose.model('Image', ImageSchema);

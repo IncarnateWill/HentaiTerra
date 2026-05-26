@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
+import { connectToDatabase } from '@/lib/mongodb';
+import { Image } from '@/models';
 import path from 'path';
 
 export async function GET(
@@ -12,33 +13,23 @@ export async function GET(
     // Sanitize filename to prevent directory traversal attacks
     const safeFilename = path.basename(filename);
     
-    // Path inside public/uploads/cards where files are written
-    const filePath = path.join(process.cwd(), 'public', 'uploads', 'cards', safeFilename);
+    await connectToDatabase();
     
     try {
-      const fileBuffer = await fs.readFile(filePath);
+      const imageDoc = await Image.findOne({ filename: safeFilename });
       
-      // Determine content type based on extension
-      const ext = path.extname(safeFilename).toLowerCase();
-      let contentType = 'image/png';
-      if (ext === '.jpg' || ext === '.jpeg') {
-        contentType = 'image/jpeg';
-      } else if (ext === '.webp') {
-        contentType = 'image/webp';
-      } else if (ext === '.gif') {
-        contentType = 'image/gif';
-      } else if (ext === '.svg') {
-        contentType = 'image/svg+xml';
+      if (!imageDoc) {
+        return new NextResponse('Image not found', { status: 404 });
       }
       
-      return new NextResponse(fileBuffer, {
+      return new NextResponse(imageDoc.data, {
         headers: {
-          'Content-Type': contentType,
+          'Content-Type': imageDoc.contentType,
           'Cache-Control': 'public, max-age=31536000, immutable',
         },
       });
-    } catch (readError) {
-      console.error(`Error reading card image file from path ${filePath}:`, readError);
+    } catch (dbError) {
+      console.error(`Error reading card image from DB ${safeFilename}:`, dbError);
       return new NextResponse('Image not found', { status: 404 });
     }
   } catch (error) {
