@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Types } from "mongoose";
 
@@ -85,6 +85,9 @@ export default function EpisodeFormModal({
     encoder: User[];
     traducator: User[];
   }>({ verificator: [], encoder: [], traducator: [] });
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
+  const [thumbnailUploadError, setThumbnailUploadError] = useState<string | null>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -150,6 +153,32 @@ export default function EpisodeFormModal({
       setForm(prev => ({ ...prev, [name]: value, displayTitle: value }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setThumbnailUploading(true);
+    setThumbnailUploadError(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/admin/upload/thumbnail', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Upload failed');
+      }
+      setForm(prev => ({ ...prev, thumbnail: data.url }));
+    } catch (err: any) {
+      setThumbnailUploadError(err.message || 'Upload failed');
+    } finally {
+      setThumbnailUploading(false);
+      // Reset file input so the same file can be re-uploaded if needed
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = '';
     }
   };
 
@@ -236,15 +265,72 @@ export default function EpisodeFormModal({
             <h3 className="text-lg font-semibold mb-4 text-blue-300">Media URLs</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-300">Thumbnail URL</label>
+                <label className="block text-sm font-medium mb-2 text-gray-300">Thumbnail</label>
+
+                {/* Preview */}
+                {form.thumbnail && (
+                  <div className="mb-3 rounded-lg overflow-hidden border border-slate-600 bg-slate-900 aspect-video w-full max-w-xs relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={form.thumbnail}
+                      alt="Thumbnail preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  </div>
+                )}
+
+                {/* URL input */}
                 <input
-                  type="url"
+                  type="text"
                   name="thumbnail"
-                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-800/50 focus:bg-slate-800 text-white border border-slate-700 focus:outline-none focus:border-blue-500 transition-colors mb-2"
                   value={form.thumbnail}
                   onChange={handleFormChange}
-                  placeholder="https://example.com/thumbnail.jpg"
+                  placeholder="https://example.com/thumbnail.jpg or upload below"
                 />
+
+                {/* Upload button */}
+                <div className="flex items-center gap-3">
+                  <input
+                    ref={thumbnailInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                    disabled={thumbnailUploading || loading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => thumbnailInputRef.current?.click()}
+                    disabled={thumbnailUploading || loading}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {thumbnailUploading ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>📁 Upload Image</>
+                    )}
+                  </button>
+                  {form.thumbnail && (
+                    <button
+                      type="button"
+                      onClick={() => setForm(prev => ({ ...prev, thumbnail: '' }))}
+                      disabled={thumbnailUploading || loading}
+                      className="px-3 py-2 rounded-lg bg-red-600/70 hover:bg-red-600 text-white text-sm transition-colors disabled:opacity-50"
+                    >
+                      ✕ Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Upload error */}
+                {thumbnailUploadError && (
+                  <p className="text-red-400 text-xs mt-1">{thumbnailUploadError}</p>
+                )}
               </div>
               
               <div>

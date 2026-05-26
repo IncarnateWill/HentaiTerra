@@ -49,3 +49,4 @@ next-env.d.ts
 /logs
 logs/imports/import-log.jsonl
 logs/imports/import-stats.json
+/public/uploads
